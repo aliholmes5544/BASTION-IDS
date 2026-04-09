@@ -12,12 +12,7 @@ models/
 # Training data (too large for git — 1.2 GB)
 data/
 
-# Runtime outputs
-outputs/flows/
-outputs/uploads/
-outputs/case_attachments/
-outputs/ip_cache.json
-outputs/triage.json
+# Logs
 logs/
 
 # IDE & tools

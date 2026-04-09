@@ -1,0 +1,4 @@
+flow_id,label,confidence,anomaly_score,severity,color,rank,is_malicious,watchlist_hit,rule_triggered,src_ip,dst_ip,src_port,dst_port,protocol
+1,BENIGN,90.89,9.11,SAFE,#00ff94,0,False,False,False,N/A,N/A,N/A,0.1800579573049617,0.8033111137548363
+2,BENIGN,92.28,7.72,SAFE,#00ff94,0,False,False,False,N/A,N/A,N/A,0.6261703102381557,0.7126307783322764
+3,BENIGN,90.68,9.32,SAFE,#00ff94,0,False,False,False,N/A,N/A,N/A,0.7360034332262813,0.9651364251697926
