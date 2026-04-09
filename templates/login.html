@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" {% if current_lang == 'ar' %}dir="rtl"{% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BASTION IDS — {{ t('Login title') }}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bastion.css') }}?v=20260322f">
+  <script src="{{ url_for('static', filename='vendor/lucide.min.js') }}"></script>
+  <script>
+    (function() {
+      var saved = localStorage.getItem('bastion-theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme-pre', 'light');
+    })();
+  </script>
+  <style>
+    .login-topbar {
+      position: fixed; top: 16px; right: 20px; z-index: 999;
+      display: flex; align-items: center; gap: 8px;
+    }
+    [dir="rtl"] .login-topbar { right: auto; left: 20px; }
+    .login-tb-btn {
+      display: flex; align-items: center; justify-content: center;
+      height: 34px; padding: 0 12px; border-radius: 8px; cursor: pointer;
+      font-size: 11px; font-weight: 700; letter-spacing: .04em;
+      border: 1px solid rgba(0,212,255,.25); background: rgba(5,10,20,.7);
+      color: var(--text-2, #8899bb); backdrop-filter: blur(8px);
+      transition: border-color .2s, color .2s, background .2s; gap: 6px;
+      text-decoration: none;
+    }
+    .login-tb-btn:hover { border-color: var(--cyan, #00d4ff); color: var(--cyan, #00d4ff); }
+    .login-tb-btn.active { border-color: var(--cyan, #00d4ff); color: var(--cyan, #00d4ff); background: rgba(0,212,255,.08); }
+    .login-tb-sep { width: 1px; height: 20px; background: rgba(0,212,255,.15); }
+    body.light .login-tb-btn { background: rgba(245,248,255,.85); color: #4a5a7a; border-color: rgba(0,100,160,.2); }
+    body.light .login-tb-btn:hover, body.light .login-tb-btn.active { border-color: #0088cc; color: #0088cc; background: rgba(0,136,204,.08); }
+
+    /* ── hCaptcha Widget ─────────────────────────────────────── */
+    .captcha-wrapper {
+      position: relative;
+      margin: 20px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(0,212,255,0.04) 0%, rgba(0,255,148,0.02) 100%);
+      border: 1px solid rgba(0,212,255,0.2);
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .captcha-wrapper:hover {
+      border-color: rgba(0,212,255,0.45);
+      box-shadow: 0 0 24px rgba(0,212,255,0.08), inset 0 0 24px rgba(0,212,255,0.03);
+    }
+    .captcha-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.7) 50%, transparent 100%);
+      animation: captchaGlow 3s ease-in-out infinite;
+    }
+    @keyframes captchaGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    .captcha-inner {
+      padding: 14px 16px 16px;
+    }
+    .captcha-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+    .captcha-header-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      color: var(--cyan, #00d4ff);
+      flex-shrink: 0;
+    }
+    .captcha-header-text {
+      flex: 1;
+    }
+    .captcha-header-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--cyan, #00d4ff);
+      line-height: 1.2;
+    }
+    .captcha-header-sub {
+      font-size: 9px;
+      color: var(--text-3, #4a5a7a);
+      letter-spacing: .04em;
+      margin-top: 1px;
+    }
+    .captcha-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(0,255,148,0.8);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .captcha-status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #00ff94;
+      box-shadow: 0 0 6px rgba(0,255,148,0.8);
+      animation: captchaPulse 2s ease-in-out infinite;
+    }
+    @keyframes captchaPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    .captcha-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.15), transparent);
+      margin-bottom: 14px;
+    }
+    .captcha-body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .captcha-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0,212,255,0.08);
+      font-size: 9px;
+      color: var(--text-3, #4a5a7a);
+      letter-spacing: .04em;
+    }
+    .captcha-footer svg { opacity: 0.5; }
+
+    /* Light theme overrides */
+    body.light .captcha-wrapper {
+      background: linear-gradient(135deg, rgba(0,100,160,0.04) 0%, rgba(0,136,204,0.02) 100%);
+      border-color: rgba(0,100,160,0.2);
+    }
+    body.light .captcha-wrapper:hover {
+      border-color: rgba(0,136,204,0.45);
+      box-shadow: 0 0 24px rgba(0,136,204,0.08), inset 0 0 24px rgba(0,136,204,0.03);
+    }
+    body.light .captcha-wrapper::before {
+      background: linear-gradient(90deg, transparent 0%, rgba(0,136,204,0.6) 50%, transparent 100%);
+    }
+    body.light .captcha-header-icon {
+      background: rgba(0,100,160,0.08);
+      border-color: rgba(0,100,160,0.2);
+      color: #0088cc;
+    }
+    body.light .captcha-header-title { color: #0066aa; }
+    body.light .captcha-status { color: #00884d; }
+    body.light .captcha-status-dot { background: #00aa66; box-shadow: 0 0 6px rgba(0,170,102,0.6); }
+    body.light .captcha-footer { border-color: rgba(0,100,160,0.1); }
+  </style>
+{% if hcaptcha_site_key %}
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+{% endif %}
+</head>
+<body>
+<!-- ── Top-right: Lang + Theme ─────────────────────────────────────────────── -->
+<div class="login-topbar">
+  <a href="{{ url_for('set_language', lang='en', next=request.path) }}"
+     class="login-tb-btn {% if current_lang == 'en' %}active{% endif %}">
+    EN
+  </a>
+  <a href="{{ url_for('set_language', lang='ar', next=request.path) }}"
+     class="login-tb-btn {% if current_lang == 'ar' %}active{% endif %}">
+    AR
+  </a>
+  <div class="login-tb-sep"></div>
+  <button class="login-tb-btn" id="login-theme-btn" onclick="loginToggleTheme()" title="{{ t('Toggle theme') }}">
+    <svg id="lt-icon-dark" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    <svg id="lt-icon-light" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+  </button>
+</div>
+<canvas id="particles-canvas"></canvas>
+
+<div class="radar-rings">
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+</div>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="login-title" id="typing-title">BASTION</div>
+      <div class="login-subtitle">{{ t('Intrusion Detection System') }}</div>
+    </div>
+
+    <div class="login-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-error" style="margin-bottom:16px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+          <label class="form-label" for="username">{{ t('Username label') }}</label>
+          <input class="form-input" type="text" id="username" name="username"
+                 placeholder="{{ t('Username label') }}" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">{{ t('Password label') }}</label>
+          <div style="position:relative">
+            <input class="form-input" type="password" id="password" name="password"
+                   placeholder="{{ t('Password label') }}" autocomplete="current-password" required
+                   style="padding-right:40px">
+            <button type="button" id="login-pw-eye"
+              onclick="(function(){var i=document.getElementById('password');var b=document.getElementById('login-pw-eye');var h=i.type==='password';i.type=h?'text':'password';b.innerHTML=h?'<svg width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;><path d=&quot;M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94&quot;/><path d=&quot;M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19&quot;/><line x1=&quot;1&quot; y1=&quot;1&quot; x2=&quot;23&quot; y2=&quot;23&quot;/></svg>':'<svg width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;><path d=&quot;M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z&quot;/><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;3&quot;/></svg>';})()"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:4px;display:flex;align-items:center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        {% if hcaptcha_site_key %}
+        <div class="captcha-wrapper">
+          <div class="captcha-inner">
+            <div class="captcha-header">
+              <div class="captcha-header-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="captcha-header-text">
+                <div class="captcha-header-title">{{ t('Security Check') }}</div>
+                <div class="captcha-header-sub">{{ t('captcha human verify') }}</div>
+              </div>
+              <div class="captcha-status">
+                <div class="captcha-status-dot"></div>
+                {{ t('ACTIVE') }}
+              </div>
+            </div>
+            <div class="captcha-divider"></div>
+            <div class="captcha-body">
+              <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}" data-theme="auto"></div>
+            </div>
+            <div class="captcha-footer">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              {{ t('captcha footer') }}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <button type="submit" class="btn-login">{{ t('AUTHENTICATE') }}</button>
+      </form>
+
+      <!-- Terminal typing animation -->
+      <div class="login-terminal" id="login-terminal">
+        <span class="login-terminal-line" id="tline-1"></span>
+        <span class="login-terminal-line" id="tline-2"></span>
+        <span class="login-terminal-line" id="tline-3"></span>
+        <span class="terminal-cursor" id="terminal-cursor"></span>
+      </div>
+
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);
+                  display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3)">
+        <div class="status-dot online"></div>
+        {{ t('System Operational') }} &nbsp;·&nbsp; {{ t('system footer') }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/bastion.js') }}?v=20260322f"></script>
+<script>
+// ── Login theme toggle ─────────────────────────────────────
+function loginToggleTheme() {
+  var isLight = document.body.classList.toggle('light');
+  localStorage.setItem('bastion-theme', isLight ? 'light' : 'dark');
+  document.getElementById('lt-icon-dark').style.display  = isLight ? 'none'  : 'block';
+  document.getElementById('lt-icon-light').style.display = isLight ? 'block' : 'none';
+}
+(function() {
+  if (localStorage.getItem('bastion-theme') === 'light') {
+    document.body.classList.add('light');
+    var d = document.getElementById('lt-icon-dark');
+    var l = document.getElementById('lt-icon-light');
+    if (d) d.style.display = 'none';
+    if (l) l.style.display = 'block';
+  }
+})();
+
+// ── Title Typing ──────────────────────────────────────────
+(function typeTitle() {
+  var el = document.getElementById('typing-title');
+  if (!el) return;
+  var text = el.textContent;
+  el.textContent = '';
+  el.style.webkitTextFillColor = '';
+  el.style.background = 'linear-gradient(135deg,#fff,var(--cyan))';
+  el.style.webkitBackgroundClip = 'text';
+  el.style.webkitTextFillColor = 'transparent';
+  var i = 0;
+  var cursor = document.createElement('span');
+  cursor.style.cssText = 'color:#00d4ff;-webkit-text-fill-color:#00d4ff;animation:scanTextBlink 1s infinite';
+  cursor.textContent = '|';
+  el.appendChild(cursor);
+  var t = setInterval(function() {
+    if (i < text.length) {
+      cursor.insertAdjacentText('beforebegin', text[i++]);
+    } else {
+      clearInterval(t);
+      setTimeout(function() { cursor.remove(); }, 600);
+    }
+  }, 80);
+})();
+
+// ── Terminal Typing Animation ─────────────────────────────
+(function initTerminal() {
+  var lines = [
+    {{ t('terminal line 1') | tojson }},
+    {{ t('terminal line 2') | tojson }},
+    {{ t('terminal line 3') | tojson }},
+  ];
+
+  var lineEls = [
+    document.getElementById('tline-1'),
+    document.getElementById('tline-2'),
+    document.getElementById('tline-3'),
+  ];
+  var cursorEl = document.getElementById('terminal-cursor');
+
+  function typeLine(lineIdx, text, charIdx, callback) {
+    if (!lineEls[lineIdx]) { if (callback) callback(); return; }
+    lineEls[lineIdx].classList.add('visible');
+    if (charIdx < text.length) {
+      lineEls[lineIdx].textContent = text.slice(0, charIdx + 1);
+      setTimeout(function() {
+        typeLine(lineIdx, text, charIdx + 1, callback);
+      }, 28 + Math.random() * 20);
+    } else {
+      if (callback) setTimeout(callback, 220);
+    }
+  }
+
+  // Start typing after 600ms delay
+  setTimeout(function() {
+    typeLine(0, lines[0], 0, function() {
+      typeLine(1, lines[1], 0, function() {
+        typeLine(2, lines[2], 0, function() {
+          // Remove blinking cursor after done
+          if (cursorEl) setTimeout(function() { cursorEl.style.display = 'none'; }, 1200);
+        });
+      });
+    });
+  }, 600);
+})();
+</script>
+</body>
+</html>

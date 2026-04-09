@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Attack Timeline title') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Attack Timeline title') }}{% endblock %}
+{% block topbar_icon %}
+<line x1="17" y1="12" x2="3" y2="12"/>
+<path d="M11 6l-6 6 6 6"/>
+<line x1="21" y1="12" x2="21" y2="12"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('Attack Timeline title') }}</div>
+  <div class="page-subtitle">{{ t('Timeline subtitle') }}</div>
+</div>
+
+{% if events %}
+<!-- Scatter Chart -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--red)"></div>{{ t('Threat Event Scatter') }}</div>
+  </div>
+  <div class="card-body">
+    <canvas id="timeline-chart" style="max-height:320px"></canvas>
+  </div>
+</div>
+
+<!-- Events Table -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('All Events tl') }} ({{ events | length }})</div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>{{ t('Timestamp') }}</th>
+          <th>{{ t('Attack Types th') }}</th>
+          <th>{{ t('Severity') }}</th>
+          <th>{{ t('Count th') }}</th>
+          <th>{{ t('Scan th') }}</th>
+          <th>{{ t('File col') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in events %}
+        <tr>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">
+            {{ e.timestamp[:16].replace('T',' ') if e.timestamp else t('N/A rep') }}
+          </td>
+          <td style="font-weight:600">{{ e.label }}</td>
+          <td>
+            <span class="badge badge-{{ e.severity | lower }}">{{ tsev(e.severity) }}</span>
+          </td>
+          <td class="mono" style="color:{{ e.color }}">{{ '{:,}'.format(e.count) }}</td>
+          <td>
+            <a href="{{ url_for('result', scan_id=e.scan_id) }}"
+               class="mono" style="font-size:11px;color:var(--cyan)">{{ e.scan_id }}</a>
+          </td>
+          <td style="font-size:11px;color:var(--text-3)">{{ e.filename }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="empty-state" style="margin-top:60px">
+  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+    <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+  </svg>
+  <p>{{ t('No attack events') }}</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TXT_TIMESTAMP   = {{ t('Timestamp') | tojson }};
+const TXT_ATTACK_TYPE = {{ t('Attack Type') | tojson }};
+const TXT_FLOWS       = {{ t('flows label') | tojson }};
+document.addEventListener('DOMContentLoaded', function() {
+  var ctx = document.getElementById('timeline-chart');
+  if (!ctx) return;
+
+  var rawEvents = {{ events[:500] | tojson }};
+  if (!rawEvents || !rawEvents.length) return;
+
+  // Get unique attack types for y-axis
+  var attackTypes = [];
+  rawEvents.forEach(function(e) {
+    if (!attackTypes.includes(e.label)) attackTypes.push(e.label);
+  });
+  attackTypes.sort();
+
+  var SEV_COLORS = {
+    'CRITICAL': 'rgba(255,62,95,0.8)',
+    'HIGH':     'rgba(255,107,53,0.8)',
+    'MEDIUM':   'rgba(255,184,0,0.8)',
+    'SAFE':     'rgba(0,255,148,0.6)',
+    'UNKNOWN':  'rgba(136,153,187,0.6)',
+  };
+
+  var datasets = {};
+  rawEvents.forEach(function(e) {
+    var sev = e.severity || 'UNKNOWN';
+    if (!datasets[sev]) {
+      datasets[sev] = {
+        label: sev,
+        data: [],
+        backgroundColor: SEV_COLORS[sev] || 'rgba(136,153,187,0.6)',
+        pointRadius: 6,
+        pointHoverRadius: 9,
+      };
+    }
+    datasets[sev].data.push({
+      x: e.timestamp ? e.timestamp.slice(0,16).replace('T',' ') : '',
+      y: attackTypes.indexOf(e.label),
+      r: Math.min(6 + Math.log10(e.count + 1) * 4, 16),
+      label: e.label,
+      count: e.count,
+      scan_id: e.scan_id,
+    });
+  });
+
+  new Chart(ctx, {
+    type: 'bubble',
+    data: { datasets: Object.values(datasets) },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#8899bb', font: { size: 11 } },
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              var d = ctx.raw;
+              return d.label + ' · ' + d.count + ' ' + TXT_FLOWS + ' · ' + d.scan_id;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'category',
+          labels: rawEvents.map(function(e) {
+            return e.timestamp ? e.timestamp.slice(0,16).replace('T',' ') : '';
+          }).filter(function(v,i,a) { return a.indexOf(v) === i; }).sort(),
+          grid: { color: 'rgba(0,212,255,0.06)' },
+          ticks: { color: '#8899bb', font: { size: 9 }, maxTicksLimit: 15 },
+          title: { display: true, text: TXT_TIMESTAMP, color: '#8899bb' },
+        },
+        y: {
+          type: 'linear',
+          min: -0.5,
+          max: attackTypes.length - 0.5,
+          grid: { color: 'rgba(0,212,255,0.06)' },
+          ticks: {
+            color: '#8899bb',
+            font: { size: 10 },
+            callback: function(val) {
+              return attackTypes[Math.round(val)] || '';
+            },
+            stepSize: 1,
+          },
+          title: { display: true, text: TXT_ATTACK_TYPE, color: '#8899bb' },
+        }
+      },
+      animation: { duration: 600 },
+    }
+  });
+});
+</script>
+{% endblock %}

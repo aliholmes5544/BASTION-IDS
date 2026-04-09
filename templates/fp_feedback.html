@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ t('False Positive Feedback') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('FP Feedback') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+<line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('False Positive Feedback') }}</div>
+  <div class="page-subtitle">{{ t('FP subtitle') }}</div>
+</div>
+
+<!-- Summary by label -->
+<div class="stat-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));margin-bottom:20px">
+  {% for label, recs in grouped.items() %}
+  <div class="stat-card amber anim-fade-up">
+    <div class="stat-value" style="font-size:28px">{{ recs | length }}</div>
+    <div class="stat-label" style="font-size:10px">{{ label[:20] }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if grouped %}
+  {% for label, recs in grouped.items() | sort(attribute='0') %}
+  <div class="card anim-fade-up" style="margin-bottom:16px">
+    <div class="card-header-custom">
+      <div class="card-title">
+        <div class="card-title-dot" style="background:var(--amber)"></div>
+        {{ label }}
+        <span class="badge badge-medium" style="margin-left:8px;font-size:10px">{{ recs | length }} {{ t('FP') }}</span>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ t('ID th') }}</th>
+            <th>{{ t('Scan ID') }}</th>
+            <th>{{ t('Flow ID') }}</th>
+            <th>{{ t('Src IP') }}</th>
+            <th>{{ t('Analyst') }}</th>
+            <th>{{ t('Timestamp') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in recs %}
+          <tr>
+            <td class="mono" style="font-size:10px;color:var(--text-3)">{{ r.id }}</td>
+            <td>
+              <a href="{{ url_for('result', scan_id=r.scan_id) }}"
+                 class="mono" style="font-size:11px;color:var(--cyan)">{{ r.scan_id }}</a>
+            </td>
+            <td class="mono" style="font-size:11px">{{ r.flow_id }}</td>
+            <td class="mono" style="font-size:11px">{{ r.src_ip }}</td>
+            <td style="font-size:12px;color:var(--text-2)">{{ r.analyst }}</td>
+            <td class="mono" style="font-size:10px;color:var(--text-3)">
+              {{ r.timestamp[:16].replace('T',' ') if r.timestamp else t('N/A rep') }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+<div class="empty-state" style="margin-top:60px">
+  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/>
+  </svg>
+  <p>{{ t('No FP records') }}</p>
+  <p style="font-size:12px;color:var(--text-3)">{{ t('FP records note') }}</p>
+</div>
+{% endif %}
+{% endblock %}

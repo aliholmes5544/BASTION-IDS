@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Scan Detail') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Scan Detail') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+{% endblock %}
+
+{% block content %}
+{% set td = entry.get('threat_breakdown', {}) %}
+{% set sd = entry.get('severity_breakdown', {}) %}
+{% set top = top_severity %}
+
+<!-- Back + Actions -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px" class="anim-fade-up">
+  <a href="{{ url_for('history') }}" class="btn btn-secondary btn-sm">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    {{ t('Back') }}
+  </a>
+  <div style="flex:1">
+    <h1 class="page-title" style="font-size:20px">{{ entry.filename }}</h1>
+    <p class="page-subtitle mono">{{ entry.scan_id }} &nbsp;·&nbsp; {{ entry.timestamp[:16].replace('T',' ') if entry.timestamp else t('N/A rep') }} {{ t('UTC label') }}</p>
+  </div>
+  <a href="{{ url_for('download_flows', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    {{ t('Raw Flows CSV') }}
+  </a>
+  <a href="{{ url_for('result', scan_id=entry.scan_id) }}" class="btn btn-primary btn-sm">{{ t('View Full Result') }}</a>
+</div>
+
+<!-- Threat Banner -->
+<div class="threat-banner {{ top | lower }} anim-fade-up" style="margin-bottom:22px">
+  <div class="scan-line"></div>
+  <div style="flex:1">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+      color:{% if top=='CRITICAL' %}var(--red){% elif top=='HIGH' %}var(--orange){% elif top=='MEDIUM' %}var(--amber){% else %}var(--green){% endif %};margin-bottom:3px">
+      {{ tsev(top) }} {{ t('SEVERITY') }}
+    </div>
+    <div style="font-size:16px;font-weight:700;color:var(--text-1)">
+      {{ entry.malicious_flows | int }} {{ t('threats in') }} {{ entry.total_flows | int }} {{ t('analyzed flows') }}
+    </div>
+  </div>
+  <span class="badge badge-{{ top | lower }}" style="font-size:12px;padding:6px 14px">{{ tsev(top) }}</span>
+</div>
+
+<!-- Stats -->
+<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+  <div class="stat-card cyan anim-fade-up delay-1">
+    <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="stat-value" data-count="{{ entry.total_flows }}">0</div>
+    <div class="stat-label">{{ t('Total Flows') }}</div>
+  </div>
+  <div class="stat-card red anim-fade-up delay-2">
+    <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <div class="stat-value" data-count="{{ entry.malicious_flows }}">0</div>
+    <div class="stat-label">{{ t('Malicious') }}</div>
+  </div>
+  <div class="stat-card green anim-fade-up delay-3">
+    <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+    <div class="stat-value" data-count="{{ entry.benign_flows }}">0</div>
+    <div class="stat-label">{{ t('Benign') }}</div>
+  </div>
+  <div class="stat-card amber anim-fade-up delay-4">
+    <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <div class="stat-value" data-count="{{ entry.avg_confidence }}" data-suffix="%">0%</div>
+    <div class="stat-label">{{ t('Avg Confidence') }}</div>
+  </div>
+</div>
+
+<!-- Charts + Threat Summary -->
+<div class="grid-2" style="margin-bottom:20px">
+  <div class="card anim-fade-up delay-1">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Traffic Split') }}</div>
+    </div>
+    <div class="card-body">
+      <canvas id="bm-chart" style="max-height:200px"></canvas>
+    </div>
+  </div>
+
+  <div class="card anim-fade-up delay-2">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Detected Attack Types') }}</div>
+      {% if td %}<span style="font-size:10px;color:var(--text-3)">{{ t('Click to inspect flows') }}</span>{% endif %}
+    </div>
+    <div class="card-body" style="padding:0">
+      {% if td %}
+        {% for label, count in td.items() | sort(attribute=1, reverse=True) %}
+        {% set a_sev, a_color, _ = get_severity(label) %}
+        <a href="{{ url_for('attack_detail', scan_id=entry.scan_id, attack_name=label) }}"
+           class="attack-row-link">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:13px;color:var(--text-1)">{{ label }}</div>
+            <div class="progress-bar-wrap" style="margin-top:6px">
+              <div class="progress-bar-fill"
+                   style="width:{{ ((count / (entry.total_flows or 1)) * 100) | round(1) }}%;
+                          background:{{ a_color }}"></div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:16px">
+            <div style="font-weight:800;font-size:18px;color:{{ a_color }}">{{ count }}</div>
+            <span class="badge badge-{{ a_sev | lower }}" style="font-size:9px">{{ tsev(a_sev) }}</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"
+               style="flex-shrink:0;margin-left:8px"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state" style="padding:30px"><p>{{ t('No malicious flows') }}</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Flow Table -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Flow Details') }}</div>
+    <div class="search-box" style="width:220px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="table-search" placeholder="{{ t('Filter flows td') }}" aria-label="{{ t('Filter flows td') }}">
+    </div>
+  </div>
+  <div class="filter-bar">
+    <span style="font-size:11px;color:var(--text-3);font-weight:600">{{ t('FILTER') }}:</span>
+    <button class="filter-chip active" data-filter="all">{{ t('All') }}</button>
+    <button class="filter-chip" data-filter="CRITICAL">{{ t('Critical') }}</button>
+    <button class="filter-chip" data-filter="HIGH">{{ t('High') }}</button>
+    <button class="filter-chip" data-filter="MEDIUM">{{ t('Medium') }}</button>
+    <button class="filter-chip" data-filter="SAFE">{{ t('Safe') }}</button>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="flows-table">
+      <thead>
+        <tr>
+          <th>#</th><th>{{ t('Classification') }}</th><th>{{ t('Severity') }}</th>
+          <th>{{ t('Confidence') }}</th><th>{{ t('Anomaly Score') }}</th><th>{{ t('Status') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr data-severity="{{ r.severity }}">
+          <td class="mono" style="color:var(--text-3)">{{ r.flow_id }}</td>
+          <td><span style="font-weight:600;color:var(--text-1)">{{ r.label }}</span></td>
+          <td><span class="badge badge-{{ r.severity | lower }}">{{ tsev(r.severity) }}</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="progress-bar-wrap" style="width:70px">
+                <div class="progress-bar-fill" style="width:{{ r.confidence }}%;background:{{ r.color }}"></div>
+              </div>
+              <span class="mono" style="font-size:12px;color:{{ r.color }}">{{ r.confidence }}%</span>
+            </div>
+          </td>
+          <td class="mono" style="font-size:12px;color:var(--text-2)">{{ r.anomaly_score }}%</td>
+          <td>
+            {% if r.is_malicious %}<span style="color:var(--red);font-size:11px;font-weight:700">{{ t('THREAT badge') }}</span>
+            {% else %}<span style="color:var(--green);font-size:11px;font-weight:700">{{ t('SAFE badge') }}</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.BASTION_RESULT = {
+  malicious: {{ entry.malicious_flows }},
+  benign:    {{ entry.benign_flows }},
+  severity:  {{ entry.get('severity_breakdown', {}) | tojson }},
+  threats:   {{ entry.get('threat_breakdown', {}) | tojson }},
+};
+</script>
+{% endblock %}

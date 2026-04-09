@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}{{ t('IP Geolocation Map') }} — {{ entry.scan_id }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('IP Geolocation Map') }}{% endblock %}
+{% block topbar_icon %}
+<circle cx="12" cy="10" r="3"/>
+<path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
+{% endblock %}
+
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+    <a href="{{ url_for('result', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      {{ t('Back') }}
+    </a>
+    <div>
+      <div class="page-title">{{ t('IP Geolocation Map') }}</div>
+      <div class="page-subtitle">{{ t('Scan:') }} {{ entry.scan_id }} · {{ entry.filename }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Global Threat Distribution') }}</div>
+    <div class="globe-stats">
+      <span id="globe-ip-count" style="color:var(--text-3)">{{ t('Loading') }}</span>
+      <div class="globe-legend">
+        <div class="globe-legend-dot" style="background:#ff3e5f;box-shadow:0 0 6px #ff3e5f"></div>
+        <span style="color:var(--text-2)">{{ t('Malicious') }}</span>
+      </div>
+      <div class="globe-legend">
+        <div class="globe-legend-dot" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff"></div>
+        <span style="color:var(--text-2)">{{ t('Benign') }}</span>
+      </div>
+      <button id="globe-rotate-btn" onclick="toggleRotate()"
+        style="font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 10px;
+               border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.06);
+               color:var(--cyan);cursor:pointer">⟳ {{ t('auto rotate btn') }}</button>
+    </div>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div id="globe-container"></div>
+  </div>
+</div>
+
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('IP List') }}</div>
+    <span id="ip-count" style="font-size:12px;color:var(--text-3)">{{ t('Loading') }}</span>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="geo-table">
+      <thead>
+        <tr>
+          <th>{{ t('IP Address') }}</th>
+          <th>{{ t('Country') }}</th>
+          <th>{{ t('Lat / Lon') }}</th>
+          <th>{{ t('Flow Count th') }}</th>
+          <th>{{ t('Status') }}</th>
+        </tr>
+      </thead>
+      <tbody id="geo-tbody">
+        <tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:30px">{{ t('Loading geo data') }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  #globe-container { width:100%; height:580px; background:#020810; border-radius:0 0 12px 12px; overflow:hidden; cursor:grab; }
+  #globe-container:active { cursor:grabbing; }
+  .globe-stats { display:flex; gap:28px; font-size:12px; align-items:center; }
+  .globe-legend { display:flex; align-items:center; gap:6px; font-size:12px; }
+  .globe-legend-dot { width:10px; height:10px; border-radius:50%; }
+</style>
+<script>
+const SCAN_ID = {{ entry.scan_id | tojson }};
+const TXT = {
+  country:   {{ t('Country:') | tojson }},
+  flows:     {{ t('Flows:') | tojson }},
+  mal:       {{ t('MALICIOUS') | tojson }},
+  ben:       {{ t('BENIGN badge') | tojson }},
+  plotted:        {{ t('public IPs plotted') | tojson }},
+  errPrefix:      {{ t('Error: prefix') | tojson }},
+  globeLoadFailed:{{ t('globe load failed') | tojson }},
+};
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let globe, isRotating = true;
+
+function toggleRotate() {
+  isRotating = !isRotating;
+  if (globe) globe.controls().autoRotate = isRotating;
+  var btn = document.getElementById('globe-rotate-btn');
+  btn.style.color = isRotating ? 'var(--cyan)' : 'var(--text-3)';
+  btn.style.borderColor = isRotating ? 'rgba(0,212,255,.3)' : 'rgba(136,153,187,.2)';
+}
+
+function buildGlobe(data) {
+  var el = document.getElementById('globe-container');
+
+  globe = Globe()
+    .globeImageUrl('/static/earth-dark.jpg')
+    .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+    .showAtmosphere(true)
+    .atmosphereColor('#00d4ff')
+    .atmosphereAltitude(0.12)
+    .width(el.offsetWidth)
+    .height(580)
+    .pointsData(data)
+    .pointLat('lat')
+    .pointLng('lon')
+    .pointColor(function(d) { return d.is_malicious ? '#ff3e5f' : '#00d4ff'; })
+    .pointAltitude(function(d) { return Math.min(0.05 + d.count / 500, 0.25); })
+    .pointRadius(function(d) { return Math.max(0.3, Math.min(Math.sqrt(d.count + 1) * 0.35, 1.2)); })
+    .pointLabel(function(d) {
+      var c = d.is_malicious ? '#ff3e5f' : '#00d4ff';
+      return '<div style="font-family:monospace;background:rgba(2,8,16,.95);padding:10px 14px;border-radius:8px;border:1px solid ' + c + ';min-width:160px;font-size:12px">' +
+        '<div style="color:' + c + ';font-weight:700;margin-bottom:6px">' + escHtml(d.ip) + '</div>' +
+        '<div style="color:#8899bb">' + TXT.country + ' <span style="color:#e8f0ff">' + escHtml(d.country) + '</span></div>' +
+        '<div style="color:#8899bb">' + TXT.flows + ' <span style="color:#e8f0ff">' + d.count + '</span></div>' +
+        '<div style="margin-top:4px;color:' + (d.is_malicious ? '#ff3e5f' : '#00ff94') + ';font-weight:700">' + (d.is_malicious ? '\u26a0 ' + TXT.mal : '\u2713 ' + TXT.ben) + '</div></div>';
+    })
+    (el);
+
+  // Arcs
+  var malicious = data.filter(function(d) { return d.is_malicious; });
+  var benign    = data.filter(function(d) { return !d.is_malicious; });
+  var homeLat   = benign.length ? benign.reduce(function(s,d){return s+d.lat;},0) / benign.length : 25;
+  var homeLng   = benign.length ? benign.reduce(function(s,d){return s+d.lon;},0) / benign.length : 45;
+  var arcs = malicious.map(function(d) {
+    return { startLat: d.lat, startLng: d.lon, endLat: homeLat, endLng: homeLng, count: d.count };
+  });
+
+  globe
+    .arcsData(arcs)
+    .arcStartLat('startLat').arcStartLng('startLng')
+    .arcEndLat('endLat').arcEndLng('endLng')
+    .arcColor(function() { return ['rgba(255,62,95,0.15)','rgba(255,62,95,0.9)']; })
+    .arcAltitude(function(d) { return Math.min(0.1 + d.count / 2000, 0.45); })
+    .arcStroke(function(d) { return Math.max(0.3, Math.min(d.count / 200, 1.2)); })
+    .arcDashLength(0.35).arcDashGap(0.15)
+    .arcDashAnimateTime(function(d) { return Math.max(800, 2500 - d.count * 2); });
+
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 0.6;
+  globe.pointOfView({ lat: 20, lng: 0, altitude: 2.2 });
+
+  window.addEventListener('resize', function() { globe.width(el.offsetWidth); });
+
+  if (malicious.length > 0) {
+    setTimeout(function() {
+      globe.pointOfView({ lat: malicious[0].lat, lng: malicious[0].lon, altitude: 2 }, 1500);
+    }, 1000);
+  }
+}
+
+// ── Dynamically load globe.gl then fetch data ──────────────────────
+var s = document.createElement('script');
+s.src = '/static/vendor/globe.gl.min.js';
+s.onload = function() {
+  fetch('/api/geo/' + SCAN_ID)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        var errTr = document.createElement('tr');
+        var errTd = document.createElement('td');
+        errTd.colSpan = 5;
+        errTd.style.cssText = 'color:var(--red);padding:20px';
+        errTd.textContent = data.error;
+        errTr.appendChild(errTd);
+        var tb = document.getElementById('geo-tbody');
+        tb.innerHTML = '';
+        tb.appendChild(errTr);
+        return;
+      }
+      document.getElementById('globe-ip-count').textContent = data.length + ' ' + TXT.plotted;
+      document.getElementById('ip-count').textContent       = data.length + ' ' + TXT.plotted;
+      buildGlobe(data);
+
+      var tbody = document.getElementById('geo-tbody');
+      tbody.innerHTML = '';
+      data.forEach(function(d) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="mono" style="font-size:12px">' + escHtml(d.ip) + '</td>' +
+          '<td>' + escHtml(d.country) + '</td>' +
+          '<td class="mono" style="font-size:11px;color:var(--text-3)">' + d.lat.toFixed(3) + ', ' + d.lon.toFixed(3) + '</td>' +
+          '<td style="font-weight:700">' + d.count + '</td>' +
+          '<td>' + (d.is_malicious
+            ? '<span class="badge badge-critical">' + TXT.mal + '</span>'
+            : '<span class="badge badge-safe">'     + TXT.ben + '</span>') + '</td>';
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(function(e) {
+      var errTr = document.createElement('tr');
+      var errTd = document.createElement('td');
+      errTd.colSpan = 5;
+      errTd.style.cssText = 'color:var(--red);padding:20px';
+      errTd.textContent = TXT.errPrefix + e;
+      errTr.appendChild(errTd);
+      var tb2 = document.getElementById('geo-tbody');
+      tb2.innerHTML = '';
+      tb2.appendChild(errTr);
+    });
+};
+s.onerror = function() {
+  document.getElementById('globe-container').innerHTML =
+    '<div style="color:var(--red);padding:40px;text-align:center;font-size:13px">' + TXT.globeLoadFailed + '</div>';
+};
+document.head.appendChild(s);
+</script>
+{% endblock %}

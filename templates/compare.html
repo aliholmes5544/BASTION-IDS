@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Scan Comparison') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Scan Comparison') }}{% endblock %}
+{% block topbar_icon %}
+<line x1="18" y1="20" x2="18" y2="10"/>
+<line x1="12" y1="20" x2="12" y2="4"/>
+<line x1="6" y1="20" x2="6" y2="14"/>
+{% endblock %}
+
+{% set LABELS = ['A','B','C','D','E'] %}
+{% set COLORS = ['var(--cyan)','var(--purple)','#00ff94','#ff6b35','#ffb800'] %}
+
+{% block content %}
+<div class="page-header anim-fade-up" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+  <div>
+    <div class="page-title">{{ t('Scan Comparison') }}</div>
+    <div class="page-subtitle">{{ scans | length }} {{ t('scans compared') }}</div>
+  </div>
+  <a href="{{ url_for('compare_select') }}" class="btn btn-secondary btn-sm">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    {{ t('New Comparison') }}
+  </a>
+</div>
+
+<!-- Scan Header Cards -->
+<div style="display:grid;grid-template-columns:repeat({{ scans|length }},1fr);gap:16px;margin-bottom:20px" class="anim-fade-up">
+  {% for s in scans %}
+  {% set lbl   = LABELS[loop.index0] %}
+  {% set color = COLORS[loop.index0] %}
+  <div class="card" style="border-color:{{ color }}">
+    <div class="card-body">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:{{ color }};margin-bottom:6px">{{ t('SCAN label') }} {{ lbl }}</div>
+      <div style="font-weight:700;font-size:14px;color:var(--text-1);word-break:break-all">{{ s.entry.scan_id }}</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:2px">{{ s.entry.filename }}</div>
+      <div style="font-size:11px;color:var(--text-3)">{{ s.entry.timestamp[:16].replace('T',' ') if s.entry.timestamp else t('N/A rep') }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Metrics Comparison Table -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Metric Comparison') }}</div>
+    <div style="font-size:11px;color:var(--text-3)">
+      <span style="color:var(--green)">● {{ t('Best') }}</span>&nbsp;&nbsp;
+      <span style="color:var(--red)">● {{ t('Worst') }}</span>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>{{ t('Metric') }}</th>
+          {% for s in scans %}
+          <th style="color:{{ COLORS[loop.index0] }}">{{ t('Scan label') }} {{ LABELS[loop.index0] }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% set metric_defs = [
+          (t('Total Flows'),      'total_flows',     False),
+          (t('Malicious Flows'),  'malicious_flows', True),
+          (t('Benign Flows'),     'benign_flows',    False),
+          (t('Avg Confidence %'), 'avg_confidence',  False),
+        ] %}
+        {% for label, key, lower_is_better in metric_defs %}
+        {% set vals = scans | map(attribute='entry') | map(attribute=key) | list %}
+        {% set best  = vals | min if lower_is_better else vals | max %}
+        {% set worst = vals | max if lower_is_better else vals | min %}
+        <tr>
+          <td style="font-weight:600;color:var(--text-2)">{{ label }}</td>
+          {% for s in scans %}
+          {% set v = s.entry[key] %}
+          <td style="font-weight:700;
+            color:{% if v == best and best != worst %}var(--green){% elif v == worst and best != worst %}var(--red){% else %}{{ COLORS[loop.index0] }}{% endif %}">
+            {{ v }}
+            {% if v == best and best != worst %}<span style="font-size:10px"> ▲</span>{% endif %}
+            {% if v == worst and best != worst %}<span style="font-size:10px"> ▼</span>{% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Threat Breakdown per Scan -->
+<div style="display:grid;grid-template-columns:repeat({{ [scans|length, 3]|min }},1fr);gap:16px;margin-bottom:20px" class="anim-fade-up">
+  {% for s in scans %}
+  {% set color = COLORS[loop.index0] %}
+  <div class="card">
+    <div class="card-header-custom">
+      <div class="card-title" style="color:{{ color }}">
+        <div class="card-title-dot" style="background:{{ color }}"></div>
+        {{ t('Scan label') }} {{ LABELS[loop.index0] }} — {{ t('Threats live stat') }}
+      </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      {% set td = s.entry.get('threat_breakdown', {}) %}
+      {% if td %}
+        {% for lbl, count in td.items() | sort(attribute=1, reverse=True) %}
+        {% set sev, tc, _ = get_severity(lbl) %}
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:9px 16px;border-bottom:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--text-1)">{{ lbl }}</span>
+          <span style="font-weight:700;color:{{ tc }};font-size:13px">{{ count }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">{{ t('No threats') }}</div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Severity Distribution Chart -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Severity Distribution') }}</div>
+  </div>
+  <div class="card-body">
+    <canvas id="compare-chart" style="max-height:300px"></canvas>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var scansData = [
+    {% for s in scans %}
+    { label: {{ (t('Scan label') ~ ' ' ~ LABELS[loop.index0]) | tojson }}, sev: {{ s.entry.get('severity_breakdown', {}) | tojson }} }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  var sevLabels = ['CRITICAL','HIGH','MEDIUM','SAFE'];
+  var sevColors = { CRITICAL:'#ff3e5f', HIGH:'#ff6b35', MEDIUM:'#ffb800', SAFE:'#00ff94' };
+  var alphas    = ['cc','99','77','55','44'];
+
+  var datasets = scansData.map(function(s, i) {
+    var alpha = alphas[i] || '55';
+    return {
+      label: s.label,
+      data:  sevLabels.map(function(l) { return s.sev[l] || 0; }),
+      backgroundColor: sevLabels.map(function(l) { return sevColors[l] + alpha; }),
+      borderColor:     sevLabels.map(function(l) { return sevColors[l]; }),
+      borderWidth: 2,
+    };
+  });
+
+  var ctx = document.getElementById('compare-chart');
+  if (ctx) {
+    new Chart(ctx.getContext('2d'), {
+      type: 'bar',
+      data: { labels: sevLabels, datasets: datasets },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#8899bb' } } },
+        scales: {
+          x: { ticks: { color: '#8899bb' }, grid: { color: 'rgba(0,212,255,0.06)' } },
+          y: { ticks: { color: '#8899bb' }, grid: { color: 'rgba(0,212,255,0.06)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

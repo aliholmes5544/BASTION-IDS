@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Compare Scans') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Compare Scans') }}{% endblock %}
+{% block topbar_icon %}
+<line x1="18" y1="20" x2="18" y2="10"/>
+<line x1="12" y1="20" x2="12" y2="4"/>
+<line x1="6" y1="20" x2="6" y2="14"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('Compare Scans') }}</div>
+  <div class="page-subtitle">{{ t('Compare subtitle') }}</div>
+</div>
+
+<div class="card anim-fade-up" style="max-width:640px;margin:0 auto">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Select Scans') }}</div>
+    <span style="font-size:11px;color:var(--text-3)" id="slot-count">2 {{ t('scans selected') }}</span>
+  </div>
+  <div class="card-body">
+    {% if history | length < 2 %}
+    <div class="alert alert-warning">
+      {{ t('Need 2 scans') }}
+      <a href="{{ url_for('scan') }}" style="color:var(--cyan)">{{ t('Run a scan') }}</a>{{ t('run scan first suffix') }}
+    </div>
+    {% else %}
+
+    <div id="slots-container">
+      <!-- Slot 1 -->
+      <div class="form-group slot-row" data-slot="1">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px">
+          <span class="slot-badge" style="background:var(--cyan)">A</span> {{ t('Scan label') }} 1
+        </label>
+        <select name="id" class="form-input slot-select" style="cursor:pointer" required>
+          <option value="">{{ t('Select scan') }}</option>
+          {% for h in history %}
+          <option value="{{ h.scan_id }}">{{ h.scan_id }} — {{ h.filename }} ({{ h.malicious_flows }} {{ t('threats count') }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <!-- Slot 2 -->
+      <div class="form-group slot-row" data-slot="2">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px">
+          <span class="slot-badge" style="background:var(--purple)">B</span> {{ t('Scan label') }} 2
+        </label>
+        <select name="id" class="form-input slot-select" style="cursor:pointer" required>
+          <option value="">{{ t('Select scan') }}</option>
+          {% for h in history %}
+          <option value="{{ h.scan_id }}">{{ h.scan_id }} — {{ h.filename }} ({{ h.malicious_flows }} {{ t('threats count') }})</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Add / Remove buttons -->
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <button type="button" class="btn btn-secondary btn-sm" id="add-slot-btn" onclick="addSlot()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        {{ t('Add Scan') }}
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" id="remove-slot-btn" onclick="removeSlot()" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        {{ t('Remove Last') }}
+      </button>
+    </div>
+
+    <button type="button" class="btn btn-primary" style="width:100%" onclick="submitCompare()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/>
+        <line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      {{ t('Compare btn') }}
+    </button>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.slot-badge {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:50%;
+  font-size:10px;font-weight:800;color:#000;flex-shrink:0;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const SLOT_COLORS = ['var(--cyan)','var(--purple)','#00ff94','#ff6b35','#ffb800'];
+const SLOT_LABELS = ['A','B','C','D','E'];
+const TXT_SCAN        = {{ t('Scan label') | tojson }};
+const TXT_SELECT_SCAN = {{ t('Select scan') | tojson }};
+const TXT_THREATS     = {{ t('threats count') | tojson }};
+const TXT_SCANS_SEL   = {{ t('scans selected') | tojson }};
+const TXT_SEL_ALERT   = {{ t('select scan alert') | tojson }};
+const TXT_DIFF_ALERT  = {{ t('different scan alert') | tojson }};
+const historyOptions = `
+  {% for h in history %}
+  <option value="{{ h.scan_id }}">{{ h.scan_id }} — {{ h.filename }} ({{ h.malicious_flows }} {{ t('threats count') }})</option>
+  {% endfor %}
+`.trim();
+
+let slotCount = 2;
+
+function updateUI() {
+  document.getElementById('slot-count').textContent = slotCount + ' ' + TXT_SCANS_SEL;
+  document.getElementById('add-slot-btn').style.display    = slotCount >= 5 ? 'none' : 'inline-flex';
+  document.getElementById('remove-slot-btn').style.display = slotCount <= 2 ? 'none' : 'inline-flex';
+}
+
+function addSlot() {
+  if (slotCount >= 5) return;
+  slotCount++;
+  const idx   = slotCount - 1;
+  const label = SLOT_LABELS[idx];
+  const color = SLOT_COLORS[idx];
+  const div   = document.createElement('div');
+  div.className   = 'form-group slot-row';
+  div.dataset.slot = slotCount;
+  div.innerHTML = `
+    <label class="form-label" style="display:flex;align-items:center;gap:8px">
+      <span class="slot-badge" style="background:${color}">${label}</span> ${TXT_SCAN} ${slotCount}
+    </label>
+    <select name="id" class="form-input slot-select" style="cursor:pointer">
+      <option value="">${TXT_SELECT_SCAN}</option>
+      ${historyOptions}
+    </select>`;
+  document.getElementById('slots-container').appendChild(div);
+  updateUI();
+}
+
+function removeSlot() {
+  if (slotCount <= 2) return;
+  const rows = document.querySelectorAll('.slot-row');
+  rows[rows.length - 1].remove();
+  slotCount--;
+  updateUI();
+}
+
+function submitCompare() {
+  const selects = document.querySelectorAll('.slot-select');
+  const ids = [];
+  for (const sel of selects) {
+    if (!sel.value) { alert(TXT_SEL_ALERT); return; }
+    ids.push(sel.value);
+  }
+  const unique = new Set(ids);
+  if (unique.size !== ids.length) { alert(TXT_DIFF_ALERT); return; }
+  window.location.href = '/compare/multi?ids=' + ids.join(',');
+}
+
+updateUI();
+</script>
+{% endblock %}

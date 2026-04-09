@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Notifications') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Alert Notifications') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('Alert Notifications') }}</h1>
+      <p class="page-subtitle">{{ notifications | length }} {{ t('total label') }} &nbsp;·&nbsp; {{ notifications | selectattr('read','equalto',false) | list | length }} {{ t('unread') }}</p>
+    </div>
+    {% if notifications %}
+    <button class="btn btn-secondary" onclick="markAllNotifsRead()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      {{ t('Mark All Read') }}
+    </button>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card anim-fade-up">
+  {% if notifications %}
+  <div>
+    {% for n in notifications %}
+    {% set is_unread = not n.get('read', False) %}
+    <div class="notif-item {% if is_unread %}unread {{ n.get('type','info') }}{% endif %}" id="notif-{{ n.id }}">
+      <div class="notif-icon {{ n.get('type','info') }}">
+        {% if n.get('type') == 'critical' %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {% elif n.get('type') in ('high','medium') %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        {% else %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {% endif %}
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">{{ n.title }}</div>
+        <div class="notif-msg">{{ n.message }}</div>
+        <div class="notif-meta">
+          {{ n.timestamp[:16].replace('T',' ') if n.timestamp else t('N/A rep') }} {{ t('UTC label') }}
+          {% if n.get('scan_id') %}
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('result', scan_id=n.scan_id) }}" style="color:var(--cyan);text-decoration:none">
+            {{ t('View Scan') }} &#8594;
+          </a>
+          {% endif %}
+          {% if n.get('case_id') %}
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('case_detail', case_id=n.case_id) }}" style="color:var(--cyan);text-decoration:none">
+            {{ t('View Case') }} &#8594;
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="notif-actions">
+        {% if is_unread %}
+        <button class="btn btn-secondary btn-sm" onclick='markNotifRead({{ n.id | tojson }})'>
+          {{ t('Mark Read') }}
+        </button>
+        {% endif %}
+        <button class="btn btn-secondary btn-sm" onclick='deleteNotif({{ n.id | tojson }})'
+          style="color:var(--red);border-color:rgba(255,62,95,0.3)">
+          {{ t('Delete') }}
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:60px">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+    <p>{{ t('No notifications') }}</p>
+    <p style="font-size:12px;color:var(--text-3)">{{ t('Notifs appear when') }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

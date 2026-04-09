@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Scheduled Scans title') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Scheduled Scans title') }}{% endblock %}
+{% block topbar_icon %}
+<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+<line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+<line x1="3" y1="10" x2="21" y2="10"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up" style="display:flex;align-items:center;justify-content:space-between">
+  <div>
+    <h1 class="page-title">{{ t('Scheduled Scans title') }}</h1>
+    <p class="page-subtitle">{{ t('Schedules subtitle') }}</p>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-sched-modal').style.display='flex'">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    {{ t('New Schedule') }}
+  </button>
+</div>
+
+{% if schedules %}
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Schedules card') }} ({{ schedules | length }})</div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>{{ t('Name th') }}</th>
+          <th>{{ t('Time HH MM') }}</th>
+          <th>{{ t('File Path th') }}</th>
+          <th>{{ t('Status') }}</th>
+          <th>{{ t('Last Run') }}</th>
+          <th>{{ t('Actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in schedules %}
+        <tr>
+          <td style="font-weight:600;color:var(--text-1)">{{ s.name }}</td>
+          <td class="mono" style="color:var(--cyan);font-size:14px">{{ s.cron_time }}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">{{ s.file_path or '—' }}</td>
+          <td>
+            <span class="badge {% if s.enabled %}badge-safe{% else %}badge-medium{% endif %}">
+              {{ t('Enabled') if s.enabled else t('Disabled') }}
+            </span>
+          </td>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">
+            {{ s.last_run[:16].replace('T',' ') if s.last_run else '—' }}
+          </td>
+          <td style="display:flex;gap:6px">
+            <form method="POST" action="{{ url_for('schedule') }}" style="display:inline">
+              <input type="hidden" name="action" value="toggle">
+              <input type="hidden" name="schedule_id" value="{{ s.id }}">
+              <button type="submit" class="btn btn-secondary btn-sm">
+                {{ t('Disable') if s.enabled else t('Enable') }}
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('schedule') }}" style="display:inline"
+                  onsubmit="return confirm({{ t('Delete schedule confirm') | tojson }})">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="schedule_id" value="{{ s.id }}">
+              <button type="submit" class="btn btn-danger btn-sm">{{ t('Delete') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card anim-fade-up">
+  <div class="card-body">
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <p>{{ t('No schedules') }}</p>
+      <button class="btn btn-primary" onclick="document.getElementById('add-sched-modal').style.display='flex'">
+        {{ t('Create First Schedule') }}
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Info Card -->
+<div class="card anim-fade-up" style="margin-top:16px">
+  <div class="card-body">
+    <p style="font-size:12px;color:var(--text-2);line-height:1.7">
+      {{ t('schedule how it works') }}
+    </p>
+  </div>
+</div>
+
+<!-- Add Schedule Modal -->
+<div id="add-sched-modal" style="display:none;position:fixed;inset:0;background:rgba(5,10,20,0.85);
+     backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:480px;padding:0">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('New Schedule') }}</div>
+      <button onclick="document.getElementById('add-sched-modal').style.display='none'"
+              style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('schedule') }}">
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+          <label class="form-label">{{ t('Schedule Name label') }}</label>
+          <input type="text" name="name" class="form-input" placeholder="{{ t('ph schedule name') }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Time HH MM label') }}</label>
+          <input type="time" name="cron_time" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('File Path label') }}</label>
+          <input type="text" name="file_path" class="form-input" placeholder="/data/captures/daily.csv">
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" name="enabled" id="sched-enabled" checked style="width:16px;height:16px;accent-color:var(--cyan)">
+          <label for="sched-enabled" class="form-label" style="margin:0">{{ t('Enable immediately') }}</label>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+          <button type="button" class="btn btn-secondary"
+                  onclick="document.getElementById('add-sched-modal').style.display='none'">{{ t('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ t('Create Schedule btn') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

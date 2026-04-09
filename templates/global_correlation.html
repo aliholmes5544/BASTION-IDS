@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Global Attack Correlation') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Global Attack Correlation') }}{% endblock %}
+{% block topbar_icon %}
+<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+<line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div>
+    <h1 class="page-title">{{ t('Global Attack Correlation') }}</h1>
+    <p class="page-subtitle">{{ correlations | length }} {{ t('unique sources') }}</p>
+  </div>
+</div>
+
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--red)"></div>{{ t('Threat Actors') }}</div>
+    <div class="search-box" style="width:220px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="corr-search" placeholder="{{ t('Search IP corr') }}" aria-label="{{ t('Search IP corr') }}" oninput="filterCorr(this.value)">
+    </div>
+  </div>
+  {% if correlations %}
+  <div style="overflow-x:auto">
+    <table class="data-table" id="corr-table">
+      <thead>
+        <tr>
+          <th>{{ t('Source IP') }}</th>
+          <th>{{ t('Attack Types th') }}</th>
+          <th>{{ t('Flow Count th') }}</th>
+          <th>{{ t('Scans Seen') }}</th>
+          <th>{{ t('Max Severity') }}</th>
+          <th>{{ t('Threat Score') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in correlations %}
+        <tr>
+          <td class="mono" style="font-weight:700;color:var(--cyan)">{{ c.src_ip }}</td>
+          <td style="font-size:11px">
+            {% for atk in c.attack_types[:3] %}
+            <span class="badge badge-high" style="font-size:9px;margin-right:3px">{{ atk[:20] }}</span>
+            {% endfor %}
+            {% if c.attack_types | length > 3 %}
+            <span style="color:var(--text-3);font-size:10px">+{{ c.attack_types | length - 3 }} {{ t('more') }}</span>
+            {% endif %}
+          </td>
+          <td style="font-weight:700;color:var(--amber)">{{ c.flow_count }}</td>
+          <td style="color:var(--text-2)">{{ c.scan_count }}</td>
+          <td>
+            <span class="badge badge-{{ c.max_severity | lower }}">{{ tsev(c.max_severity) }}</span>
+          </td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="progress-bar-wrap" style="width:80px">
+                <div class="progress-bar-fill" style="width:{{ [c.threat_score / 100 * 100, 100] | min }}%;background:var(--red)"></div>
+              </div>
+              <span class="mono" style="font-size:11px">{{ c.threat_score }}</span>
+            </div>
+          </td>
+          <td>
+            <button class="btn btn-secondary btn-sm watch-btn"
+                    data-ip="{{ c.src_ip }}"
+                    data-note="{{ t('Correlated attacker prefix') }} {{ c.attack_types | join(', ') | truncate(50) }}">
+              {{ t('Watch') }}
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body">
+    <div class="empty-state">
+      <p>{{ t('No cross-scan correlations') }}</p>
+      <a href="{{ url_for('scan') }}" class="btn btn-primary btn-sm">{{ t('Run Scans') }}</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterCorr(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#corr-table tbody tr').forEach(row => {
+    row.style.display = (!q || row.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

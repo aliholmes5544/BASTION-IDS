@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Watchlist') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Watchlist') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+<circle cx="12" cy="12" r="3"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+  <div>
+    <div class="page-title">{{ t('Watchlist') }}</div>
+    <div class="page-subtitle">{{ t('Watchlist subtitle') }}</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="{{ url_for('watchlist_export') }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      {{ t('Export CSV') }}
+    </a>
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-modal').style.display='flex'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      {{ t('Import CSV') }}
+    </button>
+    <a href="{{ url_for('watchlist_sample') }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      {{ t('Sample CSV') }}
+    </a>
+    <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-modal').style.display='flex'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      {{ t('Add IP') }}
+    </button>
+  </div>
+</div>
+
+{% if watchlist %}
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Monitored IPs') }} ({{ watchlist | length }})</div>
+    <div class="search-box" style="width:220px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="wl-search" placeholder="{{ t('Search IP or note') }}" aria-label="{{ t('Search IP or note') }}" oninput="filterWatchlist(this.value)">
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="wl-table">
+      <thead>
+        <tr>
+          <th>{{ t('IP / CIDR') }}</th>
+          <th>{{ t('Note') }}</th>
+          <th>{{ t('Threat Level') }}</th>
+          <th>{{ t('Added') }}</th>
+          <th>{{ t('Expires') }}</th>
+          <th>{{ t('Last Seen') }}</th>
+          <th>{{ t('Hits') }}</th>
+          <th>{{ t('Rep') }}</th>
+          <th>{{ t('Alert') }}</th>
+          <th>{{ t('Actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for w in watchlist %}
+        <tr data-ip="{{ w.ip }}" data-note="{{ w.note or '' }}">
+          <td class="mono" style="font-weight:700;color:var(--cyan)">
+            {{ w.ip }}
+            <a href="{{ url_for('history') }}?ip={{ w.ip | urlencode }}" class="btn btn-secondary btn-sm" style="margin-left:6px;padding:2px 6px;font-size:10px" title="{{ t('View scans for this IP') }}">{{ t('Scans btn') }}</a>
+          </td>
+          <td style="color:var(--text-2)">{{ w.note or '—' }}</td>
+          <td>
+            {% set tl = w.threat_level or 'Medium' %}
+            <span class="badge badge-{% if tl=='Critical' %}critical{% elif tl=='High' %}high{% elif tl=='Medium' %}medium{% else %}safe{% endif %}">{{ t(tl) }}</span>
+          </td>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">{{ w.added_at[:10] }}</td>
+          <td class="mono" style="font-size:11px;color:{% if w.expires_at %}var(--amber){% else %}var(--text-3){% endif %}">
+            {{ w.expires_at[:10] if w.expires_at else '—' }}
+          </td>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">
+            {{ w.last_seen[:16].replace('T',' ') if w.last_seen else '—' }}
+          </td>
+          <td>
+            {% if w.hit_count > 0 %}
+              <span class="watchlist-hit-count">{{ w.hit_count }}</span>
+            {% else %}
+              <span style="color:var(--text-3);font-size:12px">0</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="rep-badge" data-ip="{{ w.ip }}" style="font-size:11px;color:var(--text-3)">—</span>
+          </td>
+          <td>
+            <button class="btn btn-secondary btn-sm alert-toggle-btn"
+                    data-ip="{{ w.ip }}"
+                    style="{% if w.alert_on_hit %}color:var(--amber);border-color:rgba(255,184,0,0.4){% endif %}"
+                    title="{{ t('Toggle alert title') }}">
+              {{ '🔔' if w.alert_on_hit else '🔕' }}
+            </button>
+          </td>
+          <td style="display:flex;gap:6px;flex-wrap:nowrap">
+            <button class="btn btn-secondary btn-sm" onclick='openEditModal({{ w.ip | tojson }},{{ (w.note or "") | tojson }},{{ (w.threat_level or "Medium") | tojson }},{{ ("true" if w.alert_on_hit else "false") | tojson }},{{ (w.expires_at or "") | tojson }})'>{{ t('Edit') }}</button>
+            <form method="POST" action="{{ url_for('watchlist_remove') }}" style="display:inline"
+                  onsubmit="return confirm({{ t('Remove from watchlist confirm').replace('{ip}', w.ip) | tojson }})">
+              <input type="hidden" name="ip" value="{{ w.ip }}">
+              <button type="submit" class="btn btn-danger btn-sm">{{ t('Remove') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card anim-fade-up">
+  <div class="card-body">
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <p>{{ t('No IPs in watchlist') }}</p>
+      <button class="btn btn-primary" onclick="document.getElementById('add-modal').style.display='flex'">
+        {{ t('Add First IP') }}
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Add IP Modal -->
+<div id="add-modal" style="display:none;position:fixed;inset:0;background:rgba(5,10,20,0.85);
+     backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:480px;padding:0">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Add IP to Watchlist') }}</div>
+      <button onclick="document.getElementById('add-modal').style.display='none'"
+              style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('watchlist_add') }}">
+        <div class="form-group">
+          <label class="form-label">{{ t('IP Address or CIDR') }}</label>
+          <input type="text" name="ip" class="form-input" placeholder="{{ t('ph ip range') }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Note optional') }}</label>
+          <input type="text" name="note" class="form-input" placeholder="{{ t('ph note watchlist') }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Threat Level') }}</label>
+          <select name="threat_level" class="form-input">
+            <option value="Low">{{ t('Low') }}</option>
+            <option value="Medium" selected>{{ t('Medium') }}</option>
+            <option value="High">{{ t('High') }}</option>
+            <option value="Critical">{{ t('Critical') }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Expires At') }}</label>
+          <input type="date" name="expires_at" class="form-input">
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" name="alert_on_hit" id="alert_on_hit_add" style="width:16px;height:16px;accent-color:var(--cyan)">
+          <label for="alert_on_hit_add" class="form-label" style="margin:0">{{ t('Send alert when this IP') }}</label>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+          <button type="button" class="btn btn-secondary"
+                  onclick="document.getElementById('add-modal').style.display='none'">{{ t('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ t('Add to Watchlist btn') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(5,10,20,0.85);
+     backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:480px;padding:0">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Edit Watchlist Entry') }}</div>
+      <button onclick="document.getElementById('edit-modal').style.display='none'"
+              style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('watchlist_edit') }}">
+        <input type="hidden" name="ip" id="edit-ip">
+        <div class="form-group">
+          <label class="form-label">{{ t('IP Address or CIDR') }}</label>
+          <input type="text" id="edit-ip-display" class="form-input" disabled style="opacity:0.5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Note optional') }}</label>
+          <input type="text" name="note" id="edit-note" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Threat Level') }}</label>
+          <select name="threat_level" id="edit-threat-level" class="form-input">
+            <option value="Low">{{ t('Low') }}</option>
+            <option value="Medium">{{ t('Medium') }}</option>
+            <option value="High">{{ t('High') }}</option>
+            <option value="Critical">{{ t('Critical') }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Expires At') }}</label>
+          <input type="date" name="expires_at" id="edit-expires" class="form-input">
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" name="alert_on_hit" id="edit-alert-on-hit" style="width:16px;height:16px;accent-color:var(--cyan)">
+          <label for="edit-alert-on-hit" class="form-label" style="margin:0">{{ t('Send alert when detected') }}</label>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+          <button type="button" class="btn btn-secondary"
+                  onclick="document.getElementById('edit-modal').style.display='none'">{{ t('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ t('Save Changes') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div id="import-modal" style="display:none;position:fixed;inset:0;background:rgba(5,10,20,0.85);
+     backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:440px;padding:0">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Import IPs from CSV') }}</div>
+      <button onclick="document.getElementById('import-modal').style.display='none'"
+              style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-2);margin-bottom:14px">
+        {{ t('CSV import note') | safe }}<br>
+        {{ t('Sample CSV download').replace('{url}', url_for('watchlist_sample')) | safe }}
+      </p>
+      <form method="POST" action="{{ url_for('watchlist_import') }}" enctype="multipart/form-data">
+        <div class="form-group">
+          <label class="form-label">{{ t('CSV File') }}</label>
+          <input type="file" name="file" accept=".csv" class="form-input" required>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+          <button type="button" class="btn btn-secondary"
+                  onclick="document.getElementById('import-modal').style.display='none'">{{ t('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ t('Import') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TXT_WL = {
+  private: {{ t('Private IP badge') | tojson }},
+  naRep:   {{ t('N/A rep') | tojson }},
+};
+function openEditModal(ip, note, threatLevel, alertOnHit, expiresAt) {
+  document.getElementById('edit-ip').value = ip;
+  document.getElementById('edit-ip-display').value = ip;
+  document.getElementById('edit-note').value = note;
+  document.getElementById('edit-threat-level').value = threatLevel;
+  document.getElementById('edit-alert-on-hit').checked = (alertOnHit === 'true');
+  document.getElementById('edit-expires').value = expiresAt ? expiresAt.substring(0,10) : '';
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+
+function filterWatchlist(query) {
+  query = query.toLowerCase();
+  document.querySelectorAll('#wl-table tbody tr').forEach(row => {
+    const ip = (row.dataset.ip || '').toLowerCase();
+    const note = (row.dataset.note || '').toLowerCase();
+    row.style.display = (!query || ip.includes(query) || note.includes(query)) ? '' : 'none';
+  });
+}
+
+// Alert on hit toggle
+document.querySelectorAll('.alert-toggle-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const ip = this.dataset.ip;
+    fetch('/watchlist/toggle_alert', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ip: ip})
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        this.textContent = data.alert_on_hit ? '🔔' : '🔕';
+        this.style.color = data.alert_on_hit ? 'var(--amber)' : '';
+        this.style.borderColor = data.alert_on_hit ? 'rgba(255,184,0,0.4)' : '';
+        showToast(data.alert_on_hit ? {{ t('Alert enabled') | tojson }} : {{ t('Alert disabled') | tojson }}, 'success');
+      }
+    })
+    .catch(function() {});
+  });
+});
+
+// Load reputation scores for each watchlist IP (rate-limited, sequential)
+(function loadRepScores() {
+  const badges = Array.from(document.querySelectorAll('.rep-badge'));
+  let i = 0;
+  function next() {
+    if (i >= badges.length) return;
+    const badge = badges[i++];
+    const ip = badge.dataset.ip;
+    if (!ip || ip.includes('/')) { next(); return; } // skip CIDR
+    fetch(`/api/reputation/${ip}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.private) {
+          badge.textContent = TXT_WL.private;
+          badge.style.color = 'var(--text-3)';
+        } else if (data.abuseScore !== undefined) {
+          const score = data.abuseScore;
+          badge.textContent = score + '%';
+          badge.style.color = score > 70 ? 'var(--red)' : score > 30 ? 'var(--amber)' : 'var(--green)';
+          badge.style.fontWeight = '700';
+          badge.title = `AbuseIPDB: ${score}% | Reports: ${data.totalReports} | ISP: ${data.isp}`;
+        } else if (data.error) {
+          badge.textContent = TXT_WL.naRep;
+        }
+      })
+      .catch(() => { badge.textContent = '—'; })
+      .finally(() => { setTimeout(next, 300); }); // 300ms delay between requests
+  }
+  next();
+})();
+</script>
+{% endblock %}

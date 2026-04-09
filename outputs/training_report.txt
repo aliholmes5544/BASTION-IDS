@@ -1,0 +1,188 @@
+============================================================
+  IDS Version 2 — Training Report
+  Models: Random Forest | XGBoost | MLP Neural Network
+============================================================
+
+── Validation Results ──────────────────────────────────
+
+Model: RandomForestClassifier
+  Macro F1    : 0.8189
+  Weighted F1 : 0.9970
+  Accuracy    : 0.9961
+  ROC-AUC     : 0.9991
+
+  Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       1.00      1.00      1.00    314497
+                       Bot       0.22      1.00      0.36       293
+                      DDoS       1.00      1.00      1.00     19203
+             DoS GoldenEye       0.99      1.00      0.99      1543
+                  DoS Hulk       1.00      1.00      1.00     25928
+          DoS Slowhttptest       0.98      0.99      0.99       784
+             DoS slowloris       0.99      1.00      0.99       807
+               FTP-Patator       1.00      1.00      1.00       890
+                Heartbleed       0.50      1.00      0.67         1
+              Infiltration       1.00      0.60      0.75         5
+                  PortScan       0.99      1.00      1.00     13623
+               SSH-Patator       1.00      1.00      1.00       483
+  Web Attack   Brute Force       0.76      0.61      0.68       221
+Web Attack   Sql Injection       0.50      0.33      0.40         3
+          Web Attack   XSS       0.39      0.58      0.46        98
+
+                  accuracy                           1.00    378379
+                 macro avg       0.82      0.87      0.82    378379
+              weighted avg       1.00      1.00      1.00    378379
+
+
+Model: XGBClassifier
+  Macro F1    : 0.8224
+  Weighted F1 : 0.9983
+  Accuracy    : 0.9981
+  ROC-AUC     : 0.9999
+
+  Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       1.00      1.00      1.00    314497
+                       Bot       0.48      1.00      0.65       293
+                      DDoS       1.00      1.00      1.00     19203
+             DoS GoldenEye       0.98      1.00      0.99      1543
+                  DoS Hulk       1.00      1.00      1.00     25928
+          DoS Slowhttptest       0.98      0.99      0.99       784
+             DoS slowloris       0.98      1.00      0.99       807
+               FTP-Patator       1.00      1.00      1.00       890
+                Heartbleed       0.33      1.00      0.50         1
+              Infiltration       0.50      0.80      0.62         5
+                  PortScan       0.99      1.00      0.99     13623
+               SSH-Patator       1.00      1.00      1.00       483
+  Web Attack   Brute Force       0.72      0.69      0.70       221
+Web Attack   Sql Injection       0.40      0.67      0.50         3
+          Web Attack   XSS       0.36      0.48      0.41        98
+
+                  accuracy                           1.00    378379
+                 macro avg       0.78      0.91      0.82    378379
+              weighted avg       1.00      1.00      1.00    378379
+
+
+Model: MLPClassifier
+  Macro F1    : 0.6555
+  Weighted F1 : 0.9927
+  Accuracy    : 0.9903
+  ROC-AUC     : 0.9957
+
+  Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       1.00      0.99      0.99    314497
+                       Bot       0.15      0.99      0.26       293
+                      DDoS       1.00      1.00      1.00     19203
+             DoS GoldenEye       0.95      1.00      0.98      1543
+                  DoS Hulk       0.98      1.00      0.99     25928
+          DoS Slowhttptest       0.84      0.99      0.91       784
+             DoS slowloris       0.97      1.00      0.98       807
+               FTP-Patator       0.99      1.00      0.99       890
+                Heartbleed       0.05      1.00      0.10         1
+              Infiltration       0.10      0.60      0.18         5
+                  PortScan       0.99      1.00      0.99     13623
+               SSH-Patator       0.86      0.96      0.91       483
+  Web Attack   Brute Force       0.24      0.44      0.31       221
+Web Attack   Sql Injection       0.02      0.33      0.04         3
+          Web Attack   XSS       0.11      0.73      0.19        98
+
+                  accuracy                           0.99    378379
+                 macro avg       0.62      0.87      0.66    378379
+              weighted avg       1.00      0.99      0.99    378379
+
+
+Model: VotingClassifier
+  Macro F1    : 0.8275
+  Weighted F1 : 0.9983
+  Accuracy    : 0.9981
+  ROC-AUC     : 0.9993
+
+  Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       1.00      1.00      1.00    314497
+                       Bot       0.47      1.00      0.64       293
+                      DDoS       1.00      1.00      1.00     19203
+             DoS GoldenEye       0.98      1.00      0.99      1543
+                  DoS Hulk       1.00      1.00      1.00     25928
+          DoS Slowhttptest       0.98      0.99      0.99       784
+             DoS slowloris       0.99      1.00      0.99       807
+               FTP-Patator       1.00      1.00      1.00       890
+                Heartbleed       0.33      1.00      0.50         1
+              Infiltration       0.57      0.80      0.67         5
+                  PortScan       0.99      1.00      0.99     13623
+               SSH-Patator       1.00      1.00      1.00       483
+  Web Attack   Brute Force       0.73      0.69      0.71       221
+Web Attack   Sql Injection       0.40      0.67      0.50         3
+          Web Attack   XSS       0.38      0.50      0.43        98
+
+                  accuracy                           1.00    378379
+                 macro avg       0.79      0.91      0.83    378379
+              weighted avg       1.00      1.00      1.00    378379
+
+
+Model: ThresholdClassifier  ← BEST MODEL
+  Macro F1    : 0.9011
+  Weighted F1 : 0.9988
+  Accuracy    : 0.9988
+  ROC-AUC     : 0.9993
+
+  Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       1.00      1.00      1.00    314497
+                       Bot       0.70      0.94      0.80       293
+                      DDoS       1.00      1.00      1.00     19203
+             DoS GoldenEye       0.99      1.00      1.00      1543
+                  DoS Hulk       1.00      1.00      1.00     25928
+          DoS Slowhttptest       0.99      0.99      0.99       784
+             DoS slowloris       1.00      1.00      1.00       807
+               FTP-Patator       1.00      1.00      1.00       890
+                Heartbleed       1.00      1.00      1.00         1
+              Infiltration       1.00      0.80      0.89         5
+                  PortScan       0.99      1.00      0.99     13623
+               SSH-Patator       1.00      1.00      1.00       483
+  Web Attack   Brute Force       0.72      0.83      0.77       221
+Web Attack   Sql Injection       0.67      0.67      0.67         3
+          Web Attack   XSS       0.47      0.36      0.41        98
+
+                  accuracy                           1.00    378379
+                 macro avg       0.90      0.91      0.90    378379
+              weighted avg       1.00      1.00      1.00    378379
+
+
+── Best Model Selected: ThresholdClassifier ───────────────────
+
+── Test Set Results ────────────────────────────────────
+
+  Macro F1    : 0.8990
+  Weighted F1 : 0.9987
+  Accuracy    : 0.9987
+  ROC-AUC     : 0.9999
+
+  Classification Report:
+                            precision    recall  f1-score   support
+
+                    BENIGN       1.00      1.00      1.00    314497
+                       Bot       0.71      0.97      0.82       293
+                      DDoS       1.00      1.00      1.00     19202
+             DoS GoldenEye       0.99      1.00      0.99      1543
+                  DoS Hulk       1.00      1.00      1.00     25927
+          DoS Slowhttptest       0.99      0.99      0.99       784
+             DoS slowloris       1.00      0.99      0.99       808
+               FTP-Patator       1.00      1.00      1.00       890
+                Heartbleed       1.00      1.00      1.00         2
+              Infiltration       1.00      1.00      1.00         6
+                  PortScan       0.99      1.00      0.99     13623
+               SSH-Patator       1.00      1.00      1.00       483
+  Web Attack   Brute Force       0.72      0.89      0.79       220
+Web Attack   Sql Injection       1.00      0.33      0.50         3
+          Web Attack   XSS       0.51      0.34      0.40        98
+
+                  accuracy                           1.00    378379
+                 macro avg       0.93      0.90      0.90    378379
+              weighted avg       1.00      1.00      1.00    378379

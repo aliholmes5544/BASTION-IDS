@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" {% if current_lang == 'ar' %}dir="rtl"{% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ t('2FA Verification') }} — BASTION IDS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bastion.css') }}?v=20260322g">
+</head>
+<body>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg-1)">
+  <div style="width:100%;max-width:400px;padding:24px">
+    <div class="card" style="padding:0">
+      <div class="card-header-custom">
+        <div class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" style="margin-right:8px">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          {{ t('2FA Verification') }}
+        </div>
+      </div>
+      <div class="card-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}" style="margin-bottom:16px">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endwith %}
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:20px;line-height:1.7">
+          {{ t('2FA verify code hint') }}
+        </p>
+        <form method="POST" action="{{ url_for('two_fa_verify') }}">
+          <div class="form-group">
+            <label class="form-label">{{ t('Verification Code') }}</label>
+            <input type="text" name="code" class="form-input" maxlength="6"
+                   placeholder="000000" pattern="\d{6}" required autofocus
+                   style="font-size:28px;letter-spacing:10px;text-align:center"
+                   autocomplete="one-time-code">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;margin-top:16px">
+            {{ t('Verify btn') }}
+          </button>
+        </form>
+        <div style="margin-top:16px;text-align:center">
+          <a href="{{ url_for('logout') }}" style="font-size:12px;color:var(--text-3)">{{ t('Cancel Logout') }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

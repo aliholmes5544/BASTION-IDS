@@ -1,0 +1,768 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Dashboard') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Dashboard') }}{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('Security Operations Center') }}</h1>
+      <p class="page-subtitle">{{ t('Real-time threat intelligence') }}</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="{{ url_for('dashboard_map') }}" class="btn btn-secondary btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        {{ t('IP Map') }}
+      </a>
+      <a href="{{ url_for('activity_log') }}" class="btn btn-secondary btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10"/>
+        </svg>
+        {{ t('Activity') }}
+      </a>
+      <a href="{{ url_for('dashboard_export_pdf') }}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        {{ t('PDF + CSV') }}
+      </a>
+      <a href="{{ url_for('scan') }}" class="btn btn-primary btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <rect x="8" y="8" width="8" height="8"/>
+        </svg>
+        {{ t('New Scan') }}
+      </a>
+    </div>
+  </div>
+</div>
+
+{% if not model_loaded %}
+<div class="alert alert-error anim-fade-up">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+  {{ t('Model not loaded') }}{% if model_error and model_error != 'None' %}: {{ model_error }}{% endif %}
+</div>
+{% endif %}
+
+<!-- Stat Cards -->
+<div class="stat-grid">
+  <div class="stat-card cyan anim-fade-up delay-1">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <rect x="8" y="8" width="8" height="8"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ total_scans }}" id="dash-total-scans">0</div>
+    <div class="stat-label">{{ t('Total Scans') }}</div>
+  </div>
+  <div class="stat-card green anim-fade-up delay-2">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ total_flows }}" id="dash-total-flows">0</div>
+    <div class="stat-label">{{ t('Flows Analyzed') }}</div>
+  </div>
+  <div class="stat-card red anim-fade-up delay-3">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ total_threats }}" id="dash-total-threats">0</div>
+    <div class="stat-label">{{ t('Threats Detected') }}</div>
+  </div>
+  <div class="stat-card amber anim-fade-up delay-4">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ detect_rate }}" data-suffix="%">0%</div>
+    <div class="stat-label">{{ t('Detection Rate') }}</div>
+  </div>
+</div>
+
+<!-- Threat Gauge + Activity Feed Row -->
+<div class="grid-2" style="margin-bottom:20px">
+  <!-- Threat Gauge -->
+  <div class="card anim-fade-up">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot" style="background:var(--red)"></div>{{ t('Threat Level') }}</div>
+      <span style="font-size:11px;color:var(--text-3)">{{ t('Overall posture') }}</span>
+    </div>
+    <div class="card-body" style="display:flex;align-items:center;gap:24px">
+      <div id="threat-gauge-container"></div>
+      <div style="flex:1">
+        {% if total_threats > 0 %}
+        <div style="margin-bottom:10px">
+          {% for sev, count in sev_counts.items() %}{% if count > 0 %}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-{{ sev | lower }}" style="min-width:70px;text-align:center">{{ tsev(sev) }}</span>
+            <div class="progress-bar-wrap" style="flex:1">
+              <div class="progress-bar-fill" style="width:{{ ((count / [total_flows,1]|max) * 100)|round(1) }}%;background:
+                {% if sev=='CRITICAL' %}var(--red){% elif sev=='HIGH' %}var(--orange){% elif sev=='MEDIUM' %}var(--amber){% else %}var(--green){% endif %}"></div>
+            </div>
+            <span class="mono" style="font-size:11px;color:var(--text-3)">{{ count }}</span>
+          </div>
+          {% endif %}{% endfor %}
+        </div>
+        {% else %}
+        <p style="color:var(--green);font-weight:700">{{ t('No active threats detected') }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Recurring Attackers -->
+  <div class="card anim-fade-up">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot" style="background:var(--red)"></div>{{ t('Recurring Attackers') }}</div>
+      <span style="font-size:11px;color:var(--text-3)">{{ t('IPs seen in 2+ scans') }}</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      {% if recurring_ips %}
+      <table class="data-table">
+        <thead><tr>
+          <th>{{ t('IP Address') }}</th>
+          <th>{{ t('Scan Count') }}</th>
+          <th>{{ t('Total Hits') }}</th>
+          <th></th>
+        </tr></thead>
+        <tbody>
+          {% for r in recurring_ips %}
+          <tr>
+            <td class="recurring-ip">{{ r.ip }}</td>
+            <td style="font-weight:700;color:var(--amber)">{{ r.scan_count }}</td>
+            <td style="font-weight:700;color:var(--red)">{{ r.total_hits }}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm watch-btn"
+                      data-ip="{{ r.ip }}"
+                      data-note="{{ t('recurring attacker note') }}">
+                🎯 {{ t('Watch') }}
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:30px">
+        <p style="margin:0;font-size:12px">{{ t('No recurring attackers') }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2" style="margin-bottom:20px">
+  <div class="card anim-fade-up delay-1">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Severity Distribution') }}</div>
+    </div>
+    <div class="card-body">
+      {% if sev_counts and (sev_counts.SAFE + sev_counts.MEDIUM + sev_counts.HIGH + sev_counts.CRITICAL) > 0 %}
+        <div class="chart-container" style="height:260px">
+          <canvas id="sev-chart"></canvas>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+          <p>{{ t('No scan data yet') }}</p>
+          <a href="{{ url_for('scan') }}" class="btn btn-secondary btn-sm">{{ t('Run First Scan') }}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card anim-fade-up delay-2">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Attack Type Breakdown') }}</div>
+    </div>
+    <div class="card-body">
+      {% if threat_counts %}
+        <div class="chart-container" style="height:260px">
+          <canvas id="threat-chart"></canvas>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M18 20V10M12 20V4M6 20v-6"/>
+          </svg>
+          <p>{{ t('No threat data yet') }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Timeline -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Scan Activity Timeline') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ t('Last 20 scans') }}</span>
+  </div>
+  <div class="card-body">
+    {% if timeline %}
+      <div class="chart-container" style="height:240px">
+        <canvas id="timeline-chart"></canvas>
+      </div>
+    {% else %}
+      <div class="empty-state" style="padding:30px">
+        <p style="margin:0">{{ t('Run scans to see activity') }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- World Attack Map + Severity Heatmap Row -->
+<div class="grid-2" style="margin-bottom:20px">
+  <!-- World Attack Map -->
+  <div class="card anim-fade-up">
+    <div class="card-header-custom">
+      <div class="card-title">
+        <div class="card-title-dot" style="background:var(--cyan)"></div>
+        {{ t('Attack Origin Map') }}
+      </div>
+      <span style="font-size:11px;color:var(--text-3)">{{ t('Country distribution') }}</span>
+    </div>
+    <div class="card-body" style="padding:0;position:relative">
+      <div id="dash-globe-container" style="width:100%;height:260px;background:#020810;border-radius:0 0 12px 12px;overflow:hidden"></div>
+    </div>
+  </div>
+
+  <!-- Severity Heatmap -->
+  <div class="card anim-fade-up">
+    <div class="card-header-custom">
+      <div class="card-title">
+        <div class="card-title-dot" style="background:var(--amber)"></div>
+        {{ t('Attack Frequency Heatmap') }}
+      </div>
+      <span style="font-size:11px;color:var(--text-3)">{{ t('Day x Hour') }}</span>
+    </div>
+    <div class="card-body" style="padding:14px;position:relative">
+      <!-- Skeleton -->
+      <div id="heatmap-skeleton" style="display:block">
+        <div class="skeleton-card" style="padding:0;background:none;border:none">
+          {% for i in range(7) %}
+          <div style="display:flex;gap:2px;margin-bottom:2px">
+            <div class="skeleton-line" style="width:36px;height:18px;flex-shrink:0;margin:0"></div>
+            {% for j in range(12) %}
+            <div class="skeleton-block" style="flex:1;height:18px;border-radius:3px"></div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div id="heatmap-container" class="heatmap-container" style="display:none">
+        <div class="heatmap-grid" id="heatmap-grid"></div>
+        <div class="heatmap-legend">
+          <span>{{ t('Less') }}</span>
+          <div class="heatmap-legend-scale" id="heatmap-legend-scale"></div>
+          <span>{{ t('More') }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Threat Trend -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--amber)"></div>{{ t('Threat Trend') }}</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-secondary btn-sm" id="trend-week-btn" onclick="loadTrend('week')" style="color:var(--cyan)">{{ t('Week') }}</button>
+      <button class="btn btn-secondary btn-sm" id="trend-month-btn" onclick="loadTrend('month')">{{ t('Month') }}</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="chart-container" style="height:220px">
+      <canvas id="trend-chart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Scans -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Recent Scans') }}</div>
+    <a href="{{ url_for('history') }}" class="btn btn-secondary btn-sm">{{ t('View All') }}</a>
+  </div>
+  <div class="card-body" style="padding:0">
+    {% if recent %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ t('Filename') }}</th>
+            <th>{{ t('Timestamp') }}</th>
+            <th>{{ t('Flows') }}</th>
+            <th>{{ t('Threats') }}</th>
+            <th>{{ t('Avg Confidence') }}</th>
+            <th>{{ t('Top Severity') }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for h in recent %}
+          {% set sev_bd = h.get('severity_breakdown', {}) %}
+          {% set top = 'SAFE' %}
+          {% if sev_bd.get('CRITICAL', 0) > 0 %}{% set top = 'CRITICAL' %}
+          {% elif sev_bd.get('HIGH', 0) > 0 %}{% set top = 'HIGH' %}
+          {% elif sev_bd.get('MEDIUM', 0) > 0 %}{% set top = 'MEDIUM' %}
+          {% endif %}
+          <tr>
+            <td>
+              <div style="font-weight:600;color:var(--text-1);font-size:13px">{{ h.filename }}</div>
+              <div class="mono" style="font-size:10px;color:var(--text-3)">{{ h.scan_id }}</div>
+              {% if h.get('tags') %}
+              <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px">
+                {% for tag in h.tags %}
+                <span class="tag-chip">{{ tag }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </td>
+            <td class="mono" style="font-size:12px">{{ h.timestamp[:16].replace('T',' ') if h.timestamp else t('N/A rep') }}</td>
+            <td style="font-weight:700">{{ h.total_flows | default(0) | int }}</td>
+            <td>
+              {% if h.malicious_flows > 0 %}
+                <span class="glow-red" style="font-weight:700">{{ h.malicious_flows | int }}</span>
+              {% else %}
+                <span style="color:var(--green)">0</span>
+              {% endif %}
+            </td>
+            <td class="mono">{{ h.avg_confidence }}%</td>
+            <td>
+              <span class="badge badge-{{ top | lower }}">{{ tsev(top) }}</span>
+            </td>
+            <td>
+              <a href="{{ url_for('result', scan_id=h.scan_id) }}" class="btn btn-secondary btn-sm">{{ t('View') }}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <rect x="8" y="8" width="8" height="8"/>
+        </svg>
+        <p>{{ t('No scans yet start') }}</p>
+        <a href="{{ url_for('scan') }}" class="btn btn-primary">{{ t('Start First Scan') }}</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.BASTION_DASHBOARD = {
+  sev: {{ sev_counts | tojson }},
+  threats: {{ threat_counts | tojson }},
+  timeline: {{ timeline | tojson }},
+};
+const TXT_DASH = {
+  noRecentThreats:   {{ t('No recent threats') | tojson }},
+  noGeoData:         {{ t('No geo data yet') | tojson }},
+  mapUnavailable:    {{ t('Map unavailable') | tojson }},
+  unknown:           {{ t('Unknown label') | tojson }},
+  threatsChart:      {{ t('Threats chart') | tojson }},
+  scansChart:        {{ t('Scans chart') | tojson }},
+  heatmapUnavail:    {{ t('Heatmap data unavailable') | tojson }},
+  attacksLabel:      {{ t('attacks label') | tojson }},
+};
+
+// ── Threat ticker ─────────────────────────────────────────
+function initThreatTicker() {
+  var bar = document.getElementById('threat-ticker-bar');
+  if (!bar) return;
+
+  function escH(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function buildTickerHTML(items) {
+    if (!items || !items.length) {
+      return '<span class="ticker-item" style="color:var(--text-3);font-family:var(--mono);font-size:11px">' + TXT_DASH.noRecentThreats + '</span>';
+    }
+    var html = '';
+    // Duplicate for seamless loop
+    for (var pass = 0; pass < 2; pass++) {
+      items.forEach(function(item) {
+        var VALID_SEVS = {SAFE:1,MEDIUM:1,HIGH:1,CRITICAL:1,UNKNOWN:1};
+        var sevClass = VALID_SEVS[item.severity] ? item.severity : 'SAFE';
+        html += '<span class="ticker-item">' +
+          '<span class="t-time">' + escH(item.time || '--:--') + '</span>' +
+          '<span class="t-src"> ' + escH(item.src || TXT_DASH.unknown) + '</span>' +
+          '<span class="t-arr"> &#8594; </span>' +
+          '<span class="t-atk">' + escH(item.attack || TXT_DASH.unknown) + '</span>' +
+          ' <span class="ticker-sev ' + sevClass + '">' + escH(sevClass) + '</span>' +
+          '</span>';
+      });
+    }
+    return html;
+  }
+
+  function loadTicker() {
+    fetch('/api/threat/feed')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var inner = document.getElementById('threat-ticker-inner');
+        if (inner) inner.innerHTML = buildTickerHTML(data);
+        bar.style.display = '';
+      })
+      .catch(function() { bar.style.display = ''; });
+  }
+
+  loadTicker();
+  setInterval(loadTicker, 30000);
+}
+
+// ── World Attack Map (3D Globe) ───────────────────────────
+var COUNTRY_LATLNG = {
+  'US':[37,-95],'United States':[37,-95],'USA':[37,-95],
+  'CN':[35,105],'China':[35,105],
+  'RU':[60,100],'Russia':[60,100],
+  'DE':[51,10],'Germany':[51,10],
+  'GB':[55,-3],'United Kingdom':[55,-3],'UK':[55,-3],
+  'FR':[46,2],'France':[46,2],
+  'NL':[52,5],'Netherlands':[52,5],
+  'BR':[-15,-50],'Brazil':[-15,-50],
+  'IN':[20,77],'India':[20,77],
+  'JP':[36,138],'Japan':[36,138],
+  'KR':[37,127],'South Korea':[37,127],
+  'CA':[56,-106],'Canada':[56,-106],
+  'AU':[-25,133],'Australia':[-25,133],
+  'SG':[1,104],'Singapore':[1,104],
+  'UA':[49,32],'Ukraine':[49,32],
+  'RO':[46,25],'Romania':[46,25],
+  'PL':[52,20],'Poland':[52,20],
+  'NG':[9,8],'Nigeria':[9,8],
+  'ZA':[-29,25],'South Africa':[-29,25],
+  'MX':[23,-102],'Mexico':[23,-102],
+  'AR':[-34,-64],'Argentina':[-34,-64],
+  'SE':[60,15],'Sweden':[60,15],
+  'NO':[60,8],'Norway':[60,8],
+  'FI':[64,26],'Finland':[64,26],
+  'IT':[42,12],'Italy':[42,12],
+  'ES':[40,-4],'Spain':[40,-4],
+  'IR':[32,53],'Iran':[32,53],
+  'TR':[39,35],'Turkey':[39,35],
+  'VN':[16,108],'Vietnam':[16,108],
+  'ID':[-5,120],'Indonesia':[-5,120],
+  'TH':[15,101],'Thailand':[15,101],
+  'TW':[23,121],'Taiwan':[23,121],
+  'HK':[22,114],'Hong Kong':[22,114],
+  'PK':[30,70],'Pakistan':[30,70],
+  'BD':[23,90],'Bangladesh':[23,90],
+  'EG':[26,30],'Egypt':[26,30],
+  'IL':[31,35],'Israel':[31,35],
+  'SA':[24,45],'Saudi Arabia':[24,45],
+  'KZ':[48,68],'Kazakhstan':[48,68],
+  'CH':[47,8],'Switzerland':[47,8],
+  'BE':[50,4],'Belgium':[50,4],
+  'CZ':[50,15],'Czech Republic':[50,15],
+  'HU':[47,19],'Hungary':[47,19],
+  'PT':[39,-8],'Portugal':[39,-8],
+  'GR':[39,22],'Greece':[39,22],
+  'CL':[-35,-71],'Chile':[-35,-71],
+  'CO':[4,-72],'Colombia':[4,-72],
+  'PE':[-9,-75],'Peru':[-9,-75],
+  'MA':[32,-6],'Morocco':[32,-6],
+  'DZ':[28,3],'Algeria':[28,3],
+  'KE':[-1,38],'Kenya':[-1,38],
+  'ET':[9,40],'Ethiopia':[9,40],
+  'PH':[13,122],'Philippines':[13,122],
+  'MY':[4,109],'Malaysia':[4,109],
+  'NZ':[-41,174],'New Zealand':[-41,174],
+  'DK':[56,10],'Denmark':[56,10],
+  'AT':[47,14],'Austria':[47,14],
+  'SK':[49,19],'Slovakia':[49,19],
+  'HR':[45,16],'Croatia':[45,16],
+  'RS':[44,21],'Serbia':[44,21],
+  'BG':[43,25],'Bulgaria':[43,25],
+  'BY':[53,28],'Belarus':[53,28],
+  'MD':[47,29],'Moldova':[47,29],
+  'LV':[57,25],'Latvia':[57,25],
+  'LT':[56,24],'Lithuania':[56,24],
+  'EE':[59,25],'Estonia':[59,25],
+  'LU':[50,6],'Luxembourg':[50,6],
+  'IS':[65,-18],'Iceland':[65,-18],
+  'IE':[53,-8],'Ireland':[53,-8],
+};
+
+function initWorldMap() {
+  var el = document.getElementById('dash-globe-container');
+  if (!el) return;
+
+  fetch('/api/attack/map')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var entries = Object.entries(data);
+      if (!entries.length) {
+        el.innerHTML = '<div style="color:var(--text-3);font-size:12px;text-align:center;padding:40px">' + TXT_DASH.noGeoData + '</div>';
+        return;
+      }
+      var maxVal = Math.max.apply(null, entries.map(function(e) { return e[1]; }));
+      var points = [];
+      entries.forEach(function(entry) {
+        var code = entry[0], count = entry[1];
+        var ll = COUNTRY_LATLNG[code];
+        if (!ll) return;
+        var ratio = count / maxVal;
+        var color = ratio > 0.7 ? '#ff3e5f' : ratio > 0.4 ? '#ff6b35' : ratio > 0.2 ? '#ffb800' : '#00d4ff';
+        points.push({ lat: ll[0], lng: ll[1], count: count, country: code, color: color, ratio: ratio });
+      });
+
+      var dashGlobe = Globe()
+        .globeImageUrl('/static/earth-dark.jpg')
+        .backgroundImageUrl('')
+        .showAtmosphere(true)
+        .atmosphereColor('#00d4ff')
+        .atmosphereAltitude(0.1)
+        .width(el.offsetWidth)
+        .height(260)
+        .pointsData(points)
+        .pointLat('lat')
+        .pointLng('lng')
+        .pointColor('color')
+        .pointAltitude(function(d) { return Math.min(0.04 + d.ratio * 0.18, 0.22); })
+        .pointRadius(function(d) { return Math.max(0.25, Math.min(Math.sqrt(d.count + 1) * 0.3, 1.0)); })
+        .pointLabel(function(d) {
+          return '<div style="font-family:monospace;background:rgba(2,8,16,.95);padding:8px 12px;border-radius:6px;border:1px solid ' + d.color + ';font-size:11px">' +
+            '<div style="color:' + d.color + ';font-weight:700">' + d.country + '</div>' +
+            '<div style="color:#8899bb">' + d.count.toLocaleString() + ' ' + TXT_DASH.attacksLabel + '</div></div>';
+        })
+        (el);
+
+      dashGlobe.controls().autoRotate = true;
+      dashGlobe.controls().autoRotateSpeed = 0.5;
+      dashGlobe.pointOfView({ lat: 20, lng: 10, altitude: 2.0 });
+      window.addEventListener('resize', function() { dashGlobe.width(el.offsetWidth); });
+    })
+    .catch(function() {
+      el.innerHTML = '<div style="color:var(--text-3);font-size:12px;text-align:center;padding:40px">' + TXT_DASH.mapUnavailable + '</div>';
+    });
+}
+
+// ── Severity Heatmap ──────────────────────────────────────
+var DAY_LABELS = [{{ t('day Mon')|tojson }},{{ t('day Tue')|tojson }},{{ t('day Wed')|tojson }},{{ t('day Thu')|tojson }},{{ t('day Fri')|tojson }},{{ t('day Sat')|tojson }},{{ t('day Sun')|tojson }}];
+
+function initHeatmap() {
+  var skeleton = document.getElementById('heatmap-skeleton');
+  var container = document.getElementById('heatmap-container');
+  var grid = document.getElementById('heatmap-grid');
+  var legendScale = document.getElementById('heatmap-legend-scale');
+  if (!grid) return;
+
+  fetch('/api/heatmap')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      // data = [[h0..h23], ...] for 7 days
+      var maxVal = 0;
+      data.forEach(function(row) {
+        row.forEach(function(v) { if (v > maxVal) maxVal = v; });
+      });
+
+      grid.innerHTML = '';
+
+      // Header row: hour labels (0, 6, 12, 18, 23)
+      var cornerLabel = document.createElement('div');
+      cornerLabel.className = 'heatmap-day-label';
+      grid.appendChild(cornerLabel);
+
+      for (var h = 0; h < 24; h++) {
+        var hl = document.createElement('div');
+        hl.className = 'heatmap-hour-label';
+        hl.textContent = (h % 6 === 0) ? h + '' : '';
+        grid.appendChild(hl);
+      }
+
+      // Day rows
+      data.forEach(function(row, dayIdx) {
+        var dayLabel = document.createElement('div');
+        dayLabel.className = 'heatmap-day-label';
+        dayLabel.textContent = DAY_LABELS[dayIdx] || '';
+        grid.appendChild(dayLabel);
+
+        row.forEach(function(count, hourIdx) {
+          var cell = document.createElement('div');
+          cell.className = 'heatmap-cell';
+          cell.setAttribute('data-count', count);
+          cell.setAttribute('data-day', DAY_LABELS[dayIdx]);
+          cell.setAttribute('data-hour', hourIdx);
+
+          if (count === 0) {
+            cell.style.background = 'rgba(0,212,255,0.04)';
+          } else {
+            var ratio = count / maxVal;
+            var alpha = 0.1 + ratio * 0.85;
+            var r, g, b;
+            if (ratio < 0.33)      { r=0;   g=212; b=255; }  // cyan
+            else if (ratio < 0.66) { r=255; g=184; b=0; }    // amber
+            else                   { r=255; g=62;  b=95; }    // red
+            cell.style.background = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+            cell.style.boxShadow = '0 0 ' + Math.round(ratio*8) + 'px rgba(' + r + ',' + g + ',' + b + ',0.4)';
+          }
+
+          var tooltip = document.getElementById('heatmap-tooltip');
+          cell.addEventListener('mouseenter', function(e) {
+            if (!tooltip) return;
+            tooltip.textContent = cell.getAttribute('data-day') + ' ' +
+              String(hourIdx).padStart(2,'0') + ':00 — ' +
+              count + ' ' + (count !== 1 ? {{ t('threats plural')|tojson }} : {{ t('threat singular')|tojson }});
+            tooltip.style.display = 'block';
+          });
+          cell.addEventListener('mousemove', function(e) {
+            if (!tooltip) return;
+            tooltip.style.left = (e.clientX + 14) + 'px';
+            tooltip.style.top  = (e.clientY - 30) + 'px';
+          });
+          cell.addEventListener('mouseleave', function() {
+            if (tooltip) tooltip.style.display = 'none';
+          });
+
+          grid.appendChild(cell);
+        });
+      });
+
+      // Legend
+      if (legendScale) {
+        legendScale.innerHTML = '';
+        var steps = [0, 0.2, 0.4, 0.6, 0.8, 1];
+        steps.forEach(function(ratio) {
+          var lc = document.createElement('div');
+          lc.className = 'heatmap-legend-cell';
+          if (ratio === 0) {
+            lc.style.background = 'rgba(0,212,255,0.04)';
+          } else if (ratio < 0.33) {
+            lc.style.background = 'rgba(0,212,255,' + (0.1 + ratio * 0.85) + ')';
+          } else if (ratio < 0.66) {
+            lc.style.background = 'rgba(255,184,0,' + (0.1 + ratio * 0.85) + ')';
+          } else {
+            lc.style.background = 'rgba(255,62,95,' + (0.1 + ratio * 0.85) + ')';
+          }
+          legendScale.appendChild(lc);
+        });
+      }
+
+      if (skeleton) skeleton.style.display = 'none';
+      if (container) container.style.display = 'block';
+    })
+    .catch(function() {
+      if (skeleton) skeleton.style.display = 'none';
+      if (container) {
+        container.style.display = 'block';
+        container.innerHTML = '<div style="color:var(--text-3);font-size:12px;text-align:center;padding:20px">' + TXT_DASH.heatmapUnavail + '</div>';
+      }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderThreatGauge('threat-gauge-container', {{ threat_score }});
+  loadTrend('week');
+  initThreatTicker();
+  initHeatmap();
+  // Load globe.gl then init map
+  var gs = document.createElement('script');
+  gs.src = '/static/vendor/globe.gl.min.js';
+  gs.onload = function() { initWorldMap(); };
+  gs.onerror = function() {
+    var el = document.getElementById('dash-globe-container');
+    if (el) el.innerHTML = '<div style="color:var(--text-3);font-size:12px;text-align:center;padding:40px">' + TXT_DASH.mapUnavailable + '</div>';
+  };
+  document.head.appendChild(gs);
+  applyRowSeverityColors();
+
+  // Live dashboard stats via SSE
+  if (typeof EventSource !== 'undefined') {
+    const es = new EventSource('/api/dashboard/live');
+    es.onmessage = function(e) {
+      try {
+        const d = JSON.parse(e.data);
+        const scEl = document.getElementById('dash-total-scans');
+        const flEl = document.getElementById('dash-total-flows');
+        const thEl = document.getElementById('dash-total-threats');
+        const unEl = document.getElementById('dash-unread-count');
+        if (scEl) scEl.textContent = d.total_scans;
+        if (flEl) flEl.textContent = d.total_flows.toLocaleString();
+        if (thEl) thEl.textContent = d.total_threats.toLocaleString();
+        if (unEl) {
+          unEl.textContent = d.unread_count > 9 ? '9+' : d.unread_count;
+          unEl.style.display = d.unread_count > 0 ? '' : 'none';
+        }
+      } catch(err) {}
+    };
+    es.onerror = function() { es.close(); };
+  }
+});
+
+let trendChart = null;
+function loadTrend(period) {
+  document.getElementById('trend-week-btn').style.color = period === 'week' ? 'var(--cyan)' : '';
+  document.getElementById('trend-month-btn').style.color = period === 'month' ? 'var(--cyan)' : '';
+  fetch('/api/trend?period=' + period)
+    .then(r => r.json())
+    .then(data => {
+      const labels = data.map(d => d.date);
+      const threats = data.map(d => d.threats);
+      const scans = data.map(d => d.scans);
+      const ctx = document.getElementById('trend-chart').getContext('2d');
+      if (trendChart) trendChart.destroy();
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: TXT_DASH.threatsChart,
+              data: threats,
+              borderColor: '#ff3e5f',
+              backgroundColor: 'rgba(255,62,95,0.1)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 3,
+            },
+            {
+              label: TXT_DASH.scansChart,
+              data: scans,
+              borderColor: '#00d4ff',
+              backgroundColor: 'rgba(0,212,255,0.05)',
+              fill: false,
+              tension: 0.4,
+              pointRadius: 3,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#8899bb', font: { size: 11 } } }
+          },
+          scales: {
+            x: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+            y: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+          }
+        }
+      });
+    })
+    .catch(function() {});
+}
+</script>
+{% endblock %}

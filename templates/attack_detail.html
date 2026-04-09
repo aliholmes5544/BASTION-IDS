@@ -1,0 +1,612 @@
+{% extends "base.html" %}
+{% block title %}{{ attack_name }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Attack Detail title') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+<line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;
+     font-size:12px;color:var(--text-3)" class="anim-fade-up">
+  <a href="{{ url_for('history') }}" style="color:var(--text-3);text-decoration:none">{{ t('Scan History') }}</a>
+  <span>›</span>
+  <a href="{{ url_for('result', scan_id=scan_id) }}"
+     style="color:var(--text-3);text-decoration:none">{{ entry.filename }}</a>
+  <span>›</span>
+  <span style="color:var(--cyan)">{{ attack_name }}</span>
+</div>
+
+<!-- Attack Banner -->
+<div class="threat-banner {{ sev | lower }} anim-fade-up" style="margin-bottom:24px">
+  <div class="scan-line"></div>
+  <div class="threat-banner-icon"
+       style="background:rgba({{ '255,62,95' if sev=='CRITICAL' else '255,107,53' if sev=='HIGH' else '255,184,0' if sev=='MEDIUM' else '0,212,255' }},0.12);
+              width:60px;height:60px">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{{ color }}" stroke-width="1.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  </div>
+  <div style="flex:1">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+         color:{{ color }};margin-bottom:5px">{{ tsev(sev) }} {{ t('SEVERITY ATTACK') }}</div>
+    <div style="font-size:22px;font-weight:900;color:var(--text-1)">{{ attack_name }}</div>
+    <div style="font-size:12px;color:var(--text-2);margin-top:4px">
+      {{ t('Scan:') }} <span class="mono">{{ scan_id }}</span> &nbsp;·&nbsp;
+      {{ entry.get('timestamp','')[:16].replace('T',' ') }} UTC
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+    <a href="{{ url_for('result', scan_id=scan_id) }}" class="btn btn-secondary btn-sm">
+      {{ t('Back to Scan') }}
+    </a>
+    <span class="badge badge-{{ sev | lower }}" style="text-align:center;font-size:12px;padding:6px 14px">
+      {{ tsev(sev) }}
+    </span>
+    {% if src_ips %}
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('watchlist-modal').style.display='flex'">
+      🎯 {{ t('Add to Watchlist') }}
+    </button>
+    {% endif %}
+    <a href="{{ url_for('attack_export_pdf', scan_id=scan_id, attack_name=attack_name) }}"
+       class="btn btn-secondary btn-sm" style="border-color:var(--cyan);color:var(--cyan)">
+      ⬇ {{ t('Export PDF') }}
+    </a>
+  </div>
+</div>
+
+<!-- Threat Intel Panel -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Threat Intelligence') }}</div>
+  </div>
+  <div class="card-body">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+      <input type="text" id="rep-ip-input" class="form-input" style="width:220px;max-width:100%"
+             placeholder="{{ t('Enter IP placeholder') }}" value="{{ src_ips[0] if src_ips else '' }}">
+      <button class="btn btn-primary btn-sm" onclick="checkReputation()">AbuseIPDB</button>
+      <button class="btn btn-secondary btn-sm" style="border-color:#394eff;color:#394eff" onclick="checkVirusTotal()">VirusTotal</button>
+      <button class="btn btn-secondary btn-sm" style="border-color:#f90;color:#f90" onclick="checkShodan()">Shodan</button>
+    </div>
+    <!-- AbuseIPDB Result -->
+    <div id="rep-result" style="font-size:13px;color:var(--text-3);margin-bottom:10px">
+      {{ t('Enter IP to query') }}
+    </div>
+    <!-- VirusTotal Result -->
+    <div id="vt-result" style="display:none;font-size:13px;border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px"></div>
+    <!-- Shodan Result -->
+    <div id="shodan-result" style="display:none;font-size:13px;border-top:1px solid var(--border);padding-top:10px"></div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+  <div class="stat-card red anim-fade-up delay-1">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ count }}">0</div>
+    <div class="stat-label">{{ t('Detected Flows') }}</div>
+  </div>
+  <div class="stat-card amber anim-fade-up delay-2">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 20V10M12 20V4M6 20v-6"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ pct }}" data-suffix="%">0%</div>
+    <div class="stat-label">{{ t('Of Total Traffic') }}</div>
+  </div>
+  <div class="stat-card cyan anim-fade-up delay-3">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ avg_conf }}" data-suffix="%">0%</div>
+    <div class="stat-label">{{ t('Avg Confidence') }}</div>
+  </div>
+  <div class="stat-card green anim-fade-up delay-4">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ entry.total_flows | default(0) }}">0</div>
+    <div class="stat-label">{{ t('Total Flows in Scan') }}</div>
+  </div>
+</div>
+
+<!-- Protocol Breakdown Chart -->
+{% if protocol_breakdown %}
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:{{ color }}"></div>{{ t('Protocol Breakdown') }}</div>
+  </div>
+  <div class="card-body" style="display:flex;align-items:center;gap:30px">
+    <div class="protocol-chart-container" style="width:180px;flex-shrink:0">
+      <canvas id="proto-chart" style="max-height:180px"></canvas>
+    </div>
+    <div style="flex:1">
+      {% for proto, cnt in protocol_breakdown.items() | sort(attribute=1, reverse=True) %}
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span class="mono" style="font-size:12px;min-width:40px;color:var(--text-2)">{{ proto }}</span>
+        <div class="progress-bar-wrap" style="flex:1">
+          <div class="progress-bar-fill" style="width:{{ ((cnt / ([protocol_breakdown.values()|sum, 1]|max)) * 100)|round(1) }}%;background:{{ color }}"></div>
+        </div>
+        <span class="mono" style="font-size:11px;color:var(--text-3);min-width:40px">{{ cnt }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Definition + Why Flagged -->
+{% if definition or why_flagged %}
+<div class="card anim-fade-up" style="margin-bottom:20px;border-color:{{ color }}22">
+  <div class="card-header-custom">
+    <div class="card-title">
+      <div class="card-title-dot" style="background:{{ color }}"></div>
+      {{ t('About This Attack') }}
+    </div>
+  </div>
+  <div class="card-body" style="display:flex;flex-direction:column;gap:18px">
+    {% if definition %}
+    <div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:{{ color }};text-transform:uppercase;margin-bottom:6px">
+        {{ t('What is') }} {{ attack_name }}?
+      </div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.8">{{ definition }}</div>
+    </div>
+    {% endif %}
+    {% if why_flagged %}
+    <div style="padding:14px 16px;background:rgba({{ '255,62,95' if sev=='CRITICAL' else '255,107,53' if sev=='HIGH' else '255,184,0' if sev=='MEDIUM' else '0,212,255' }},0.06);border-left:3px solid {{ color }};border-radius:0 8px 8px 0">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:{{ color }};text-transform:uppercase;margin-bottom:6px">
+        {{ t('Why model flagged') }}
+      </div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.8">{{ why_flagged }}</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- MITRE ATT&CK -->
+{% if mitre %}
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:#f90"></div>MITRE ATT&CK</div>
+  </div>
+  <div class="card-body" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center">
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">{{ t('Technique ID') }}</div>
+      <a href="https://attack.mitre.org/techniques/{{ mitre.id }}" target="_blank"
+         style="font-size:20px;font-weight:800;color:#f90;text-decoration:none;font-family:monospace">
+        {{ mitre.id }}
+      </a>
+    </div>
+    <div style="flex:2;min-width:200px">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">{{ t('Technique Name') }}</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text-1)">{{ mitre.name }}</div>
+    </div>
+    <div style="flex:1;min-width:140px">
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">{{ t('Tactic') }}</div>
+      <span class="badge badge-high" style="font-size:12px;padding:5px 12px">{{ mitre.tactic }}</span>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Response Playbook (collapsible) -->
+<div class="card anim-fade-up" style="margin-bottom:20px" id="playbook-panel">
+  <div class="card-header-custom" style="cursor:pointer;user-select:none" onclick="togglePlaybook()">
+    <div class="card-title">
+      <div class="card-title-dot" style="background:#00d4ff"></div>
+      {{ t('Response Playbook') }}
+      <span style="font-size:11px;color:var(--text-3);font-weight:400;margin-left:8px">{{ t('playbook hint') }}</span>
+    </div>
+    <svg id="playbook-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="var(--text-3)" stroke-width="2.5" style="transition:transform 0.25s;flex-shrink:0">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+  <div id="playbook-body" style="display:none">
+    <div class="card-body" id="playbook-content">
+      <div style="font-size:12px;color:var(--text-3)">{{ t('Loading') }}…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flows Table -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title">
+      <div class="card-title-dot" style="background:{{ color }}"></div>
+      {{ t('Network Flows table') }} — {{ attack_name }}
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="search-box" style="width:220px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="table-search" placeholder="{{ t('Filter flows') }}" aria-label="{{ t('Filter flows') }}">
+      </div>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto">
+    <table class="data-table" id="flows-table">
+      <thead>
+        <tr>
+          <th class="sortable">#</th>
+          <th class="sortable">{{ t('Source IP') }}</th>
+          <th class="sortable">{{ t('Src Port') }}</th>
+          <th class="sortable">{{ t('Destination IP') }}</th>
+          <th class="sortable">{{ t('Dst Port') }}</th>
+          <th class="sortable">{{ t('Protocol') }}</th>
+          <th class="sortable">{{ t('Confidence') }}</th>
+          <th class="sortable">{{ t('Anomaly Score') }}</th>
+          <th>{{ t('Triage') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in flows %}
+        {% set flow_id_str = r.flow_id | string %}
+        {% set triage_status = triage_data.get(flow_id_str, '') %}
+        <tr class="expandable">
+          <td class="mono" style="color:var(--text-3)">{{ r.flow_id }}</td>
+          <td class="mono" style="color:var(--text-1);font-size:12px">
+            {{ r.get('src_ip', 'N/A') }}
+            {% if r.get('src_ip','N/A') != 'N/A' %}
+            <button class="btn btn-secondary btn-sm" style="font-size:9px;padding:1px 6px;margin-left:4px"
+              onclick='lookupWhois({{ r.get("src_ip","") | tojson }},"whois-atk-{{ r.flow_id }}");event.stopPropagation()'>{{ t('WHOIS btn') }}</button>
+            {% endif %}
+          </td>
+          <td class="mono" style="font-size:12px">{{ r.get('src_port', 'N/A') }}</td>
+          <td class="mono" style="color:var(--text-1);font-size:12px">{{ r.get('dst_ip', 'N/A') }}</td>
+          <td class="mono" style="font-size:12px">{{ r.get('dst_port', 'N/A') }}</td>
+          <td class="mono" style="font-size:12px">{{ r.get('protocol', 'N/A') }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="progress-bar-wrap" style="width:70px">
+                <div class="progress-bar-fill" style="width:{{ r.confidence }}%;background:{{ color }}"></div>
+              </div>
+              <span class="mono" style="font-size:12px;color:{{ color }}">{{ r.confidence }}%</span>
+            </div>
+          </td>
+          <td class="mono" style="font-size:12px;color:var(--text-2)">{{ r.anomaly_score }}%</td>
+          <td>
+            {% if triage_status %}
+              {% set _tm = {'confirmed': t('triage confirmed'), 'investigated': t('triage investigated'), 'false_positive': t('triage false positive')} %}
+              <span class="triage-applied {{ triage_status }}">{{ _tm.get(triage_status, triage_status.replace('_',' ')) }}</span>
+            {% else %}
+              <div class="triage-actions">
+                <button class="triage-btn investigated" onclick='triageFlow({{ scan_id | tojson }},{{ r.flow_id | tojson }},"investigated",this);event.stopPropagation()'>{{ t('Inv') }}</button>
+                <button class="triage-btn false-positive" onclick='triageFlow({{ scan_id | tojson }},{{ r.flow_id | tojson }},"false_positive",this);event.stopPropagation()'>{{ t('FP') }}</button>
+                <button class="triage-btn confirmed" onclick='triageFlow({{ scan_id | tojson }},{{ r.flow_id | tojson }},"confirmed",this);event.stopPropagation()'>{{ t('Conf') }}</button>
+              </div>
+            {% endif %}
+          </td>
+        </tr>
+        <tr class="expand-row">
+          <td colspan="9">
+            <div class="expand-details">
+              <div class="expand-field"><label>{{ t('Flow ID') }}</label><span>{{ r.flow_id }}</span></div>
+              <div class="expand-field"><label>{{ t('Anomaly Score') }}</label><span>{{ r.anomaly_score }}%</span></div>
+              <div class="expand-field" id="whois-atk-{{ r.flow_id }}">
+                <label>WHOIS</label><span style="color:var(--text-3)">{{ t('Lookup WHOIS') }}</span>
+              </div>
+              <div class="expand-field"><label>{{ t('Watchlist Hit') }}</label><span>{{ t('Yes') if r.get('watchlist_hit') else t('No') }}</span></div>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" style="text-align:center;padding:40px;color:var(--text-3)">
+            {{ t('No flows found') }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if flows | length == 2000 %}
+  <div style="padding:12px 22px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border)">
+    {{ t('Showing first 2000') }}
+  </div>
+  {% endif %}
+</div>
+<!-- Watchlist Modal -->
+<div id="watchlist-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);
+     z-index:2000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;
+       padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:16px;font-weight:800;color:var(--text-1)">🎯 {{ t('Add to Watchlist') }}</div>
+      <button onclick="document.getElementById('watchlist-modal').style.display='none'"
+              style="background:none;border:none;color:var(--text-3);font-size:20px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-3);margin-bottom:14px">{{ t('Select IPs to add') }}</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;max-height:200px;overflow-y:auto">
+      {% for ip in src_ips %}
+      <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface-2);
+             border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:12px">
+        <input type="checkbox" value="{{ ip }}" class="watch-ip-check" checked
+               style="accent-color:var(--cyan)">
+        {{ ip }}
+      </label>
+      {% endfor %}
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick='submitWatchlist({{ scan_id | tojson }}, {{ attack_name | tojson }})'
+              class="btn btn-primary" style="flex:1">{{ t('Add Selected') }}</button>
+      <button onclick="document.getElementById('watchlist-modal').style.display='none'"
+              class="btn btn-secondary">{{ t('Cancel') }}</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TXT_AD = {
+  enterIP:        {{ t('Enter an IP address') | tojson }},
+  checking:       {{ t('Checking') | tojson }},
+  errPrefix:      {{ t('Error: prefix') | tojson }},
+  netErrPfx:      {{ t('Network error prefix') | tojson }},
+  privateIP:      {{ t('Private IP badge') | tojson }},
+  country:        {{ t('Country:') | tojson }},
+  isp:            {{ t('ISP:') | tojson }},
+  reports:        {{ t('Reports:') | tojson }},
+  lastRep:        {{ t('Last reported:') | tojson }},
+  neverRep:       {{ t('Never') | tojson }},
+  reputation:     {{ t('Reputation:') | tojson }},
+  city:           {{ t('City:') | tojson }},
+  org:            {{ t('Org:') | tojson }},
+  maliciousLbl:   {{ t('Malicious:') | tojson }},
+  suspiciousLbl:  {{ t('Suspicious:') | tojson }},
+  harmless:       {{ t('Harmless:') | tojson }},
+  asOwner:        {{ t('AS Owner:') | tojson }},
+  openPorts:      {{ t('Open Ports:') | tojson }},
+  hostnames:      {{ t('Hostnames:') | tojson }},
+  cves:           {{ t('CVEs:') | tojson }},
+  abuseNotCfg:    {{ t('AbuseIPDB not configured') | tojson }},
+  vtNotCfg:       {{ t('VT not configured') | tojson }},
+  shodanNotCfg:   {{ t('Shodan not configured') | tojson }},
+  reqFailed:      {{ t('Request failed') | tojson }},
+  vtErrPfx:       {{ t('VT error prefix') | tojson }},
+  shodanErrPfx:   {{ t('Shodan error prefix') | tojson }},
+  queryingVT:     {{ t('Querying VirusTotal') | tojson }},
+  queryShodan:    {{ t('Querying Shodan') | tojson }},
+  noPlaybook:     {{ t('No playbook') | tojson }},
+  playbookFail:   {{ t('Failed to load playbook') | tojson }},
+  highRisk:       {{ t('HIGH RISK label') | tojson }},
+  abuseScore:     {{ t('abuse score label') | tojson }},
+  noneLabel:      {{ t('None label') | tojson }},
+  noneFound:      {{ t('None found label') | tojson }},
+  malicious:      {{ t('MALICIOUS badge') | tojson }},
+  suspicious:     {{ t('SUSPICIOUS badge') | tojson }},
+  clean:          {{ t('CLEAN badge') | tojson }},
+  privateIPNote:  {{ t('private IP query note') | tojson }},
+};
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function checkReputation() {
+  var ip = document.getElementById('rep-ip-input').value.trim();
+  if (!ip) { showToast(TXT_AD.enterIP, 'warning'); return; }
+  var box = document.getElementById('rep-result');
+  box.innerHTML = '<span style="color:var(--cyan)">' + TXT_AD.checking + '</span>';
+  fetch('/api/reputation/' + encodeURIComponent(ip))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        if (d.configure) {
+          box.innerHTML = '<span style="color:var(--amber)">' + TXT_AD.abuseNotCfg + '</span>';
+        } else {
+          box.innerHTML = '<span style="color:var(--red)">' + TXT_AD.errPrefix + escHtml(d.error) + '</span>';
+        }
+        return;
+      }
+      if (d.private) {
+        box.innerHTML =
+          '<span class="reputation-badge safe">' + TXT_AD.privateIP + '</span>' +
+          '<div style="margin-top:8px;font-size:12px;color:var(--text-2)">' + TXT_AD.privateIPNote + '</div>';
+        return;
+      }
+      var score = d.abuseScore || 0;
+      var cls = score >= 75 ? 'danger' : score >= 25 ? 'warn' : 'safe';
+      var label = score >= 75 ? TXT_AD.highRisk : score >= 25 ? TXT_AD.suspicious : TXT_AD.clean;
+      box.innerHTML =
+        '<span class="reputation-badge ' + cls + '">' + label + ' — ' + escHtml(score) + TXT_AD.abuseScore + '</span>' +
+        '<div style="margin-top:8px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--text-2)">' +
+        '<span>' + TXT_AD.country + ' <b>' + escHtml(d.country) + '</b></span>' +
+        '<span>' + TXT_AD.isp + ' <b>' + escHtml(d.isp) + '</b></span>' +
+        '<span>' + TXT_AD.reports + ' <b>' + escHtml(d.totalReports) + '</b></span>' +
+        '<span>' + TXT_AD.lastRep + ' <b>' + (d.lastReported !== 'N/A' ? escHtml(d.lastReported.slice(0,10)) : TXT_AD.neverRep) + '</b></span>' +
+        '</div>';
+    })
+    .catch(function(e) {
+      box.innerHTML = '<span style="color:var(--red)">' + TXT_AD.reqFailed + ': ' + escHtml(e.message) + '</span>';
+    });
+}
+
+function checkVirusTotal() {
+  var ip = document.getElementById('rep-ip-input').value.trim();
+  if (!ip) { showToast(TXT_AD.enterIP, 'warning'); return; }
+  var box = document.getElementById('vt-result');
+  box.style.display = 'block';
+  box.innerHTML = '<span style="color:#394eff">' + TXT_AD.queryingVT + '</span>';
+  fetch('/api/virustotal/' + encodeURIComponent(ip))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        if (d.configure) {
+          box.innerHTML = '<span style="color:var(--amber)">' + TXT_AD.vtNotCfg + '</span>';
+        } else {
+          box.innerHTML = '<span style="color:var(--red)">' + TXT_AD.vtErrPfx + escHtml(d.error) + '</span>';
+        }
+        return;
+      }
+      if (d.private) {
+        box.innerHTML = '<span style="color:#394eff;font-weight:700">VIRUSTOTAL</span> <span class="reputation-badge safe">' + TXT_AD.privateIP + '</span>';
+        return;
+      }
+      var mal = d.malicious || 0;
+      var sus = d.suspicious || 0;
+      var cls = mal > 5 ? 'danger' : (mal > 0 || sus > 0) ? 'warn' : 'safe';
+      var label = mal > 5 ? TXT_AD.malicious : (mal > 0 || sus > 0) ? TXT_AD.suspicious : TXT_AD.clean;
+      box.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">' +
+        '<span style="font-size:11px;font-weight:700;color:#394eff;letter-spacing:1px">VIRUSTOTAL</span>' +
+        '<span class="reputation-badge ' + cls + '">' + label + '</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text-2)">' +
+        '<span style="color:var(--red)">' + TXT_AD.maliciousLbl + ' <b>' + escHtml(mal) + '</b></span>' +
+        '<span style="color:var(--amber)">' + TXT_AD.suspiciousLbl + ' <b>' + escHtml(d.suspicious||0) + '</b></span>' +
+        '<span style="color:var(--green)">' + TXT_AD.harmless + ' <b>' + escHtml(d.harmless||0) + '</b></span>' +
+        '<span>' + TXT_AD.country + ' <b>' + escHtml(d.country) + '</b></span>' +
+        '<span>' + TXT_AD.asOwner + ' <b>' + escHtml(d.as_owner) + '</b></span>' +
+        '<span>' + TXT_AD.reputation + ' <b>' + escHtml(d.reputation) + '</b></span>' +
+        '</div>';
+    })
+    .catch(function(e) { box.innerHTML = '<span style="color:var(--red)">' + TXT_AD.reqFailed + ' (VT): ' + escHtml(e.message) + '</span>'; });
+}
+
+function checkShodan() {
+  var ip = document.getElementById('rep-ip-input').value.trim();
+  if (!ip) { showToast(TXT_AD.enterIP, 'warning'); return; }
+  var box = document.getElementById('shodan-result');
+  box.style.display = 'block';
+  box.innerHTML = '<span style="color:#f90">' + TXT_AD.queryShodan + '</span>';
+  fetch('/api/shodan/' + encodeURIComponent(ip))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        if (d.configure) {
+          box.innerHTML = '<span style="color:var(--amber)">' + TXT_AD.shodanNotCfg + '</span>';
+        } else {
+          box.innerHTML = '<span style="color:var(--red)">' + TXT_AD.shodanErrPfx + escHtml(d.error) + '</span>';
+        }
+        return;
+      }
+      if (d.private) {
+        box.innerHTML = '<span style="color:#f90;font-weight:700">SHODAN</span> <span class="reputation-badge safe">' + TXT_AD.privateIP + '</span>';
+        return;
+      }
+      var ports = escHtml((d.ports || []).slice(0, 20).join(', ') || TXT_AD.noneLabel);
+      var vulns = escHtml((d.vulns || []).length ? d.vulns.slice(0, 10).join(', ') : TXT_AD.noneFound);
+      var hosts = escHtml((d.hostnames || []).join(', ') || TXT_AD.neverRep);
+      var vulnColor = (d.vulns || []).length ? 'var(--red)' : 'var(--green)';
+      box.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">' +
+        '<span style="font-size:11px;font-weight:700;color:#f90;letter-spacing:1px">SHODAN</span>' +
+        (d.tags && d.tags.length ? d.tags.map(function(t){ return '<span class="badge badge-medium" style="font-size:10px">' + escHtml(t) + '</span>'; }).join('') : '') +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:12px;color:var(--text-2)">' +
+        '<span>' + TXT_AD.org + ' <b>' + escHtml(d.org) + '</b></span>' +
+        '<span>' + TXT_AD.isp + ' <b>' + escHtml(d.isp) + '</b></span>' +
+        '<span>' + TXT_AD.country + ' <b>' + escHtml(d.country) + '</b></span>' +
+        '<span>' + TXT_AD.city + ' <b>' + escHtml(d.city) + '</b></span>' +
+        '<span style="grid-column:1/-1">' + TXT_AD.openPorts + ' <b class="mono">' + ports + '</b></span>' +
+        '<span style="grid-column:1/-1">' + TXT_AD.hostnames + ' <b class="mono">' + hosts + '</b></span>' +
+        '<span style="grid-column:1/-1;color:' + vulnColor + '">' + TXT_AD.cves + ' <b>' + vulns + '</b></span>' +
+        '</div>';
+    })
+    .catch(function(e) { box.innerHTML = '<span style="color:var(--red)">' + TXT_AD.reqFailed + ' (Shodan): ' + escHtml(e.message) + '</span>'; });
+}
+
+var TXT_WL_SELECT = {{ t('select at least one IP') | tojson }};
+var TXT_WL_ADDED  = {{ t('IPs added watchlist') | tojson }};
+var TXT_WL_SKIP   = {{ t('IPs already watchlist') | tojson }};
+function submitWatchlist(scanId, attackName) {
+  var checks = document.querySelectorAll('.watch-ip-check:checked');
+  if (!checks.length) { showToast(TXT_WL_SELECT, 'warning'); return; }
+  var promises = Array.from(checks).map(function(chk) {
+    return fetch('/watchlist/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ip: chk.value, note: attackName + ' — scan ' + scanId})
+    }).then(function(r) { return r.json(); });
+  });
+  Promise.all(promises).then(function(results) {
+    document.getElementById('watchlist-modal').style.display = 'none';
+    var added   = results.filter(function(d) { return d.ok; }).length;
+    var skipped = results.filter(function(d) { return !d.ok; }).length;
+    if (added)   showToast(added + ' ' + TXT_WL_ADDED, 'success');
+    if (skipped) showToast(skipped + ' ' + TXT_WL_SKIP, 'warning');
+  }).catch(function() { showToast(TXT_WL_SKIP, 'error'); });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var protoCtx = document.getElementById('proto-chart');
+  var protoData = {{ protocol_breakdown | tojson }};
+  if (protoCtx && protoData && Object.keys(protoData).length) {
+    var PALETTE = ['#00d4ff','#7b2fff','#ff3e5f','#ffb800','#ff6b35','#00ff94','#a78bfa'];
+    var labels = Object.keys(protoData);
+    var values = Object.values(protoData);
+    new Chart(protoCtx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: labels.map(function(_,i){ return PALETTE[i % PALETTE.length] + '99'; }),
+          borderColor: labels.map(function(_,i){ return PALETTE[i % PALETTE.length]; }),
+          borderWidth: 2,
+          hoverOffset: 6,
+        }]
+      },
+      options: {
+        responsive: true, cutout: '60%',
+        plugins: { legend: { position: 'right', labels: { font: { size: 11 }, usePointStyle: true } } },
+        animation: { duration: 800 },
+      }
+    });
+  }
+});
+
+// Playbook collapsible
+var playbookLoaded = false;
+function togglePlaybook() {
+  var body     = document.getElementById('playbook-body');
+  var chevron  = document.getElementById('playbook-chevron');
+  var isOpen   = body.style.display !== 'none';
+  body.style.display    = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (!isOpen && !playbookLoaded) {
+    playbookLoaded = true;
+    loadPlaybook();
+  }
+}
+
+function loadPlaybook() {
+  var attackType = {{ attack_name | tojson }};
+  var panel = document.getElementById('playbook-content');
+  fetch('/api/playbook/' + encodeURIComponent(attackType))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.steps || !d.steps.length) {
+        panel.innerHTML = '<div style="color:var(--text-3);font-size:13px">' + TXT_AD.noPlaybook + '</div>';
+        return;
+      }
+      var html = '<ol style="margin:0;padding-left:20px;font-size:13px;color:var(--text-2);line-height:2">';
+      d.steps.forEach(function(step) {
+        var text = step.replace(/^\d+\.\s*/, '');
+        html += '<li style="margin-bottom:4px">' + escHtml(text) + '</li>';
+      });
+      html += '</ol>';
+      panel.innerHTML = html;
+    })
+    .catch(function() {
+      panel.innerHTML = '<div style="color:var(--red);font-size:13px">' + TXT_AD.playbookFail + '</div>';
+    });
+}
+</script>
+{% endblock %}

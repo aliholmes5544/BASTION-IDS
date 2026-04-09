@@ -1,0 +1,3002 @@
+[
+  {
+    "timestamp": "2026-03-19T02:33:56.409135",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-19T02:35:12.495399",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-19T02:39:02.723941",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-19T02:39:15.609963",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-19T02:39:26.982592",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-19T02:39:45.952624",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T02:43:30.484055",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T03:01:43.094964",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-19T05:37:23.278349",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-19T05:37:38.013111",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T16:41:15.542147",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:19:25.121795",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:19:49.851701",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:24:53.184899",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:27:19.983078",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:31:35.007969",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:35:56.721926",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:39:51.283011",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:40:03.614514",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:41:30.931936",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:44:15.194573",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:46:54.332978",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:47:12.339858",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-19T23:54:42.594726",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-20T00:17:06.096653",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-20T00:43:09.615855",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T05:34:30.576572",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T05:36:38.772979",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T05:36:56.398240",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T05:41:52.643671",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T05:42:07.563877",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T05:43:30.585902",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T05:43:47.061650",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T05:45:13.033146",
+    "user": "admin",
+    "action": "watchlist_add",
+    "detail": "Added 192.168.10.5 to watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T05:47:58.856755",
+    "user": "admin",
+    "action": "watchlist_edit",
+    "detail": "Edited watchlist entry for 192.168.10.5"
+  },
+  {
+    "timestamp": "2026-03-21T05:50:03.252581",
+    "user": "admin",
+    "action": "watchlist_edit",
+    "detail": "Edited watchlist entry for 192.168.10.5"
+  },
+  {
+    "timestamp": "2026-03-21T06:00:11.540933",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T06:01:19.961623",
+    "user": "admin",
+    "action": "watchlist_add",
+    "detail": "Added 192.168.10.0/24 to watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:02:54.164785",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:06:25.079686",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:07:52.360896",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:08:12.842512",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:10:23.044827",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:11:15.918086",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:12:02.629243",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:13:56.344788",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T06:14:17.218988",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:16:00.640656",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:17:36.067336",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:19:09.225746",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:20:30.009580",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:28:14.411842",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:29:55.432217",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 0 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:36:53.548044",
+    "user": "admin",
+    "action": "watchlist_import",
+    "detail": "Imported 10 IPs"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:03.978087",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 192.168.1.100 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:08.476610",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 10.0.0.55 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:13.937150",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 185.220.101.5 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:16.736379",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 203.0.113.10 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:19.294603",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 198.51.100.25 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:22.947428",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 45.33.32.156 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:25.758443",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 91.108.4.1 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:28.482784",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 1.1.1.1 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:37:30.908104",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 8.8.8.8 from watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:39:21.730291",
+    "user": "admin",
+    "action": "watchlist_add",
+    "detail": "Added 172.16.0.1 to watchlist"
+  },
+  {
+    "timestamp": "2026-03-21T06:46:02.402521",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 0ed5ee27 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-21T06:46:20.082699",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T06:46:33.290780",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-21T06:48:11.135751",
+    "user": "analyst",
+    "action": "case_assign",
+    "detail": "Case 0ed5ee27 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-21T06:52:06.246816",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-21T06:55:14.015570",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T06:55:28.588620",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 0ed5ee27 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-21T06:55:39.381748",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-21T06:55:55.505817",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-21T06:56:08.591077",
+    "user": "user",
+    "action": "login",
+    "detail": "User user logged in"
+  },
+  {
+    "timestamp": "2026-03-21T06:59:13.391490",
+    "user": "user",
+    "action": "logout",
+    "detail": "User user logged out"
+  },
+  {
+    "timestamp": "2026-03-21T06:59:22.448133",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T07:04:29.928447",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:04:49.315413",
+    "user": "user",
+    "action": "login",
+    "detail": "User user logged in"
+  },
+  {
+    "timestamp": "2026-03-21T07:05:20.015283",
+    "user": "user",
+    "action": "password_change",
+    "detail": "User user changed password"
+  },
+  {
+    "timestamp": "2026-03-21T07:07:37.182372",
+    "user": "user",
+    "action": "2fa_enabled",
+    "detail": "2FA enabled for user"
+  },
+  {
+    "timestamp": "2026-03-21T07:07:55.686808",
+    "user": "user",
+    "action": "logout",
+    "detail": "User user logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:08:02.632009",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T07:08:55.737687",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:09:15.657627",
+    "user": "user",
+    "action": "login",
+    "detail": "User user logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-21T07:10:35.482425",
+    "user": "user",
+    "action": "2fa_enabled",
+    "detail": "2FA enabled for user"
+  },
+  {
+    "timestamp": "2026-03-21T07:10:44.595010",
+    "user": "user",
+    "action": "logout",
+    "detail": "User user logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:10:51.452205",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T07:11:53.722462",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:12:04.183095",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-21T07:12:44.679191",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:12:54.434790",
+    "user": "system",
+    "action": "logout",
+    "detail": "User  logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:13:06.954624",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-21T07:23:17.632321",
+    "user": "admin",
+    "action": "2fa_enabled",
+    "detail": "2FA enabled for admin"
+  },
+  {
+    "timestamp": "2026-03-21T07:23:19.533862",
+    "user": "admin",
+    "action": "2fa_enabled",
+    "detail": "2FA enabled for admin"
+  },
+  {
+    "timestamp": "2026-03-21T07:23:37.157239",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:23:50.194383",
+    "user": "system",
+    "action": "logout",
+    "detail": "User  logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:23:55.959236",
+    "user": "system",
+    "action": "logout",
+    "detail": "User  logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:24:12.515616",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-21T07:26:49.051377",
+    "user": "user",
+    "action": "login",
+    "detail": "User user logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-21T07:27:12.728427",
+    "user": "user",
+    "action": "2fa_disabled",
+    "detail": "2FA disabled for user"
+  },
+  {
+    "timestamp": "2026-03-21T07:37:41.479188",
+    "user": "user",
+    "action": "logout",
+    "detail": "User user logged out"
+  },
+  {
+    "timestamp": "2026-03-21T07:38:14.959335",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-21T07:42:19.189543",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-21T22:01:07.787835",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-21T22:02:07.689053",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-21T22:05:43.022605",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-21T22:05:47.573624",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-21T22:14:35.961401",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-21T22:15:10.216814",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-21T22:23:48.157194",
+    "user": "admin",
+    "action": "settings_save",
+    "detail": "System settings updated"
+  },
+  {
+    "timestamp": "2026-03-21T23:04:52.872728",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260321_230437 started on file smallFlows.pcap"
+  },
+  {
+    "timestamp": "2026-03-21T23:04:54.587861",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260321_230437: 632 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-03-21T23:07:08.239098",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260321_230308_0: 27285 flows, 7 threats"
+  },
+  {
+    "timestamp": "2026-03-21T23:07:10.967297",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260321_230308_1: 632 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-03-21T23:10:01.803369",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260321_230405_0: 27285 flows, 7 threats"
+  },
+  {
+    "timestamp": "2026-03-21T23:10:02.032457",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260321_230405_1: 632 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-03-21T23:11:23.948966",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-22T01:20:33.210070",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-22T01:20:49.645609",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-22T01:21:23.473157",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260322_012120 started on file DrDoS_LDAP.csv"
+  },
+  {
+    "timestamp": "2026-03-22T01:26:54.896449",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260322_012120: 2181542 flows, 18 threats"
+  },
+  {
+    "timestamp": "2026-03-22T01:34:37.101449",
+    "user": "admin",
+    "action": "triage",
+    "detail": "Scan 20260322_012120 flow 235382 \u2192 false_positive"
+  },
+  {
+    "timestamp": "2026-03-22T01:34:43.455461",
+    "user": "admin",
+    "action": "triage",
+    "detail": "Scan 20260322_012120 flow 412949 \u2192 investigated"
+  },
+  {
+    "timestamp": "2026-03-22T01:34:52.009148",
+    "user": "admin",
+    "action": "triage",
+    "detail": "Scan 20260322_012120 flow 499370 \u2192 confirmed"
+  },
+  {
+    "timestamp": "2026-03-22T07:38:39.794677",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-22T08:06:57.160125",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-22T09:12:41.353188",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260322_091241 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-03-23T12:36:59.473350",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T12:53:53.747715",
+    "user": "admin",
+    "action": "triage",
+    "detail": "Scan 20260317_023220 flow 5033 \u2192 confirmed"
+  },
+  {
+    "timestamp": "2026-03-23T12:53:57.278729",
+    "user": "admin",
+    "action": "triage",
+    "detail": "Scan 20260317_023220 flow 49938 \u2192 false_positive"
+  },
+  {
+    "timestamp": "2026-03-23T12:58:28.574154",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260323_125828 started on file Friday-WorkingHours-Morning.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-03-23T13:03:21.183064",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:04:39.649400",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-23T13:05:18.349280",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:05:48.172329",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T13:06:58.840858",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"bot\" created"
+  },
+  {
+    "timestamp": "2026-03-23T13:07:03.442795",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 62ee3e93 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-23T13:07:14.539024",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:07:25.764074",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-23T13:08:08.165172",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:08:36.647155",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T13:14:08.891461",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:14:17.707175",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-23T13:14:50.915480",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:15:04.957263",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-23T13:16:37.516091",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-23T13:17:15.654586",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T16:19:07.602323",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T16:20:33.624216",
+    "user": "admin",
+    "action": "user_remove",
+    "detail": "Removed user user"
+  },
+  {
+    "timestamp": "2026-03-23T16:55:39.679130",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T17:12:24.900569",
+    "user": "admin",
+    "action": "whitelist_add",
+    "detail": "Added 192.168.10.5"
+  },
+  {
+    "timestamp": "2026-03-23T17:14:14.216303",
+    "user": "admin",
+    "action": "whitelist_remove",
+    "detail": "Removed 192.168.10.5"
+  },
+  {
+    "timestamp": "2026-03-23T17:16:12.803224",
+    "user": "admin",
+    "action": "user_add",
+    "detail": "Added user cc_admin with role cc_admin"
+  },
+  {
+    "timestamp": "2026-03-23T17:21:08.557122",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"dos\" created"
+  },
+  {
+    "timestamp": "2026-03-23T18:46:14.614492",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T18:47:09.246395",
+    "user": "admin",
+    "action": "user_remove",
+    "detail": "Removed user cc_admin"
+  },
+  {
+    "timestamp": "2026-03-23T18:47:29.726315",
+    "user": "admin",
+    "action": "user_add",
+    "detail": "Added user cc_admin with role cc_admin"
+  },
+  {
+    "timestamp": "2026-03-23T18:47:33.689257",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T18:47:55.906421",
+    "user": "analyst",
+    "action": "login",
+    "detail": "User analyst logged in"
+  },
+  {
+    "timestamp": "2026-03-23T18:48:33.162485",
+    "user": "analyst",
+    "action": "scan_start",
+    "detail": "Scan 20260323_184832 started on file Friday-WorkingHours-Morning.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-03-23T18:53:58.667948",
+    "user": "analyst",
+    "action": "scan_complete",
+    "detail": "Scan 20260323_184832: 191033 flows, 2325 threats"
+  },
+  {
+    "timestamp": "2026-03-23T18:55:30.935407",
+    "user": "analyst",
+    "action": "logout",
+    "detail": "User analyst logged out"
+  },
+  {
+    "timestamp": "2026-03-23T18:55:41.548454",
+    "user": "cc_admin",
+    "action": "login",
+    "detail": "User cc_admin logged in"
+  },
+  {
+    "timestamp": "2026-03-23T19:04:33.861253",
+    "user": "cc_admin",
+    "action": "logout",
+    "detail": "User cc_admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T19:04:53.245357",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T19:13:32.507828",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T19:13:45.223630",
+    "user": "cc_admin",
+    "action": "login",
+    "detail": "User cc_admin logged in"
+  },
+  {
+    "timestamp": "2026-03-23T19:17:01.098135",
+    "user": "cc_admin",
+    "action": "logout",
+    "detail": "User cc_admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T21:30:23.933631",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T21:45:44.551574",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-23T21:46:35.675917",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T22:04:22.941179",
+    "user": "admin",
+    "action": "user_remove",
+    "detail": "Removed user cc_admin"
+  },
+  {
+    "timestamp": "2026-03-23T22:48:05.457747",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-23T22:48:29.800808",
+    "user": "admin",
+    "action": "user_role_change",
+    "detail": "Changed analyst role to analyst"
+  },
+  {
+    "timestamp": "2026-03-23T22:48:49.419162",
+    "user": "admin",
+    "action": "user_role_change",
+    "detail": "Changed analyst role to cc_admin"
+  },
+  {
+    "timestamp": "2026-03-23T22:49:03.064551",
+    "user": "admin",
+    "action": "user_role_change",
+    "detail": "Changed analyst role to analyst"
+  },
+  {
+    "timestamp": "2026-03-23T22:50:01.160530",
+    "user": "admin",
+    "action": "user_add",
+    "detail": "Added user cc_admin03 with role cc_admin"
+  },
+  {
+    "timestamp": "2026-03-23T23:24:09.253368",
+    "user": "admin",
+    "action": "user_disable",
+    "detail": "Disabled user analyst06"
+  },
+  {
+    "timestamp": "2026-03-23T23:24:28.054833",
+    "user": "admin",
+    "action": "analyst_move",
+    "detail": "Moved analyst analyst03 to cc_admin03"
+  },
+  {
+    "timestamp": "2026-03-24T00:13:22.396747",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-24T00:15:52.697275",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260324_001551 started on file Monday-WorkingHours.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-03-24T00:48:26.474582",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-24T00:49:03.017276",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260324_004902 started on file Friday-WorkingHours-Morning.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-03-24T00:53:49.685644",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260324_004902: 191033 flows, 2325 threats"
+  },
+  {
+    "timestamp": "2026-03-24T01:12:04.757742",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-24T07:46:04.155293",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-24T17:20:38.681292",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-24T22:27:20.526237",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-24T23:18:05.651207",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-24T23:19:47.489883",
+    "user": "admin",
+    "action": "case_close",
+    "detail": "Case 0ed5ee27 closed"
+  },
+  {
+    "timestamp": "2026-03-25T06:56:21.151832",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-25T07:02:03.914980",
+    "user": "admin",
+    "action": "case_close",
+    "detail": "Case 62ee3e93 closed"
+  },
+  {
+    "timestamp": "2026-03-25T07:02:35.362398",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 7f02d219 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T07:12:48.526836",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"sql\" created"
+  },
+  {
+    "timestamp": "2026-03-25T07:13:32.052380",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case d9e6a92f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T07:19:45.986063",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-25T07:20:11.886307",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T07:31:32.915339",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case d9e6a92f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T07:37:52.623388",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T07:38:03.563101",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T07:43:49.078251",
+    "user": "cc_admin01",
+    "action": "cc_admin_user_add",
+    "detail": "CC Admin cc_admin01 added analyst analyst09a"
+  },
+  {
+    "timestamp": "2026-03-25T07:46:49.934906",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T07:47:35.635533",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-25T10:46:03.553652",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in via 2FA"
+  },
+  {
+    "timestamp": "2026-03-25T10:46:10.065009",
+    "user": "admin",
+    "action": "2fa_disabled",
+    "detail": "2FA disabled for admin"
+  },
+  {
+    "timestamp": "2026-03-25T10:52:19.383139",
+    "user": "admin",
+    "action": "analyst_move",
+    "detail": "Moved analyst analyst09a to cc_admin02"
+  },
+  {
+    "timestamp": "2026-03-25T10:52:29.844901",
+    "user": "admin",
+    "action": "analyst_move",
+    "detail": "Moved analyst analyst09a to cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-25T10:53:27.042920",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"attAack\" created"
+  },
+  {
+    "timestamp": "2026-03-25T10:53:51.466840",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 9036a24f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T10:54:01.864980",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-25T10:54:12.217414",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T10:55:25.966557",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T10:58:15.348452",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T11:31:29.140464",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T11:31:36.292071",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-25T16:38:18.892135",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T16:41:39.647378",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T16:41:51.076870",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-25T16:43:05.341610",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 9036a24f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T16:48:20.333073",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 9036a24f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T16:53:28.904200",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case d9e6a92f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T16:54:11.950640",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"botnet\" created"
+  },
+  {
+    "timestamp": "2026-03-25T16:55:16.756148",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-25T16:55:28.487871",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T17:14:44.445712",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case 9036a24f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T17:21:28.536871",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case d9e6a92f assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-25T17:29:42.734868",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T17:29:49.790367",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-25T17:36:22.743486",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-25T17:36:33.234773",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-25T17:36:42.888663",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-25T18:44:41.405480",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T00:43:56.313416",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T00:44:09.236917",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T00:44:19.965227",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T00:46:14.298442",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-26T00:55:57.941801",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T01:30:26.756025",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T07:01:16.136368",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:41:51.744987",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:43:03.502984",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"scan\" created"
+  },
+  {
+    "timestamp": "2026-03-26T18:44:36.179966",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-26T18:44:45.470760",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:45:13.524594",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case 67dd12c7 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-26T18:45:53.609276",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T18:46:06.797535",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:46:41.128918",
+    "user": "analyst01",
+    "action": "case_analyst_close",
+    "detail": "Case 67dd12c7 finished by analyst analyst01"
+  },
+  {
+    "timestamp": "2026-03-26T18:46:45.742361",
+    "user": "analyst01",
+    "action": "logout",
+    "detail": "User analyst01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T18:47:29.538330",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:48:44.629884",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T18:48:55.476961",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:52:38.156632",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-26T18:52:48.759624",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:53:07.098183",
+    "user": "cc_admin01",
+    "action": "case_cc_close",
+    "detail": "Case 67dd12c7 reviewed and closed by CC Admin cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-26T18:53:52.907279",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T18:54:05.224808",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T18:54:24.153536",
+    "user": "admin",
+    "action": "case_close",
+    "detail": "Case 67dd12c7 permanently closed"
+  },
+  {
+    "timestamp": "2026-03-26T19:05:04.112769",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"scan\" created"
+  },
+  {
+    "timestamp": "2026-03-26T19:05:20.838486",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-26T19:05:49.659047",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T19:06:08.733570",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case edca8f45 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-26T19:06:22.993370",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T19:06:39.609039",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T19:06:51.807815",
+    "user": "analyst01",
+    "action": "case_analyst_close",
+    "detail": "Case edca8f45 finished by analyst analyst01"
+  },
+  {
+    "timestamp": "2026-03-26T19:06:57.572982",
+    "user": "analyst01",
+    "action": "logout",
+    "detail": "User analyst01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T19:07:08.322003",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T19:07:20.489503",
+    "user": "cc_admin01",
+    "action": "case_cc_close",
+    "detail": "Case edca8f45 reviewed and closed by CC Admin cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-26T19:07:27.199832",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T19:07:36.194787",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-26T19:07:51.133639",
+    "user": "admin",
+    "action": "case_close",
+    "detail": "Case edca8f45 permanently closed"
+  },
+  {
+    "timestamp": "2026-03-26T19:13:42.455251",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"scan\" created"
+  },
+  {
+    "timestamp": "2026-03-26T19:13:57.903906",
+    "user": "admin",
+    "action": "case_assign",
+    "detail": "Case 701b2f96 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-26T19:14:14.281757",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-26T19:14:27.485838",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-26T19:15:13.472729",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case 701b2f96 assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-26T19:15:20.917507",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-26T19:15:33.755395",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:32:02.249929",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:33:09.854225",
+    "user": "admin",
+    "action": "case_comment_delete",
+    "detail": "Comment #0 deleted from case 0ed5ee27 by admin"
+  },
+  {
+    "timestamp": "2026-03-31T07:33:32.328791",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"DDOS\" created"
+  },
+  {
+    "timestamp": "2026-03-31T07:34:04.793910",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:34:14.851403",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:34:30.942005",
+    "user": "cc_admin01",
+    "action": "case_assign",
+    "detail": "Case ccbafeba assigned/priority updated"
+  },
+  {
+    "timestamp": "2026-03-31T07:34:37.105753",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:34:56.177653",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:35:06.007688",
+    "user": "analyst01",
+    "action": "case_analyst_close",
+    "detail": "Case ccbafeba finished by analyst analyst01"
+  },
+  {
+    "timestamp": "2026-03-31T07:35:12.948957",
+    "user": "analyst01",
+    "action": "logout",
+    "detail": "User analyst01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:35:22.601298",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:35:29.728811",
+    "user": "cc_admin01",
+    "action": "case_return_analyst",
+    "detail": "Case ccbafeba returned to analyst by cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-31T07:35:37.337807",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:35:55.430820",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:36:22.843442",
+    "user": "analyst01",
+    "action": "case_analyst_close",
+    "detail": "Case ccbafeba finished by analyst analyst01"
+  },
+  {
+    "timestamp": "2026-03-31T07:36:28.556924",
+    "user": "analyst01",
+    "action": "logout",
+    "detail": "User analyst01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:36:42.592113",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:36:54.938810",
+    "user": "cc_admin01",
+    "action": "case_return_analyst",
+    "detail": "Case ccbafeba returned to analyst by cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-31T07:37:03.378004",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:37:34.809163",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:43:43.708698",
+    "user": "analyst01",
+    "action": "case_analyst_close",
+    "detail": "Case ccbafeba finished by analyst analyst01"
+  },
+  {
+    "timestamp": "2026-03-31T07:43:49.315774",
+    "user": "analyst01",
+    "action": "logout",
+    "detail": "User analyst01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:44:03.920252",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:44:17.951667",
+    "user": "cc_admin01",
+    "action": "case_cc_close",
+    "detail": "Case ccbafeba reviewed and closed by CC Admin cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-31T07:44:25.131726",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:44:39.651774",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:52:07.416575",
+    "user": "admin",
+    "action": "case_return_cc",
+    "detail": "Case ccbafeba returned to CC Admin by admin admin"
+  },
+  {
+    "timestamp": "2026-03-31T07:52:12.619493",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:52:33.529324",
+    "user": "cc_admin01",
+    "action": "login",
+    "detail": "User cc_admin01 logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:52:47.542000",
+    "user": "cc_admin01",
+    "action": "case_cc_close",
+    "detail": "Case ccbafeba reviewed and closed by CC Admin cc_admin01"
+  },
+  {
+    "timestamp": "2026-03-31T07:52:53.301053",
+    "user": "cc_admin01",
+    "action": "logout",
+    "detail": "User cc_admin01 logged out"
+  },
+  {
+    "timestamp": "2026-03-31T07:53:05.277695",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-03-31T07:57:00.033740",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-02T09:36:49.319324",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-02T09:37:56.913750",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260402_093756 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-04-02T16:31:20.350602",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-02T16:47:18.851175",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260402_164718 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-04-02T17:35:50.973733",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260402_164718: auto-triage applied to 45027 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-02T17:35:50.995280",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260402_164718: 225745 flows, 45027 threats"
+  },
+  {
+    "timestamp": "2026-04-02T17:36:13.608521",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-02T20:35:24.949263",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-02T20:39:38.505327",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260402_203938 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-04-02T20:43:33.288536",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-02T20:43:56.602535",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-02T20:44:16.777108",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260402_204416 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-04-02T20:58:02.351034",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260402_205802 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-04-02T21:40:00.733545",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260402_205802: auto-triage applied to 13422 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-02T21:40:00.753593",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260402_205802: 225745 flows, 13422 threats"
+  },
+  {
+    "timestamp": "2026-04-03T00:09:55.360348",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T07:20:36.510165",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T07:21:57.698909",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_072157 started on file Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+  },
+  {
+    "timestamp": "2026-04-03T08:03:11.853144",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_072157: auto-triage applied to 128177 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T08:03:11.874891",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_072157: 225745 flows, 128177 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:01:02.808551",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T13:24:29.480621",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_132427 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:24:30.469284",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_132427: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:24:30.488687",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_132427: 11 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:27:25.112254",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_132724 started on file 3439fc2b352e45632563fb4fedfd6f70.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:27:25.990565",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_132724: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:27:26.007901",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_132724: 10 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:28:51.274818",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_132850 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:28:52.206875",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_132850: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:28:52.230778",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_132850: 11 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:33:05.087000",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_133304 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:33:06.161430",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_133304: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:33:06.181678",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_133304: 11 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:35:31.041261",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_133529 started on file 3439fc2b352e45632563fb4fedfd6f70.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:35:32.152321",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_133529: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:35:32.173586",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_133529: 10 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:35:45.752151",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_133545 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:35:46.881768",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_133545: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:35:46.899470",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_133545: 11 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:40:39.685946",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_134039 started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T13:40:40.845850",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_134039: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:40:40.867408",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_134039: 300 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T13:58:47.660446",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_135847 started on file test_attacks.csv"
+  },
+  {
+    "timestamp": "2026-04-03T13:58:54.498346",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_135847: auto-triage applied to 400 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T13:58:54.518271",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_135847: 400 flows, 400 threats"
+  },
+  {
+    "timestamp": "2026-04-03T19:14:58.983657",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T19:15:22.655216",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_191520 started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T19:15:24.365467",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_191520: auto-triage applied to 300 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T19:15:24.390902",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_191520: 300 flows, 300 threats"
+  },
+  {
+    "timestamp": "2026-04-03T19:16:03.868745",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_191603 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T19:16:04.829265",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_191603: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T19:16:04.852083",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_191603: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-03T19:16:34.854874",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_191634 started on file 3439fc2b352e45632563fb4fedfd6f70.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T19:16:35.820123",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_191634: auto-triage applied to 3 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T19:16:35.843562",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_191634: 10 flows, 3 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:44:34.149146",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-03T20:44:46.776458",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T20:46:18.797559",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_204617 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:46:19.769484",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_204617: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:46:19.791850",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_204617: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:46:59.056942",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_204654 started on file smallFlows.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:47:01.210971",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_204654: auto-triage applied to 250 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:47:01.234660",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_204654: 632 flows, 250 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:47:54.701161",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_204754 started on file test_portscan.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:47:57.412900",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_204754: auto-triage applied to 1024 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:47:57.438710",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_204754: 1024 flows, 1024 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:52:38.011952",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_205237 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:52:39.404526",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_205237: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:52:39.428651",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_205237: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:53:20.709272",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_205320 started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:53:22.238694",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_205320: auto-triage applied to 300 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:53:22.269091",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_205320: 300 flows, 300 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:54:36.904825",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_205436 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:54:38.450826",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_205436: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:54:38.478115",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_205436: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T20:54:50.879248",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_205449 started on file test_mixed.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T20:54:54.685810",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_205449: auto-triage applied to 1324 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T20:54:54.718588",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_205449: 1820 flows, 1324 threats"
+  },
+  {
+    "timestamp": "2026-04-03T21:02:10.968371",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-03T21:02:16.089374",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T21:23:25.998513",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_211823 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T21:23:27.439498",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_211823: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T21:23:27.467285",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_211823: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T21:35:02.093141",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-03T21:35:16.476329",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-03T21:35:39.684820",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_213536 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T21:35:41.435342",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_213536: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T21:35:41.465549",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_213536: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T21:40:38.462999",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_214037 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T21:40:39.904481",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_214037: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T21:40:39.927335",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_214037: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T21:42:03.274893",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260403_214202 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-03T21:42:04.826915",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260403_214202: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-03T21:42:04.850584",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260403_214202: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-03T21:55:58.776941",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-05T07:12:13.046118",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-05T07:12:38.733854",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260405_071237 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-05T07:12:39.648666",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260405_071237: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-05T07:12:39.669405",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260405_071237: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-05T07:13:35.370234",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260405_071335 started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-05T07:13:36.595344",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260405_071335: auto-triage applied to 300 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-05T07:13:36.618881",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260405_071335: 300 flows, 300 threats"
+  },
+  {
+    "timestamp": "2026-04-05T09:51:23.254207",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-05T09:51:59.406147",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260405_095158 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-05T09:52:00.297311",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260405_095158: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-05T09:52:00.314221",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260405_095158: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-05T09:52:39.227402",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260405_095238 started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-05T09:52:40.834070",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260405_095238: auto-triage applied to 300 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-05T09:52:40.858069",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260405_095238: 300 flows, 300 threats"
+  },
+  {
+    "timestamp": "2026-04-05T09:53:52.225295",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:15.349866",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:42.603011",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_100241_892179 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:43.730829",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_100241_892179: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:43.757178",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_100241_892179: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:56.289289",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_100255_ba3489 started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:57.556196",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_100255_ba3489: auto-triage applied to 300 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T10:02:57.578588",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_100255_ba3489: 300 flows, 300 threats"
+  },
+  {
+    "timestamp": "2026-04-06T10:17:01.692855",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_101700_7111af started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T10:17:02.599672",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_101700_7111af: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T10:17:02.618060",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_101700_7111af: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:31:54.083419",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-06T16:32:18.422792",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_163216_dfb8db started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:32:19.918164",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_163216_dfb8db: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:32:19.948679",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_163216_dfb8db: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:36:51.976923",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_163651_ec3b46 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:36:53.515391",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_163651_ec3b46: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:36:53.550625",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_163651_ec3b46: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:39:33.455491",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_163932_609a1b started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:39:34.940043",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_163932_609a1b: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:39:34.991731",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_163932_609a1b: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:49:15.743175",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_164914_5b0d5e started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:49:17.236160",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_164914_5b0d5e: auto-triage applied to 100 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:49:17.262408",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_164914_5b0d5e: 100 flows, 100 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:50:47.762273",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_165047_2bfbba started on file test_ddos.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:50:49.373936",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_165047_2bfbba: auto-triage applied to 300 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:50:49.404369",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_165047_2bfbba: 300 flows, 300 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:01.952578",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_165100_9e0bde started on file test_mixed.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:05.214558",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_165100_9e0bde: auto-triage applied to 1424 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:05.242421",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_165100_9e0bde: 1424 flows, 1424 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:18.722280",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_165118_e33c5b started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:19.918217",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_165118_e33c5b: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:19.944706",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_165118_e33c5b: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:33.030055",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_165132_226ee5 started on file 3439fc2b352e45632563fb4fedfd6f70.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:34.277316",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_165132_226ee5: auto-triage applied to 3 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:51:34.300412",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_165132_226ee5: 10 flows, 3 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:58:41.532676",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_165840_71f5b3 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:58:43.064407",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_165840_71f5b3: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:58:43.122176",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_165840_71f5b3: 496 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-06T16:58:59.745270",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260406_165859_393b95 started on file test_dos_hulk.pcap"
+  },
+  {
+    "timestamp": "2026-04-06T16:59:01.009648",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260406_165859_393b95: auto-triage applied to 100 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-06T16:59:01.033408",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260406_165859_393b95: 100 flows, 100 threats"
+  },
+  {
+    "timestamp": "2026-04-07T06:57:53.427924",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T07:58:12.354009",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T07:58:39.845939",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260409_075838_146a88 started on file 2f429bd5ed5ce816b00a23a17b1ad714.pcap"
+  },
+  {
+    "timestamp": "2026-04-09T07:58:40.880981",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260409_075838_146a88: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-09T07:58:40.905218",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260409_075838_146a88: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-09T08:32:27.756365",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:32:33.656757",
+    "user": "admin",
+    "action": "watchlist_add",
+    "detail": "Added 198.51.100.1 to watchlist"
+  },
+  {
+    "timestamp": "2026-04-09T08:40:18.764828",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:42:51.992219",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:44:13.975352",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:46:43.248625",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:48:47.461990",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:49:33.635623",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:57:54.390307",
+    "user": "admin",
+    "action": "login",
+    "detail": "User admin logged in"
+  },
+  {
+    "timestamp": "2026-04-09T08:59:00.932164",
+    "user": "admin",
+    "action": "triage",
+    "detail": "Scan 20260409_075838_146a88 flow 1 \u2192 investigated"
+  },
+  {
+    "timestamp": "2026-04-09T09:03:30.346393",
+    "user": "admin",
+    "action": "scan_start",
+    "detail": "Scan 20260409_090330_5ce1a6 started on file test.csv"
+  },
+  {
+    "timestamp": "2026-04-09T09:03:31.238791",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260409_090330_5ce1a6: auto-triage applied to 0 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-09T09:03:31.259368",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260409_090330_5ce1a6: 3 flows, 0 threats"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:02.314838",
+    "user": "admin",
+    "action": "user_add",
+    "detail": "Added user testuser99 with role analyst"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:02.413031",
+    "user": "admin",
+    "action": "user_role_change",
+    "detail": "Changed testuser99 role to analyst"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:02.512161",
+    "user": "admin",
+    "action": "user_disable",
+    "detail": "Disabled user testuser99"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:02.603183",
+    "user": "admin",
+    "action": "user_remove",
+    "detail": "Removed user testuser99"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:23.374744",
+    "user": "admin",
+    "action": "user_add",
+    "detail": "Added user testuser99 with role analyst"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:23.481815",
+    "user": "admin",
+    "action": "user_role_change",
+    "detail": "Changed testuser99 role to cc_admin"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:23.587775",
+    "user": "admin",
+    "action": "user_disable",
+    "detail": "Disabled user testuser99"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:23.679952",
+    "user": "admin",
+    "action": "user_enable",
+    "detail": "Enabled user testuser99"
+  },
+  {
+    "timestamp": "2026-04-09T09:04:23.777554",
+    "user": "admin",
+    "action": "user_remove",
+    "detail": "Removed user testuser99"
+  },
+  {
+    "timestamp": "2026-04-09T09:05:05.471261",
+    "user": "admin",
+    "action": "watchlist_add",
+    "detail": "Added 198.51.100.99 to watchlist"
+  },
+  {
+    "timestamp": "2026-04-09T09:05:06.062425",
+    "user": "admin",
+    "action": "watchlist_remove",
+    "detail": "Removed 198.51.100.99 from watchlist"
+  },
+  {
+    "timestamp": "2026-04-09T09:05:06.161107",
+    "user": "admin",
+    "action": "case_create",
+    "detail": "Case \"Test Case\" created"
+  },
+  {
+    "timestamp": "2026-04-09T09:05:06.639836",
+    "user": "admin",
+    "action": "case_close",
+    "detail": "Case 37abecff permanently closed"
+  },
+  {
+    "timestamp": "2026-04-09T09:05:37.247019",
+    "user": "admin",
+    "action": "whitelist_add",
+    "detail": "Added 10.0.0.0/8"
+  },
+  {
+    "timestamp": "2026-04-09T09:05:37.359859",
+    "user": "admin",
+    "action": "whitelist_remove",
+    "detail": "Removed 10.0.0.0/8"
+  },
+  {
+    "timestamp": "2026-04-09T09:06:08.942184",
+    "user": "admin",
+    "action": "cc_admin_user_add",
+    "detail": "CC Admin admin added analyst cc_test_analyst"
+  },
+  {
+    "timestamp": "2026-04-09T09:06:10.201965",
+    "user": "admin",
+    "action": "auto_triage",
+    "detail": "Scan 20260409_090609_178505: auto-triage applied to 2 malicious flows"
+  },
+  {
+    "timestamp": "2026-04-09T09:06:10.223466",
+    "user": "admin",
+    "action": "scan_complete",
+    "detail": "Scan 20260409_090609_178505: 11 flows, 2 threats"
+  },
+  {
+    "timestamp": "2026-04-09T09:06:45.257208",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  },
+  {
+    "timestamp": "2026-04-09T09:06:45.427340",
+    "user": "analyst01",
+    "action": "login",
+    "detail": "User analyst01 logged in"
+  },
+  {
+    "timestamp": "2026-04-09T09:07:39.271797",
+    "user": "admin",
+    "action": "logout",
+    "detail": "User admin logged out"
+  }
+]

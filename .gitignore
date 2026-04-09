@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Models (too large for git — 6.8 GB)
+models/
+
+# Training data (too large for git — 1.2 GB)
+data/
+
+# Runtime outputs
+outputs/flows/
+outputs/uploads/
+outputs/case_attachments/
+outputs/ip_cache.json
+outputs/triage.json
+logs/
+
+# IDE & tools
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+nul
+
+# Local config with real secrets
+config.json.local
+
+# Misc
+earth-dark/

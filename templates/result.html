@@ -1,0 +1,537 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Scan Result') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Scan Result') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+{% endblock %}
+
+{% block content %}
+{% set td = entry.get('threat_breakdown', {}) %}
+{% set sd = entry.get('severity_breakdown', {}) %}
+
+<!-- Threat Banner -->
+<div class="threat-banner {{ top_severity | lower }} anim-fade-up" style="margin-bottom:24px">
+  <div class="scan-line"></div>
+  <div class="threat-banner-icon" style="background:
+    {% if top_severity == 'CRITICAL' %}rgba(255,62,95,0.15){% elif top_severity == 'HIGH' %}rgba(255,107,53,0.15)
+    {% elif top_severity == 'MEDIUM' %}rgba(255,184,0,0.12){% else %}rgba(0,255,148,0.1){% endif %}">
+    {% if top_severity == 'CRITICAL' %}⚠️
+    {% elif top_severity == 'HIGH' %}🔴
+    {% elif top_severity == 'MEDIUM' %}🟡
+    {% else %}✅{% endif %}
+  </div>
+  <div style="flex:1">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+      color:{% if top_severity=='CRITICAL' %}var(--red){% elif top_severity=='HIGH' %}var(--orange){% elif top_severity=='MEDIUM' %}var(--amber){% else %}var(--green){% endif %};
+      margin-bottom:4px">
+      {{ tsev(top_severity) }} {{ t('THREAT LEVEL') }}
+    </div>
+    <div style="font-size:20px;font-weight:800;color:var(--text-1)">
+      {% if top_severity == 'SAFE' %}{{ t('No Threats Detected') }}
+      {% elif top_severity == 'MEDIUM' %}{{ t('Low-Level Threats') }}
+      {% elif top_severity == 'HIGH' %}{{ t('Significant Threats') }}
+      {% else %}{{ t('Critical Threats') }}
+      {% endif %}
+    </div>
+    <div style="font-size:12px;color:var(--text-2);margin-top:4px">
+      {{ t('Scan ID') }}: <span class="mono">{{ entry.scan_id }}</span> &nbsp;·&nbsp;
+      {{ entry.timestamp[:16].replace('T', ' ') if entry.timestamp else t('N/A rep') }} {{ t('UTC label') }} &nbsp;·&nbsp;
+      {{ entry.filename }}
+    </div>
+  </div>
+  <div style="text-align:right;flex-shrink:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:flex-start">
+    <a href="{{ url_for('download_flows', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      {{ t('Raw Flows CSV') }}
+    </a>
+    <a href="{{ url_for('export_pdf', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      {{ t('PDF + CSV Report') }}
+    </a>
+    <a href="{{ url_for('geo_map', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="10" r="3"/>
+        <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
+      </svg>
+      {{ t('View Map') }}
+    </a>
+    <a href="{{ url_for('shap_page', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 20V10M12 20V4M6 20v-6"/>
+      </svg>
+      {{ t('Explain') }}
+    </a>
+    <a href="{{ url_for('correlation', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+        <line x1="6" y1="9" x2="6" y2="15"/>
+        <path d="M9 18h3a6 6 0 0 0 6-6V9"/>
+      </svg>
+      {{ t('Correlation') }}
+    </a>
+    <form method="POST" action="{{ url_for('rescan', scan_id=entry.scan_id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('Re-run confirm') | tojson }})">
+      <button type="submit" class="btn btn-secondary btn-sm">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        {{ t('Re-scan') }}
+      </button>
+    </form>
+    <a href="{{ url_for('network_graph', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      {{ t('Network Graph') }}
+    </a>
+  </div>
+</div>
+
+{% if alert_sent %}
+<div class="alert alert-success anim-fade-up" style="margin-bottom:16px">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+  {{ t('Alert sent') }}
+</div>
+{% endif %}
+
+<!-- Stat Cards -->
+<div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+  <div class="stat-card cyan anim-fade-up delay-1">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ entry.total_flows }}">0</div>
+    <div class="stat-label">{{ t('Total Flows') }}</div>
+  </div>
+  <div class="stat-card red anim-fade-up delay-2">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ entry.malicious_flows }}">0</div>
+    <div class="stat-label">{{ t('Malicious') }}</div>
+  </div>
+  <div class="stat-card green anim-fade-up delay-3">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ entry.benign_flows }}">0</div>
+    <div class="stat-label">{{ t('Benign') }}</div>
+  </div>
+  <div class="stat-card amber anim-fade-up delay-4">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <div class="stat-value" data-count="{{ entry.avg_confidence }}" data-suffix="%">0%</div>
+    <div class="stat-label">{{ t('Avg Confidence') }}</div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="grid-3" style="margin-bottom:20px">
+  <div class="card anim-fade-up delay-1">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Traffic Split') }}</div>
+    </div>
+    <div class="card-body">
+      <canvas id="bm-chart" style="max-height:200px"></canvas>
+    </div>
+  </div>
+
+  <div class="card anim-fade-up delay-2">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Severity Breakdown') }}</div>
+    </div>
+    <div class="card-body">
+      <canvas id="sev-result-chart" style="max-height:200px"></canvas>
+    </div>
+  </div>
+
+  <!-- Threat Timeline -->
+  <div class="card anim-fade-up delay-3">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot" style="background:var(--red)"></div>{{ t('Threat Timeline') }}</div>
+    </div>
+    <div class="card-body">
+      {% if threat_timeline %}
+      <canvas id="threat-timeline-chart" style="max-height:200px"></canvas>
+      {% else %}
+      <div class="empty-state" style="padding:20px"><p>{{ t('No threat data') }}</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Second charts row: Attack Types -->
+<div class="grid-3" style="margin-bottom:20px">
+  <div class="card anim-fade-up" style="grid-column:1/3">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Threat Distribution Chart') }}</div>
+    </div>
+    <div class="card-body">
+      <canvas id="threat-result-chart" style="max-height:180px"></canvas>
+    </div>
+  </div>
+
+  <div class="card anim-fade-up delay-3">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Attack Types') }}</div>
+      {% if td %}<span style="font-size:10px;color:var(--text-3)">{{ t('Click to inspect flows') }}</span>{% endif %}
+    </div>
+    <div class="card-body" style="padding:0">
+      {% if td %}
+        {% for label, count in td.items() | sort(attribute=1, reverse=True) %}
+        {% set a_sev, a_color, _ = get_severity(label) %}
+        <a href="{{ url_for('attack_detail', scan_id=entry.scan_id, attack_name=label) }}"
+           class="attack-row-link">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:13px;color:var(--text-1)">{{ label }}</div>
+            <div style="margin-top:6px">
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill"
+                     style="width:{{ ((count / (entry.total_flows or 1)) * 100) | round(1) }}%;
+                            background:{{ a_color }}"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:16px">
+            <div style="font-weight:800;font-size:18px;color:{{ a_color }}">{{ count }}</div>
+            <span class="badge badge-{{ a_sev | lower }}" style="font-size:9px">{{ tsev(a_sev) }}</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"
+               style="flex-shrink:0;margin-left:8px"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state" style="padding:30px">
+          <p>{{ t('No malicious flows') }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Flow Table -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Flow-Level Results') }}</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="search-box" style="width:220px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="table-search" placeholder="{{ t('Search flows') }}" aria-label="{{ t('Search flows') }}">
+      </div>
+    </div>
+  </div>
+
+  <!-- Column Toggle -->
+  <div class="col-toggle-bar">
+    <span class="col-toggle-label">{{ t('Columns') }}:</span>
+    <div id="col-toggle-container" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  </div>
+
+  <div class="filter-bar">
+    <span style="font-size:11px;color:var(--text-3);font-weight:600">{{ t('FILTER') }}:</span>
+    <button class="filter-chip active" data-filter="all">{{ t('All') }}</button>
+    <button class="filter-chip" data-filter="CRITICAL">{{ t('Critical') }}</button>
+    <button class="filter-chip" data-filter="HIGH">{{ t('High') }}</button>
+    <button class="filter-chip" data-filter="MEDIUM">{{ t('Medium') }}</button>
+    <button class="filter-chip" data-filter="SAFE">{{ t('Safe') }}</button>
+  </div>
+
+  <div style="overflow-x:auto">
+    <table class="data-table" id="flows-table">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="bulk-select-all" title="{{ t('Select all malicious title') }}" style="cursor:pointer"></th>
+          <th class="sortable">#</th>
+          <th class="sortable">{{ t('Classification') }}</th>
+          <th class="sortable">{{ t('Src IP') }}</th>
+          <th class="sortable">{{ t('Src Port') }}</th>
+          <th class="sortable">{{ t('Dst IP') }}</th>
+          <th class="sortable">{{ t('Dst Port') }}</th>
+          <th class="sortable">{{ t('Proto') }}</th>
+          <th class="sortable">{{ t('Severity') }}</th>
+          <th class="sortable">{{ t('Confidence') }}</th>
+          <th>{{ t('Status') }}</th>
+          <th>{{ t('Triage') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        {% set flow_id_str = r.flow_id | string %}
+        {% set triage_status = triage_data.get(flow_id_str, '') %}
+        <tr data-severity="{{ r.severity }}" class="expandable">
+          <td>
+            {% if r.is_malicious and not triage_status %}
+            <input type="checkbox" class="bulk-flow-cb" data-flow-id="{{ r.flow_id }}" style="cursor:pointer">
+            {% endif %}
+          </td>
+          <td class="mono" style="color:var(--text-3)">{{ r.flow_id }}</td>
+          <td>
+            <a href="{{ url_for('attack_detail', scan_id=entry.scan_id, attack_name=r.label) }}"
+               style="font-weight:600;color:var(--text-1);text-decoration:none"
+               onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-1)'">
+              {{ r.label }}</a>
+            {% if r.get('watchlist_hit') %}
+              <span title="{{ t('Watchlist hit title') }}" style="margin-left:4px">&#127919;</span>
+            {% endif %}
+          </td>
+          <td class="mono" style="font-size:11px">{{ r.get('src_ip','N/A') }}</td>
+          <td class="mono" style="font-size:11px">{{ r.get('src_port','N/A') }}</td>
+          <td class="mono" style="font-size:11px">{{ r.get('dst_ip','N/A') }}</td>
+          <td class="mono" style="font-size:11px">{{ r.get('dst_port','N/A') }}</td>
+          <td class="mono" style="font-size:11px">{{ r.get('protocol','N/A') }}</td>
+          <td>
+            <span class="badge badge-{{ r.severity | lower }}">{{ tsev(r.severity) }}</span>
+          </td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="progress-bar-wrap" style="width:80px">
+                <div class="progress-bar-fill" style="width:{{ r.confidence }}%;
+                  background:{{ r.color }}"></div>
+              </div>
+              <span class="mono" style="font-size:12px;color:{{ r.color }}">{{ r.confidence }}%</span>
+            </div>
+          </td>
+          <td>
+            {% if r.is_malicious %}
+              <span style="color:var(--red);font-size:11px;font-weight:700">&#9888; {{ t('THREAT') }}</span>
+            {% else %}
+              <span style="color:var(--green);font-size:11px;font-weight:700">&#10003; {{ t('SAFE status') }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if triage_status %}
+              <span class="triage-applied {{ triage_status }}">{{ t('triage ' + triage_status.replace('_',' ')) }}</span>
+            {% elif r.is_malicious %}
+              <div class="triage-actions">
+                <button class="triage-btn investigated" onclick='triageFlow({{ entry.scan_id | tojson }},{{ r.flow_id | tojson }},"investigated",this)'>{{ t('Investigated') }}</button>
+                <button class="triage-btn false-positive" onclick='triageFlow({{ entry.scan_id | tojson }},{{ r.flow_id | tojson }},"false_positive",this)'>{{ t('FP') }}</button>
+                <button class="triage-btn confirmed" onclick='triageFlow({{ entry.scan_id | tojson }},{{ r.flow_id | tojson }},"confirmed",this)'>{{ t('Confirmed') }}</button>
+              </div>
+            {% endif %}
+          </td>
+        </tr>
+        <tr class="expand-row">
+          <td colspan="12">
+            <div class="expand-details">
+              <div class="expand-field"><label>{{ t('Flow ID') }}</label><span>{{ r.flow_id }}</span></div>
+              <div class="expand-field"><label>{{ t('Anomaly Score') }}</label><span>{{ r.get('anomaly_score','N/A') }}%</span></div>
+              <div class="expand-field"><label>{{ t('Src IP') }}</label><span>{{ r.get('src_ip','N/A') }}</span>
+                {% if r.get('src_ip','N/A') != 'N/A' %}
+                <div class="whois-container" id="whois-src-{{ r.flow_id }}">
+                  <a href="javascript:void(0)" onclick='lookupWhois({{ r.get("src_ip","") | tojson }},"whois-src-{{ r.flow_id }}")' style="font-size:10px;color:var(--cyan)">{{ t('Lookup WHOIS') }}</a>
+                </div>
+                {% endif %}
+              </div>
+              <div class="expand-field"><label>{{ t('Dst IP') }}</label><span>{{ r.get('dst_ip','N/A') }}</span>
+                {% if r.get('dst_ip','N/A') != 'N/A' %}
+                <div class="whois-container" id="whois-dst-{{ r.flow_id }}">
+                  <a href="javascript:void(0)" onclick='lookupWhois({{ r.get("dst_ip","") | tojson }},"whois-dst-{{ r.flow_id }}")' style="font-size:10px;color:var(--cyan)">{{ t('Lookup WHOIS') }}</a>
+                </div>
+                {% endif %}
+              </div>
+              <div class="expand-field"><label>{{ t('Protocol') }}</label><span>{{ r.get('protocol','N/A') }}</span></div>
+              <div class="expand-field"><label>{{ t('Watchlist Hit') }}</label><span>{{ t('Yes') if r.get('watchlist_hit') else t('No') }}</span></div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if results | length == 2000 %}
+  <div style="padding:12px 22px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border)">
+    {{ t('Showing first 2000') }}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Bulk Action Bar -->
+<div id="bulk-action-bar" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+     background:var(--surface-2);border:1px solid var(--cyan);border-radius:12px;
+     padding:12px 20px;align-items:center;gap:12px;z-index:1000;
+     box-shadow:0 8px 40px rgba(0,212,255,0.25);backdrop-filter:blur(12px)">
+  <span id="bulk-count-label" style="font-size:13px;font-weight:700;color:var(--cyan)">0 {{ t('selected') }}</span>
+  <button class="btn btn-sm" style="background:#1a3050;color:var(--text-2);border:1px solid var(--border)"
+          onclick="bulkTriage('investigated')">{{ t('Mark Investigated') }}</button>
+  <button class="btn btn-sm" style="background:#1a3050;color:#ffb800;border:1px solid #ffb800"
+          onclick="bulkTriage('false_positive')">{{ t('Mark False Positive') }}</button>
+  <button class="btn btn-sm" style="background:#1a3050;color:var(--red);border:1px solid var(--red)"
+          onclick="bulkTriage('confirmed')">{{ t('Mark Confirmed') }}</button>
+  <button class="btn btn-sm" style="background:#0a1628;color:var(--green);border:1px solid var(--green)"
+          onclick="document.getElementById('bulk-case-modal').classList.add('active')">{{ t('Add to Case') }}</button>
+  <button onclick="clearBulkSelection()" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px;padding:0 4px">&times;</button>
+</div>
+
+<!-- Bulk Case Modal -->
+<div class="modal-overlay" id="bulk-case-modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal">
+    <div class="modal-title">{{ t('Add Selected Flows to Case') }}</div>
+    <div class="form-group">
+      <label class="form-label">{{ t('Case ID') }}</label>
+      <input type="text" id="bulk-case-id-input" class="form-input" placeholder="{{ t('Enter case ID placeholder') }}">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('bulk-case-modal').classList.remove('active')">{{ t('Cancel') }}</button>
+      <button class="btn btn-primary" onclick="bulkAddToCase()">{{ t('Add to Case') }}</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var TXT_BUCKET        = {{ t('Bucket') | tojson }};
+var TXT_MAL_FLOWS     = {{ t('Malicious Flows') | tojson }};
+var TXT_RERUN_CONFIRM = {{ t('Re-run confirm') | tojson }};
+var TXT_SELECTED      = {{ t('selected') | tojson }};
+var TXT_BULK_ERR      = {{ t('Bulk triage error') | tojson }};
+var TXT_ENTER_CASE    = {{ t('Please enter Case ID') | tojson }};
+var TXT_ADDED_CASE    = {{ t('Added to case msg') | tojson }};
+var TRIAGE_LABELS = {
+  confirmed:       {{ t('triage confirmed') | tojson }},
+  false_positive:  {{ t('triage false positive') | tojson }},
+  investigated:    {{ t('triage investigated') | tojson }},
+};
+// ── Bulk Triage ──────────────────────────────────────────────────────────────
+var SCAN_ID = {{ entry.scan_id | tojson }};
+
+function updateBulkBar() {
+  var checked = document.querySelectorAll('.bulk-flow-cb:checked');
+  var bar = document.getElementById('bulk-action-bar');
+  var lbl = document.getElementById('bulk-count-label');
+  if (checked.length > 0) {
+    bar.style.display = 'flex';
+    lbl.textContent = checked.length + ' ' + TXT_SELECTED;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function clearBulkSelection() {
+  document.querySelectorAll('.bulk-flow-cb').forEach(function(cb) { cb.checked = false; });
+  document.getElementById('bulk-select-all').checked = false;
+  updateBulkBar();
+}
+
+function bulkTriage(status) {
+  var checked = document.querySelectorAll('.bulk-flow-cb:checked');
+  if (!checked.length) return;
+  var ids = Array.from(checked).map(function(cb) { return parseInt(cb.dataset.flowId); });
+  fetch('/api/triage/bulk', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({scan_id: SCAN_ID, flow_ids: ids, status: status})
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.ok) {
+      checked.forEach(function(cb) {
+        var row = cb.closest('tr');
+        var triageCell = row.querySelector('td:last-child');
+        if (triageCell) {
+          triageCell.innerHTML = '<span class="triage-applied ' + status + '">' + (TRIAGE_LABELS[status] || status.replace('_',' ')) + '</span>';
+        }
+        var cbTd = cb.closest('td');
+        if (cbTd) cbTd.innerHTML = '';
+      });
+      clearBulkSelection();
+    }
+  }).catch(function(e) { alert(TXT_BULK_ERR + e); });
+}
+
+function bulkAddToCase() {
+  var caseId = document.getElementById('bulk-case-id-input').value.trim();
+  if (!caseId) { alert(TXT_ENTER_CASE); return; }
+  var checked = document.querySelectorAll('.bulk-flow-cb:checked');
+  var ids = Array.from(checked).map(function(cb) { return parseInt(cb.dataset.flowId); });
+  fetch('/api/triage/bulk', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({scan_id: SCAN_ID, flow_ids: ids, status: 'investigated', case_id: caseId})
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    document.getElementById('bulk-case-modal').classList.remove('active');
+    if (d.ok) { clearBulkSelection(); alert(TXT_ADDED_CASE); }
+    else { alert(TXT_BULK_ERR + (d.error || {{ t('Unknown label') | tojson }})); }
+  }).catch(function(e) { alert(TXT_BULK_ERR + e); });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.bulk-flow-cb').forEach(function(cb) {
+    cb.addEventListener('change', updateBulkBar);
+  });
+  var selectAll = document.getElementById('bulk-select-all');
+  if (selectAll) {
+    selectAll.addEventListener('change', function() {
+      document.querySelectorAll('.bulk-flow-cb').forEach(function(cb) {
+        // Only select checkboxes in visible (not filtered-out) rows
+        var row = cb.closest('tr');
+        if (row && row.style.display === 'none') return;
+        cb.checked = selectAll.checked;
+      });
+      updateBulkBar();
+    });
+  }
+});
+// ── End Bulk Triage ──────────────────────────────────────────────────────────
+
+window.BASTION_RESULT = {
+  malicious: {{ entry.malicious_flows }},
+  benign:    {{ entry.benign_flows }},
+  severity:  {{ entry.get('severity_breakdown', {}) | tojson }},
+  threats:   {{ entry.get('threat_breakdown', {}) | tojson }},
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Threat timeline chart
+  var tlCtx = document.getElementById('threat-timeline-chart');
+  var tlData = {{ threat_timeline | tojson }};
+  if (tlCtx && tlData && tlData.length) {
+    new Chart(tlCtx, {
+      type: 'line',
+      data: {
+        labels: tlData.map(function(d) { return TXT_BUCKET + ' ' + d.minute; }),
+        datasets: [{
+          label: TXT_MAL_FLOWS,
+          data: tlData.map(function(d) { return d.count; }),
+          borderColor: '#ff3e5f',
+          backgroundColor: 'rgba(255,62,95,0.1)',
+          fill: true, tension: 0.4,
+          pointBackgroundColor: '#ff3e5f',
+          pointRadius: 3, pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(0,212,255,0.06)' }, ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+          y: { grid: { color: 'rgba(0,212,255,0.06)' }, beginAtZero: true, ticks: { font: { size: 10 } } }
+        },
+        animation: { duration: 800 },
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

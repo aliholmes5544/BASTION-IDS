@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Admin') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Admin') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+<circle cx="9" cy="7" r="4"/>
+<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+<path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('Admin') }}</div>
+  <div class="page-subtitle">{{ t('Admin subtitle') }}</div>
+</div>
+
+<!-- System Stats -->
+<div class="stat-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:24px">
+  <div class="admin-stat anim-fade-up delay-1">
+    <div class="admin-stat-val">{{ stats.total_scans }}</div>
+    <div class="admin-stat-lbl">{{ t('Total Scans') }}</div>
+  </div>
+  <div class="admin-stat anim-fade-up delay-2">
+    <div class="admin-stat-val">{{ '{:,}'.format(stats.total_flows) }}</div>
+    <div class="admin-stat-lbl">{{ t('Total Flows') }}</div>
+  </div>
+  <div class="admin-stat anim-fade-up delay-3">
+    <div class="admin-stat-val" style="color:{% if stats.model_loaded %}var(--green){% else %}var(--red){% endif %}">
+      {% if stats.model_loaded %}{{ t('Online') }}{% else %}{{ t('Offline') }}{% endif %}
+    </div>
+    <div class="admin-stat-lbl">{{ t('Model Status') }}</div>
+  </div>
+  <div class="admin-stat anim-fade-up delay-4">
+    <div class="admin-stat-val" style="color:var(--green)">{{ stats.config_status }}</div>
+    <div class="admin-stat-lbl">{{ t('Config') }}</div>
+  </div>
+  <div class="admin-stat anim-fade-up delay-4">
+    <div class="admin-stat-val">{{ stats.watchlist_count }}</div>
+    <div class="admin-stat-lbl">{{ t('Watchlist IPs') }}</div>
+  </div>
+</div>
+
+<!-- User Management -->
+<div class="grid-2 anim-fade-up">
+  <!-- Users Table -->
+  <div class="card">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Users') }} ({{ user_list | length }})</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ t('Username') }}</th>
+            <th>{{ t('Role') }}</th>
+            <th>{{ t('Status') }}</th>
+            <th>{{ t('Last Login') }}</th>
+            <th>{{ t('Actions') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in user_list %}
+          <tr style="{% if u.disabled %}opacity:0.5{% endif %}">
+            <td style="font-weight:600;color:var(--text-1)">{{ u.username }}</td>
+            <td>
+              <span class="badge {% if u.role == 'admin' %}badge-critical{% elif u.role == 'cc_admin' %}badge-high{% else %}badge-safe{% endif %}">
+                {{ t('role ' + u.role) }}
+              </span>
+            </td>
+            <td>
+              {% if u.disabled %}
+              <span class="badge" style="background:rgba(255,62,95,0.12);color:var(--red);font-size:9px">{{ t('DISABLED') }}</span>
+              {% else %}
+              <span class="badge" style="background:rgba(0,255,148,0.1);color:var(--green);font-size:9px">{{ t('ACTIVE') }}</span>
+              {% endif %}
+            </td>
+            <td class="mono" style="font-size:11px;color:var(--text-3)">
+              {% if u.last_login and u.last_login != 'Never' %}
+                {{ u.last_login[:16].replace('T',' ') }}
+              {% else %}{{ t('Never') }}{% endif %}
+            </td>
+            <td>
+              {% if u.username == session.get('user') %}
+              <span style="font-size:11px;color:var(--text-3)">({{ t('you') }})</span>
+              {% else %}
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+
+                <!-- Role selector -->
+                <form method="POST" action="{{ url_for('admin_set_role') }}" style="display:flex;gap:4px;align-items:center">
+                  <input type="hidden" name="username" value="{{ u.username }}">
+                  <select name="role" class="form-input" style="font-size:11px;padding:3px 6px;height:auto;cursor:pointer">
+                    <option value="analyst" {% if u.role == 'analyst' %}selected{% endif %}>{{ t('role analyst') }}</option>
+                    <option value="cc_admin" {% if u.role == 'cc_admin' %}selected{% endif %}>{{ t('role cc_admin') }}</option>
+                    <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>{{ t('role admin') }}</option>
+                  </select>
+                  <button type="submit" class="btn btn-sm"
+                    style="background:rgba(0,212,255,0.08);color:var(--cyan);border:1px solid var(--cyan);padding:3px 8px">
+                    {{ t('Set') }}
+                  </button>
+                </form>
+
+                <!-- Enable / Disable -->
+                <form method="POST" action="{{ url_for('admin_toggle_user') }}" style="display:inline"
+                      onsubmit="return confirm({% if u.disabled %}{{ t('Enable') | tojson }}{% else %}{{ t('Disable') | tojson }}{% endif %} + {{ t('user word') | tojson }} + {{ u.username | tojson }} + '?')">
+                  <input type="hidden" name="username" value="{{ u.username }}">
+                  <button type="submit" class="btn btn-sm"
+                    style="{% if u.disabled %}background:rgba(0,255,148,0.08);color:var(--green);border:1px solid var(--green){% else %}background:rgba(255,184,0,0.08);color:var(--amber);border:1px solid var(--amber){% endif %};padding:3px 8px">
+                    {% if u.disabled %}{{ t('Enable') }}{% else %}{{ t('Disable') }}{% endif %}
+                  </button>
+                </form>
+
+                <!-- Remove -->
+                <form method="POST" action="{{ url_for('admin_remove_user') }}" style="display:inline"
+                      onsubmit="return confirm({{ t('Permanently remove user').replace('{user}', u.username) | tojson }})">
+                  <input type="hidden" name="username" value="{{ u.username }}">
+                  <button type="submit" class="btn btn-danger btn-sm" style="padding:3px 8px">{{ t('Remove') }}</button>
+                </form>
+
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add New User -->
+  <div class="card">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Add New User') }}</div>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('admin_add_user') }}" id="add-user-form">
+        <div class="form-group">
+          <label class="form-label">{{ t('Username') }} *</label>
+          <input type="text" name="username" class="form-input" required
+                 placeholder="{{ t('ph username example') }}" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Password') }} *</label>
+          <div class="pw-wrap">
+            <input type="password" id="admin-new-pw" name="password" class="form-input" required
+                   placeholder="{{ t('Min 8 characters') }}" autocomplete="new-password"
+                   oninput="adminCheckStrength(this.value)">
+            <button type="button" class="pw-eye" onclick="adminTogglePw()" tabindex="-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="pw-strength" id="admin-pw-strength" style="display:none">
+            <div class="pw-strength-bar"><div class="pw-strength-fill" id="admin-pw-fill"></div></div>
+            <span class="pw-strength-label" id="admin-pw-label"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Role') }}</label>
+          <select name="role" id="role-select" class="form-input" style="cursor:pointer"
+                  onchange="toggleCcAdminAssign(this.value)">
+            <option value="analyst">{{ t('role analyst') }}</option>
+            <option value="cc_admin">{{ t('role cc_admin') }}</option>
+            <option value="admin">{{ t('role admin') }}</option>
+          </select>
+        </div>
+        <!-- CC Admin assignment — shown only when role = analyst -->
+        <div class="form-group" id="cc-admin-assign" style="display:none">
+          <label class="form-label">{{ t('Assign to CC Admin') }}</label>
+          <select name="assign_to_cc_admin" class="form-input" style="cursor:pointer">
+            <option value="">{{ t('None Unassigned') }}</option>
+            {% for cca in cc_admin_list %}
+            <option value="{{ cca }}">{{ cca }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <line x1="20" y1="8" x2="20" y2="14"/>
+            <line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+          {{ t('Add User') }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- CC Admin Overview -->
+{% if cc_admin_data %}
+<div class="card anim-fade-up" style="margin-top:24px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--amber)"></div>{{ t('CC Admin Overview') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ t('CC Admin Overview subtitle') }}</span>
+  </div>
+  <div class="card-body" style="padding:0">
+    {% for cca in cc_admin_data %}
+    <div style="border-bottom:1px solid var(--border);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
+        <span style="font-weight:700;color:var(--amber);font-size:13px">{{ cca.username }}</span>
+        <span class="badge badge-high" style="font-size:9px">{{ t('role cc_admin') }}</span>
+        <span style="font-size:11px;color:var(--text-3)">{{ cca.analysts | length }} {{ t('analyst(s)') }}</span>
+      </div>
+
+      {% if cca.analysts %}
+      <div style="overflow-x:auto;margin-bottom:12px">
+        <table class="data-table" style="margin:0">
+          <thead>
+            <tr>
+              <th>{{ t('Analyst') }}</th>
+              <th>{{ t('Last Login') }}</th>
+              <th>{{ t('Actions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in cca.analysts %}
+            <tr>
+              <td style="font-weight:600;color:var(--text-1)">{{ a.username }}</td>
+              <td class="mono" style="font-size:11px;color:var(--text-3)">
+                {% if a.last_login and a.last_login != 'Never' %}
+                  {{ a.last_login[:16].replace('T',' ') }}
+                {% else %}{{ t('Never') }}{% endif %}
+              </td>
+              <td style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+                <!-- Move to another CC Admin -->
+                <form method="POST" action="{{ url_for('admin_move_analyst') }}" style="display:flex;gap:4px;align-items:center">
+                  <input type="hidden" name="username" value="{{ a.username }}">
+                  <select name="new_cc_admin" class="form-input" style="font-size:11px;padding:3px 6px;height:auto;cursor:pointer">
+                    {% for other_cca in cc_admin_list %}
+                      {% if other_cca != cca.username %}
+                    <option value="{{ other_cca }}">{{ other_cca }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-sm"
+                    style="background:rgba(0,212,255,0.08);color:var(--cyan);border:1px solid var(--cyan);padding:3px 8px">{{ t('Move') }}</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_promote_analyst') }}" style="display:inline"
+                      onsubmit="return confirm({{ t('Promote to CC Admin').replace('{user}', a.username) | tojson }})">
+                  <input type="hidden" name="username" value="{{ a.username }}">
+                  <button type="submit" class="btn btn-sm"
+                    style="background:rgba(255,184,0,0.1);color:var(--amber);border:1px solid var(--amber)">{{ t('Promote') }}</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_remove_user') }}" style="display:inline"
+                      onsubmit="return confirm({{ t('Remove analyst confirm').replace('{user}', a.username) | tojson }})">
+                  <input type="hidden" name="username" value="{{ a.username }}">
+                  <button type="submit" class="btn btn-danger btn-sm">{{ t('Remove') }}</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if cca.activity %}
+      <details style="margin-top:4px">
+        <summary style="font-size:11px;color:var(--text-3);cursor:pointer;user-select:none">
+          {{ t('View analyst activity') }} ({{ cca.activity | length }} {{ t('events') }})
+        </summary>
+        <div style="overflow-x:auto;max-height:200px;overflow-y:auto;margin-top:8px">
+          <table class="data-table" style="margin:0">
+            <thead style="position:sticky;top:0;background:var(--bg-2)">
+              <tr><th>{{ t('Timestamp') }}</th><th>{{ t('Analyst') }}</th><th>{{ t('Event') }}</th></tr>
+            </thead>
+            <tbody>
+              {% for ev in cca.activity %}
+              <tr>
+                <td class="mono" style="font-size:10px;color:var(--text-3)">{{ ev.get('timestamp','')[:16].replace('T',' ') }}</td>
+                <td style="font-size:12px;color:var(--cyan)">{{ ev.get('user','') }}</td>
+                <td>
+                  {% if ev.get('action') == 'login' %}
+                  <span class="badge badge-safe" style="font-size:9px">{{ t('LOGIN') }}</span>
+                  {% else %}
+                  <span class="badge" style="font-size:9px;background:rgba(136,153,187,0.15);color:var(--text-3)">{{ t('LOGOUT') }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      {% endif %}
+      {% else %}
+      <div style="font-size:12px;color:var(--text-3);padding:4px 0">{{ t('No analysts assigned') }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<style>
+.pw-wrap { position:relative; }
+.pw-wrap .form-input { padding-right:40px; }
+.pw-eye {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer; color:var(--text-3);
+  padding:4px; display:flex; align-items:center;
+}
+.pw-eye:hover { color:var(--cyan); }
+.pw-strength { margin-top:8px; }
+.pw-strength-bar { height:4px; border-radius:2px; background:rgba(255,255,255,0.08); overflow:hidden; margin-bottom:5px; }
+.pw-strength-fill { height:100%; border-radius:2px; transition:width 0.3s ease, background 0.3s ease; width:0%; }
+.pw-strength-label { font-size:11px; font-weight:600; letter-spacing:.04em; }
+</style>
+<script>
+function toggleCcAdminAssign(role) {
+  document.getElementById('cc-admin-assign').style.display = role === 'analyst' ? '' : 'none';
+}
+toggleCcAdminAssign(document.getElementById('role-select').value);
+
+function adminTogglePw() {
+  var inp = document.getElementById('admin-new-pw');
+  var btn = inp.nextElementSibling;
+  var isHidden = inp.type === 'password';
+  inp.type = isHidden ? 'text' : 'password';
+  btn.innerHTML = isHidden
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+function adminCheckStrength(val) {
+  var box   = document.getElementById('admin-pw-strength');
+  var fill  = document.getElementById('admin-pw-fill');
+  var label = document.getElementById('admin-pw-label');
+  if (!val) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  var score = 0;
+  if (val.length >= 8)  score++;
+  if (val.length >= 12) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  var levels = [
+    { pct:'20%', color:'#ff3e5f', text: {{ t('pw weak')        | tojson }} },
+    { pct:'40%', color:'#ff6b35', text: {{ t('pw fair')        | tojson }} },
+    { pct:'60%', color:'#ffb800', text: {{ t('pw good')        | tojson }} },
+    { pct:'80%', color:'#00d4ff', text: {{ t('pw strong')      | tojson }} },
+    { pct:'100%',color:'#00ff94', text: {{ t('pw very strong') | tojson }} },
+  ];
+  var lvl = levels[Math.min(score, 4)];
+  fill.style.width      = lvl.pct;
+  fill.style.background = lvl.color;
+  label.textContent     = lvl.text;
+  label.style.color     = lvl.color;
+}
+</script>
+{% endblock %}

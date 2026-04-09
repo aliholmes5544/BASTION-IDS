@@ -1,0 +1,27 @@
+{
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 587,
+  "smtp_user": "",
+  "smtp_pass": "",
+  "smtp_to": "",
+  "webhook_url": "",
+  "abuseipdb_key": "",
+  "alert_on_critical": true,
+  "alert_on_high": true,
+  "language": "en",
+  "theme": "dark",
+  "users": {
+    "admin": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+  },
+  "roles": {
+    "admin": "admin"
+  },
+  "managed_by": {},
+  "user_last_login": {},
+  "2fa_secrets": {},
+  "virustotal_key": "",
+  "shodan_key": "",
+  "disabled_users": [],
+  "hcaptcha_site_key": "",
+  "hcaptcha_secret_key": ""
+}

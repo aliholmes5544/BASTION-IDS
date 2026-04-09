@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Playbooks title') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Playbooks title') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('Playbooks title') }}</div>
+  <div class="page-subtitle">{{ t('Playbooks subtitle') }}</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px">
+  {% for attack_type, steps in playbooks.items() %}
+  {% if attack_type != 'BENIGN' %}
+  {% set sev, color, _ = get_severity(attack_type) %}
+  <div class="card anim-fade-up" id="playbook-{{ attack_type | replace(' ', '-') | lower }}">
+    <div class="card-header-custom">
+      <div class="card-title">
+        <div class="card-title-dot" style="background:{{ color }}"></div>
+        {{ attack_type }}
+      </div>
+      <span class="badge badge-{{ sev | lower }}" style="font-size:10px">{{ tsev(sev) }}</span>
+    </div>
+    <div class="card-body">
+      <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--text-2);line-height:1.8">
+        {% for step in steps %}
+        <li style="margin-bottom:4px">{{ step[3:] if step[:2] in ('1.','2.','3.','4.','5.','6.','7.','8.','9.') else step }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endblock %}

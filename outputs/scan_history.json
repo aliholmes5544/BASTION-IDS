@@ -1,0 +1,1310 @@
+[
+  {
+    "scan_id": "20260409_090609_178505",
+    "timestamp": "2026-04-09T09:06:09.541269",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260409_090609_178505.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260409_090330_5ce1a6",
+    "timestamp": "2026-04-09T09:03:30.668000",
+    "filename": "test.csv",
+    "total_flows": 3,
+    "malicious_flows": 0,
+    "benign_flows": 3,
+    "avg_confidence": 91.28,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 3
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260409_090330_5ce1a6.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260409_075838_146a88",
+    "timestamp": "2026-04-09T07:58:40.249289",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260409_075838_146a88.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_165859_393b95",
+    "timestamp": "2026-04-06T16:59:00.336310",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 100,
+    "malicious_flows": 100,
+    "benign_flows": 0,
+    "avg_confidence": 85.0,
+    "threat_breakdown": {
+      "DoS Hulk": 100
+    },
+    "severity_breakdown": {
+      "HIGH": 100
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_165859_393b95.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_165840_71f5b3",
+    "timestamp": "2026-04-06T16:58:42.136107",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_165840_71f5b3.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_165132_226ee5",
+    "timestamp": "2026-04-06T16:51:33.476837",
+    "filename": "3439fc2b352e45632563fb4fedfd6f70.pcap",
+    "total_flows": 10,
+    "malicious_flows": 3,
+    "benign_flows": 7,
+    "avg_confidence": 92.02,
+    "threat_breakdown": {
+      "DoS slowloris": 2,
+      "DoS Slowhttptest": 1
+    },
+    "severity_breakdown": {
+      "SAFE": 7,
+      "MEDIUM": 3
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_165132_226ee5.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_165118_e33c5b",
+    "timestamp": "2026-04-06T16:51:19.133945",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_165118_e33c5b.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_165100_9e0bde",
+    "timestamp": "2026-04-06T16:51:04.414689",
+    "filename": "test_mixed.pcap",
+    "total_flows": 1424,
+    "malicious_flows": 1424,
+    "benign_flows": 0,
+    "avg_confidence": 88.21,
+    "threat_breakdown": {
+      "DDoS": 300,
+      "PortScan": 1024,
+      "DoS Hulk": 100
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300,
+      "MEDIUM": 1024,
+      "HIGH": 100
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_165100_9e0bde.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_165047_2bfbba",
+    "timestamp": "2026-04-06T16:50:48.453110",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 300,
+    "benign_flows": 0,
+    "avg_confidence": 90.0,
+    "threat_breakdown": {
+      "DDoS": 300
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_165047_2bfbba.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_164914_5b0d5e",
+    "timestamp": "2026-04-06T16:49:16.318387",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 100,
+    "malicious_flows": 100,
+    "benign_flows": 0,
+    "avg_confidence": 85.0,
+    "threat_breakdown": {
+      "DoS Hulk": 100
+    },
+    "severity_breakdown": {
+      "HIGH": 100
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_164914_5b0d5e.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_163932_609a1b",
+    "timestamp": "2026-04-06T16:39:34.037342",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_163932_609a1b.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_163651_ec3b46",
+    "timestamp": "2026-04-06T16:36:52.551032",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_163651_ec3b46.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_163216_dfb8db",
+    "timestamp": "2026-04-06T16:32:19.085290",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_163216_dfb8db.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_101700_7111af",
+    "timestamp": "2026-04-06T10:17:02.149379",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_101700_7111af.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_100255_ba3489",
+    "timestamp": "2026-04-06T10:02:56.870049",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 300,
+    "benign_flows": 0,
+    "avg_confidence": 90.0,
+    "threat_breakdown": {
+      "DDoS": 300
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_100255_ba3489.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260406_100241_892179",
+    "timestamp": "2026-04-06T10:02:43.119288",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260406_100241_892179.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260405_095238",
+    "timestamp": "2026-04-05T09:52:40.020285",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 300,
+    "benign_flows": 0,
+    "avg_confidence": 90.0,
+    "threat_breakdown": {
+      "DDoS": 300
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260405_095238.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260405_095158",
+    "timestamp": "2026-04-05T09:51:59.788041",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260405_095158.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260405_071335",
+    "timestamp": "2026-04-05T07:13:35.914652",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 300,
+    "benign_flows": 0,
+    "avg_confidence": 90.0,
+    "threat_breakdown": {
+      "DDoS": 300
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260405_071335.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260405_071237",
+    "timestamp": "2026-04-05T07:12:39.113147",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260405_071237.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_214202",
+    "timestamp": "2026-04-03T21:42:03.944531",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_214202.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_214037",
+    "timestamp": "2026-04-03T21:40:39.193620",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_214037.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_213536",
+    "timestamp": "2026-04-03T21:35:40.520843",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_213536.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_211823",
+    "timestamp": "2026-04-03T21:23:26.664892",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_211823.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_205449",
+    "timestamp": "2026-04-03T20:54:53.873742",
+    "filename": "test_mixed.pcap",
+    "total_flows": 1820,
+    "malicious_flows": 1324,
+    "benign_flows": 496,
+    "avg_confidence": 87.32,
+    "threat_breakdown": {
+      "DDoS": 300,
+      "PortScan": 1024
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300,
+      "MEDIUM": 1024,
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_205449.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_205436",
+    "timestamp": "2026-04-03T20:54:37.546652",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_205436.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_205320",
+    "timestamp": "2026-04-03T20:53:21.422588",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 300,
+    "benign_flows": 0,
+    "avg_confidence": 90.0,
+    "threat_breakdown": {
+      "DDoS": 300
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_205320.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_205237",
+    "timestamp": "2026-04-03T20:52:38.645988",
+    "filename": "test_dos_hulk.pcap",
+    "total_flows": 496,
+    "malicious_flows": 0,
+    "benign_flows": 496,
+    "avg_confidence": 84.29,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 496
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_205237.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_204754",
+    "timestamp": "2026-04-03T20:47:56.686718",
+    "filename": "test_portscan.pcap",
+    "total_flows": 1024,
+    "malicious_flows": 1024,
+    "benign_flows": 0,
+    "avg_confidence": 88.0,
+    "threat_breakdown": {
+      "PortScan": 1024
+    },
+    "severity_breakdown": {
+      "MEDIUM": 1024
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_204754.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_204654",
+    "timestamp": "2026-04-03T20:47:00.419342",
+    "filename": "smallFlows.pcap",
+    "total_flows": 632,
+    "malicious_flows": 250,
+    "benign_flows": 382,
+    "avg_confidence": 91.24,
+    "threat_breakdown": {
+      "DoS slowloris": 150,
+      "PortScan": 16,
+      "DoS Slowhttptest": 84
+    },
+    "severity_breakdown": {
+      "MEDIUM": 250,
+      "SAFE": 382
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_204654.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_204617",
+    "timestamp": "2026-04-03T20:46:19.215412",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_204617.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_191634",
+    "timestamp": "2026-04-03T19:16:35.255944",
+    "filename": "3439fc2b352e45632563fb4fedfd6f70.pcap",
+    "total_flows": 10,
+    "malicious_flows": 3,
+    "benign_flows": 7,
+    "avg_confidence": 92.02,
+    "threat_breakdown": {
+      "DoS slowloris": 2,
+      "DoS Slowhttptest": 1
+    },
+    "severity_breakdown": {
+      "SAFE": 7,
+      "MEDIUM": 3
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_191634.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_191603",
+    "timestamp": "2026-04-03T19:16:04.266629",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 2,
+    "benign_flows": 9,
+    "avg_confidence": 94.05,
+    "threat_breakdown": {
+      "DoS slowloris": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 9,
+      "MEDIUM": 2
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_191603.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_191520",
+    "timestamp": "2026-04-03T19:15:23.471549",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 300,
+    "benign_flows": 0,
+    "avg_confidence": 90.0,
+    "threat_breakdown": {
+      "DDoS": 300
+    },
+    "severity_breakdown": {
+      "CRITICAL": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_191520.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_135847",
+    "timestamp": "2026-04-03T13:58:53.882099",
+    "filename": "test_attacks.csv",
+    "total_flows": 400,
+    "malicious_flows": 400,
+    "benign_flows": 0,
+    "avg_confidence": 99.61,
+    "threat_breakdown": {
+      "DoS Hulk": 50,
+      "DoS GoldenEye": 50,
+      "DDoS": 100,
+      "DoS slowloris": 50,
+      "PortScan": 100,
+      "SSH-Patator": 50
+    },
+    "severity_breakdown": {
+      "HIGH": 150,
+      "CRITICAL": 100,
+      "MEDIUM": 150
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_135847.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_134039",
+    "timestamp": "2026-04-03T13:40:40.172950",
+    "filename": "test_ddos.pcap",
+    "total_flows": 300,
+    "malicious_flows": 0,
+    "benign_flows": 300,
+    "avg_confidence": 95.69,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 300
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_134039.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_133545",
+    "timestamp": "2026-04-03T13:35:46.187546",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 0,
+    "benign_flows": 11,
+    "avg_confidence": 96.46,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 11
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_133545.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_133529",
+    "timestamp": "2026-04-03T13:35:31.501109",
+    "filename": "3439fc2b352e45632563fb4fedfd6f70.pcap",
+    "total_flows": 10,
+    "malicious_flows": 0,
+    "benign_flows": 10,
+    "avg_confidence": 95.93,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 10
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_133529.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_133304",
+    "timestamp": "2026-04-03T13:33:05.513651",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 0,
+    "benign_flows": 11,
+    "avg_confidence": 74.42,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 11
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_133304.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_132850",
+    "timestamp": "2026-04-03T13:28:51.637207",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 0,
+    "benign_flows": 11,
+    "avg_confidence": 87.36,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 11
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_132850.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_132724",
+    "timestamp": "2026-04-03T13:27:25.455207",
+    "filename": "3439fc2b352e45632563fb4fedfd6f70.pcap",
+    "total_flows": 10,
+    "malicious_flows": 0,
+    "benign_flows": 10,
+    "avg_confidence": 87.47,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 10
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_132724.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_132427",
+    "timestamp": "2026-04-03T13:24:29.822170",
+    "filename": "2f429bd5ed5ce816b00a23a17b1ad714.pcap",
+    "total_flows": 11,
+    "malicious_flows": 0,
+    "benign_flows": 11,
+    "avg_confidence": 87.36,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 11
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_132427.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260403_072157",
+    "timestamp": "2026-04-03T08:03:09.317780",
+    "filename": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+    "total_flows": 225745,
+    "malicious_flows": 128177,
+    "benign_flows": 97568,
+    "avg_confidence": 99.85,
+    "threat_breakdown": {
+      "Bot": 140,
+      "Web Attack XSS": 1,
+      "DoS Hulk": 6,
+      "FTP-Patator": 2,
+      "DDoS": 128019,
+      "Web Attack Brute Force": 3,
+      "DoS Slowhttptest": 6
+    },
+    "severity_breakdown": {
+      "SAFE": 97568,
+      "CRITICAL": 128159,
+      "HIGH": 12,
+      "MEDIUM": 6
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260403_072157.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260402_205802",
+    "timestamp": "2026-04-02T21:39:58.559021",
+    "filename": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+    "total_flows": 225745,
+    "malicious_flows": 13422,
+    "benign_flows": 212323,
+    "avg_confidence": 78.24,
+    "threat_breakdown": {
+      "DDoS": 5624,
+      "DoS Hulk": 7797,
+      "DoS Slowhttptest": 1
+    },
+    "severity_breakdown": {
+      "SAFE": 212323,
+      "CRITICAL": 5624,
+      "HIGH": 7797,
+      "MEDIUM": 1
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260402_205802.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260402_164718",
+    "timestamp": "2026-04-02T17:35:48.791797",
+    "filename": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+    "total_flows": 225745,
+    "malicious_flows": 45027,
+    "benign_flows": 180718,
+    "avg_confidence": 76.95,
+    "threat_breakdown": {
+      "DDoS": 44454,
+      "DoS Hulk": 573
+    },
+    "severity_breakdown": {
+      "SAFE": 180718,
+      "CRITICAL": 44454,
+      "HIGH": 573
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260402_164718.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260324_004902",
+    "timestamp": "2026-03-24T00:53:48.252206",
+    "filename": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+    "total_flows": 191033,
+    "malicious_flows": 2325,
+    "benign_flows": 188708,
+    "avg_confidence": 99.11,
+    "threat_breakdown": {
+      "PortScan": 20,
+      "FTP-Patator": 26,
+      "DoS Hulk": 466,
+      "DoS GoldenEye": 227,
+      "Web Attack \ufffd XSS": 239,
+      "DoS Slowhttptest": 27,
+      "Bot": 1256,
+      "DoS slowloris": 14,
+      "SSH-Patator": 48,
+      "Heartbleed": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 188708,
+      "MEDIUM": 61,
+      "HIGH": 767,
+      "UNKNOWN": 239,
+      "CRITICAL": 1258
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260324_004902.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260323_184832",
+    "timestamp": "2026-03-23T18:53:56.676233",
+    "filename": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+    "total_flows": 191033,
+    "malicious_flows": 2325,
+    "benign_flows": 188708,
+    "avg_confidence": 99.11,
+    "threat_breakdown": {
+      "PortScan": 20,
+      "FTP-Patator": 26,
+      "DoS Hulk": 466,
+      "DoS GoldenEye": 227,
+      "Web Attack \ufffd XSS": 239,
+      "DoS Slowhttptest": 27,
+      "Bot": 1256,
+      "DoS slowloris": 14,
+      "SSH-Patator": 48,
+      "Heartbleed": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 188708,
+      "MEDIUM": 61,
+      "HIGH": 767,
+      "UNKNOWN": 239,
+      "CRITICAL": 1258
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260323_184832.csv",
+    "tags": [],
+    "user": "analyst"
+  },
+  {
+    "scan_id": "20260322_012120",
+    "timestamp": "2026-03-22T01:26:32.585891",
+    "filename": "DrDoS_LDAP.csv",
+    "total_flows": 2181542,
+    "malicious_flows": 18,
+    "benign_flows": 2181524,
+    "avg_confidence": 96.9,
+    "threat_breakdown": {
+      "DoS Hulk": 9,
+      "SSH-Patator": 5,
+      "DoS Slowhttptest": 3,
+      "PortScan": 1
+    },
+    "severity_breakdown": {
+      "SAFE": 2181524,
+      "HIGH": 14,
+      "MEDIUM": 4
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260322_012120.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260321_230405_1",
+    "timestamp": "2026-03-21T23:10:01.995764",
+    "filename": "smallFlows.pcap",
+    "total_flows": 632,
+    "malicious_flows": 0,
+    "benign_flows": 632,
+    "avg_confidence": 99.72,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 632
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260321_230405_1.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260321_230405_0",
+    "timestamp": "2026-03-21T23:10:01.546642",
+    "filename": "bigFlows.pcap",
+    "total_flows": 27285,
+    "malicious_flows": 7,
+    "benign_flows": 27278,
+    "avg_confidence": 99.58,
+    "threat_breakdown": {
+      "DoS Slowhttptest": 2,
+      "PortScan": 5
+    },
+    "severity_breakdown": {
+      "SAFE": 27278,
+      "MEDIUM": 7
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260321_230405_0.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260321_230308_1",
+    "timestamp": "2026-03-21T23:07:10.638433",
+    "filename": "smallFlows.pcap",
+    "total_flows": 632,
+    "malicious_flows": 0,
+    "benign_flows": 632,
+    "avg_confidence": 99.72,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 632
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260321_230308_1.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260321_230308_0",
+    "timestamp": "2026-03-21T23:07:04.292184",
+    "filename": "bigFlows.pcap",
+    "total_flows": 27285,
+    "malicious_flows": 7,
+    "benign_flows": 27278,
+    "avg_confidence": 99.58,
+    "threat_breakdown": {
+      "DoS Slowhttptest": 2,
+      "PortScan": 5
+    },
+    "severity_breakdown": {
+      "SAFE": 27278,
+      "MEDIUM": 7
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260321_230308_0.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260321_230437",
+    "timestamp": "2026-03-21T23:04:54.305713",
+    "filename": "smallFlows.pcap",
+    "total_flows": 632,
+    "malicious_flows": 0,
+    "benign_flows": 632,
+    "avg_confidence": 99.72,
+    "threat_breakdown": {},
+    "severity_breakdown": {
+      "SAFE": 632
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260321_230437.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260317_023220",
+    "timestamp": "2026-03-17T02:32:46.407846",
+    "filename": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+    "total_flows": 191033,
+    "malicious_flows": 2067,
+    "benign_flows": 188966,
+    "avg_confidence": 99.48,
+    "threat_breakdown": {
+      "PortScan": 12,
+      "FTP-Patator": 26,
+      "DoS Hulk": 448,
+      "Web Attack \ufffd XSS": 225,
+      "DoS Slowhttptest": 27,
+      "Bot": 1215,
+      "DoS GoldenEye": 59,
+      "DoS slowloris": 10,
+      "SSH-Patator": 43,
+      "Heartbleed": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 188966,
+      "MEDIUM": 49,
+      "HIGH": 576,
+      "UNKNOWN": 225,
+      "CRITICAL": 1217
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260317_023220.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260316_182451",
+    "timestamp": "2026-03-16T18:25:32.236393",
+    "filename": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+    "total_flows": 286467,
+    "malicious_flows": 160051,
+    "benign_flows": 126416,
+    "avg_confidence": 98.61,
+    "threat_breakdown": {
+      "Bot": 611,
+      "DoS Hulk": 370,
+      "DoS Slowhttptest": 17,
+      "FTP-Patator": 21,
+      "Web Attack \ufffd XSS": 232,
+      "SSH-Patator": 311,
+      "PortScan": 158457,
+      "DoS slowloris": 5,
+      "DoS GoldenEye": 27
+    },
+    "severity_breakdown": {
+      "SAFE": 126416,
+      "CRITICAL": 611,
+      "HIGH": 729,
+      "MEDIUM": 158479,
+      "UNKNOWN": 232
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260316_182451.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260315_021347",
+    "timestamp": "2026-03-15T02:14:24.874132",
+    "filename": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+    "total_flows": 191033,
+    "malicious_flows": 2067,
+    "benign_flows": 188966,
+    "avg_confidence": 99.48,
+    "threat_breakdown": {
+      "PortScan": 12,
+      "FTP-Patator": 26,
+      "DoS Hulk": 448,
+      "Web Attack \ufffd XSS": 225,
+      "DoS Slowhttptest": 27,
+      "Bot": 1215,
+      "DoS GoldenEye": 59,
+      "DoS slowloris": 10,
+      "SSH-Patator": 43,
+      "Heartbleed": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 188966,
+      "MEDIUM": 49,
+      "HIGH": 576,
+      "UNKNOWN": 225,
+      "CRITICAL": 1217
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260315_021347.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260314_024554",
+    "timestamp": "2026-03-14T03:09:42.292217",
+    "filename": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+    "total_flows": 225745,
+    "malicious_flows": 35762,
+    "benign_flows": 189983,
+    "avg_confidence": 93.28,
+    "threat_breakdown": {
+      "DoS Hulk": 335,
+      "Bot": 183,
+      "SSH-Patator": 10,
+      "DoS GoldenEye": 9,
+      "Web Attack \ufffd XSS": 250,
+      "FTP-Patator": 15,
+      "PortScan": 4,
+      "DoS Slowhttptest": 14,
+      "DDoS": 34932,
+      "DoS slowloris": 10
+    },
+    "severity_breakdown": {
+      "SAFE": 189983,
+      "HIGH": 369,
+      "CRITICAL": 35115,
+      "UNKNOWN": 250,
+      "MEDIUM": 28
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260314_024554.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260314_022422",
+    "timestamp": "2026-03-14T02:25:49.882187",
+    "filename": "Wednesday-workingHours.pcap_ISCX.csv",
+    "total_flows": 692703,
+    "malicious_flows": 180277,
+    "benign_flows": 512426,
+    "avg_confidence": 97.81,
+    "threat_breakdown": {
+      "DoS Hulk": 158261,
+      "FTP-Patator": 69,
+      "Heartbleed": 13,
+      "PortScan": 142,
+      "DoS Slowhttptest": 5243,
+      "SSH-Patator": 342,
+      "DoS GoldenEye": 9844,
+      "Web Attack \ufffd XSS": 966,
+      "Bot": 15,
+      "DoS slowloris": 5382
+    },
+    "severity_breakdown": {
+      "SAFE": 512426,
+      "HIGH": 168516,
+      "CRITICAL": 28,
+      "MEDIUM": 10767,
+      "UNKNOWN": 966
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260314_022422.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260314_021809",
+    "timestamp": "2026-03-14T02:18:38.947516",
+    "filename": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+    "total_flows": 286467,
+    "malicious_flows": 160051,
+    "benign_flows": 126416,
+    "avg_confidence": 98.61,
+    "threat_breakdown": {
+      "Bot": 611,
+      "DoS Hulk": 370,
+      "DoS Slowhttptest": 17,
+      "FTP-Patator": 21,
+      "Web Attack \ufffd XSS": 232,
+      "SSH-Patator": 311,
+      "PortScan": 158457,
+      "DoS slowloris": 5,
+      "DoS GoldenEye": 27
+    },
+    "severity_breakdown": {
+      "SAFE": 126416,
+      "CRITICAL": 611,
+      "HIGH": 729,
+      "MEDIUM": 158479,
+      "UNKNOWN": 232
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260314_021809.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260314_020545",
+    "timestamp": "2026-03-14T02:06:11.996714",
+    "filename": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+    "total_flows": 225745,
+    "malicious_flows": 225745,
+    "benign_flows": 0,
+    "avg_confidence": 93.28,
+    "threat_breakdown": {
+      "Benign": 189983,
+      "DoS Hulk": 335,
+      "Bot": 183,
+      "SSH-Patator": 10,
+      "DoS GoldenEye": 9,
+      "Web Attack \ufffd XSS": 250,
+      "FTP-Patator": 15,
+      "PortScan": 4,
+      "DoS Slowhttptest": 14,
+      "DDoS": 34932,
+      "DoS slowloris": 10
+    },
+    "severity_breakdown": {
+      "SAFE": 189983,
+      "HIGH": 344,
+      "CRITICAL": 35115,
+      "UNKNOWN": 275,
+      "MEDIUM": 28
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260314_020545.csv",
+    "tags": [],
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260313_024943",
+    "timestamp": "2026-03-13T02:50:07.220399",
+    "filename": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+    "total_flows": 225745,
+    "malicious_flows": 225745,
+    "benign_flows": 0,
+    "avg_confidence": 93.28,
+    "threat_breakdown": {
+      "Benign": 189983,
+      "DoS Hulk": 335,
+      "Bot": 183,
+      "SSH-Patator": 10,
+      "DoS GoldenEye": 9,
+      "Web Attack \ufffd XSS": 250,
+      "FTP-Patator": 15,
+      "PortScan": 4,
+      "DoS Slowhttptest": 14,
+      "DDoS": 34932,
+      "DoS slowloris": 10
+    },
+    "severity_breakdown": {
+      "SAFE": 189983,
+      "HIGH": 344,
+      "CRITICAL": 35115,
+      "UNKNOWN": 275,
+      "MEDIUM": 28
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260313_024943.csv",
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260313_024723",
+    "timestamp": "2026-03-13T02:47:23.719524",
+    "filename": "test.csv",
+    "total_flows": 50,
+    "malicious_flows": 50,
+    "benign_flows": 0,
+    "avg_confidence": 97.07,
+    "threat_breakdown": {
+      "Benign": 47,
+      "Bot": 2,
+      "DoS Hulk": 1
+    },
+    "severity_breakdown": {
+      "SAFE": 47,
+      "CRITICAL": 2,
+      "HIGH": 1
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260313_024723.csv",
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260313_022743",
+    "timestamp": "2026-03-13T02:27:43.992630",
+    "filename": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+    "total_flows": 191033,
+    "malicious_flows": 191033,
+    "benign_flows": 0,
+    "avg_confidence": 99.48,
+    "threat_breakdown": {
+      "Benign": 188966,
+      "PortScan": 12,
+      "FTP-Patator": 26,
+      "DoS Hulk": 448,
+      "Web Attack \ufffd XSS": 225,
+      "DoS Slowhttptest": 27,
+      "Bot": 1215,
+      "DoS GoldenEye": 59,
+      "DoS slowloris": 10,
+      "SSH-Patator": 43,
+      "Heartbleed": 2
+    },
+    "severity_breakdown": {
+      "SAFE": 188966,
+      "MEDIUM": 49,
+      "UNKNOWN": 294,
+      "HIGH": 507,
+      "CRITICAL": 1217
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260313_022743.csv",
+    "user": "admin"
+  },
+  {
+    "scan_id": "20260313_022553",
+    "timestamp": "2026-03-13T02:25:53.065259",
+    "filename": "test.csv",
+    "total_flows": 20,
+    "malicious_flows": 20,
+    "benign_flows": 0,
+    "avg_confidence": 95.29,
+    "threat_breakdown": {
+      "Benign": 17,
+      "Bot": 2,
+      "DoS Hulk": 1
+    },
+    "severity_breakdown": {
+      "SAFE": 17,
+      "CRITICAL": 2,
+      "HIGH": 1
+    },
+    "flows_file": "C:\\Users\\dohaq\\OneDrive\\Desktop\\claude code\\BASTION IDS\\outputs\\flows\\scan_20260313_022553.csv",
+    "user": "admin"
+  }
+]

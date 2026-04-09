@@ -1,0 +1,1184 @@
+[
+  {
+    "id": "ccbafeba",
+    "title": "DDOS",
+    "description": "DDOS",
+    "scan_ids": [],
+    "status": "pending_admin_close",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-31T07:33:32.309819",
+    "notes": [],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "cc_admin01",
+      "analyst01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2026-03-31T07:43:43.689786",
+    "returned_by": "cc_admin01",
+    "returned_at": "2026-03-31T07:36:54.918112",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-03-31T07:52:47.520549",
+    "returned_by_admin": "admin",
+    "returned_by_admin_at": "2026-03-31T07:52:07.393528",
+    "returned_to_cc": "cc_admin01"
+  },
+  {
+    "id": "701b2f96",
+    "title": "scan",
+    "description": "",
+    "scan_ids": [],
+    "status": "open",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-26T19:13:42.419267",
+    "notes": [],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "cc_admin01",
+      "analyst01"
+    ]
+  },
+  {
+    "id": "edca8f45",
+    "title": "scan",
+    "description": "scan",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-26T19:05:04.083590",
+    "notes": [],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2026-03-26T19:06:51.773949",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-03-26T19:07:20.453608",
+    "closed_at": "2026-03-26T19:07:20.453608",
+    "seen_by": [
+      "admin"
+    ],
+    "archived": true
+  },
+  {
+    "id": "67dd12c7",
+    "title": "scan",
+    "description": "scan this file",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-26T18:43:03.233429",
+    "notes": [
+      {
+        "ts": "2026-03-26T18:44:03.970690",
+        "user": "admin",
+        "text": "scan"
+      },
+      {
+        "ts": "2026-03-26T18:44:19.562615",
+        "user": "admin",
+        "text": "",
+        "attachment": "1774539859_example_2.docx"
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [
+      "Friday-WorkingHours-Morning.pcap_ISCX.csv"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2026-03-26T18:46:41.095093",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-03-26T18:53:07.069459",
+    "closed_at": "2026-03-26T18:53:07.069459",
+    "archived": true
+  },
+  {
+    "id": "313051fc",
+    "title": "botnet",
+    "description": "botnet",
+    "scan_ids": [],
+    "status": "open",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst01",
+      "cc_admin01"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-25T16:54:11.933509",
+    "notes": [],
+    "sla_hours": 24.0
+  },
+  {
+    "id": "9036a24f",
+    "title": "attAack",
+    "description": "gjb",
+    "scan_ids": [],
+    "status": "open",
+    "priority": "Low",
+    "assigned_to": [
+      "analyst02"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-25T10:53:27.039095",
+    "notes": [],
+    "sla_hours": 24.0
+  },
+  {
+    "id": "d9e6a92f",
+    "title": "sql",
+    "description": "sql injaction",
+    "scan_ids": [],
+    "status": "open",
+    "priority": "High",
+    "assigned_to": [
+      "analyst09a"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-25T07:12:48.507425",
+    "notes": [],
+    "sla_hours": 1.0
+  },
+  {
+    "id": "7f02d219",
+    "title": "dos",
+    "description": "attack",
+    "scan_ids": [],
+    "status": "open",
+    "priority": "Medium",
+    "assigned_to": [
+      "cc_admin01",
+      "cc_admin02"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-23T17:21:08.522819",
+    "notes": [],
+    "sla_hours": 24.0,
+    "seen_by": [
+      "admin"
+    ]
+  },
+  {
+    "id": "62ee3e93",
+    "title": "bot",
+    "description": "attack",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2026-03-23T13:06:58.824516",
+    "notes": [
+      {
+        "ts": "2026-03-23T13:07:11.147161",
+        "user": "admin",
+        "text": "make scan"
+      },
+      {
+        "ts": "2026-03-23T13:07:40.185175",
+        "user": "analyst01",
+        "text": "ok"
+      }
+    ],
+    "sla_hours": 24.0,
+    "closed_at": "2026-03-23T15:30:00.000000",
+    "archived": true
+  },
+  {
+    "id": "0ed5ee27",
+    "title": "DDOS",
+    "description": "",
+    "scan_ids": [],
+    "status": "closed",
+    "analyst": "admin",
+    "created": "2026-03-14T03:08:03.325972",
+    "notes": [
+      {
+        "ts": "2026-03-19T02:23:22.241871",
+        "user": "analyst01",
+        "text": "ok"
+      }
+    ],
+    "assigned_to": [
+      "analyst01"
+    ],
+    "priority": "Medium",
+    "sla_hours": 24.0,
+    "closed_at": "2026-03-19T10:00:00.000000",
+    "seen_by": [
+      "admin"
+    ],
+    "archived": true
+  },
+  {
+    "id": "arc_feb26_01",
+    "title": "Zero-Day Vulnerability Response",
+    "description": "Critical zero-day in Apache web server actively exploited in the wild. Multiple internal servers potentially affected.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01",
+      "analyst02"
+    ],
+    "analyst": "admin",
+    "created": "2026-02-03T08:15:00.000000",
+    "notes": [
+      {
+        "ts": "2026-02-03T09:00:00.000000",
+        "user": "analyst01",
+        "text": "Confirmed exploitation attempts on 3 servers. Patching in progress."
+      },
+      {
+        "ts": "2026-02-05T14:22:00.000000",
+        "user": "analyst02",
+        "text": "All servers patched. No evidence of successful breach."
+      },
+      {
+        "ts": "2026-02-06T10:00:00.000000",
+        "user": "cc_admin01",
+        "text": "Reviewed. Good containment. Case ready for closure."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "analyst02",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2026-02-06T08:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-02-06T11:00:00.000000",
+    "closed_at": "2026-02-07T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_feb26_02",
+    "title": "Credential Stuffing Attack",
+    "description": "Large-scale credential stuffing attack against the VPN gateway. 1,200 failed login attempts from 48 unique IPs.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst03"
+    ],
+    "analyst": "admin",
+    "created": "2026-02-14T11:30:00.000000",
+    "notes": [
+      {
+        "ts": "2026-02-14T12:00:00.000000",
+        "user": "analyst03",
+        "text": "IPs blocked at firewall. MFA enforcement initiated on VPN."
+      },
+      {
+        "ts": "2026-02-16T09:15:00.000000",
+        "user": "analyst03",
+        "text": "No successful logins confirmed. Incident contained."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst03",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst03",
+    "analyst_closed_at": "2026-02-16T10:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-02-17T08:30:00.000000",
+    "closed_at": "2026-02-18T10:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jan26_01",
+    "title": "New Year Botnet Campaign",
+    "description": "Coordinated botnet activity detected across multiple network segments. C2 communication to external IPs identified.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01",
+      "analyst04"
+    ],
+    "analyst": "admin",
+    "created": "2026-01-02T07:45:00.000000",
+    "notes": [
+      {
+        "ts": "2026-01-02T08:30:00.000000",
+        "user": "analyst01",
+        "text": "C2 IPs blocked. 14 infected endpoints identified and quarantined."
+      },
+      {
+        "ts": "2026-01-04T11:00:00.000000",
+        "user": "analyst04",
+        "text": "Malware removed from all affected endpoints. Systems clean."
+      },
+      {
+        "ts": "2026-01-05T09:00:00.000000",
+        "user": "cc_admin01",
+        "text": "Full remediation confirmed. Excellent response time."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "analyst04",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2026-01-05T08:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-01-05T10:00:00.000000",
+    "closed_at": "2026-01-06T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jan26_02",
+    "title": "Critical Infrastructure Alert",
+    "description": "Unusual traffic patterns targeting SCADA systems. Potential state-sponsored activity suspected.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst02"
+    ],
+    "analyst": "admin",
+    "created": "2026-01-19T14:00:00.000000",
+    "notes": [
+      {
+        "ts": "2026-01-19T15:00:00.000000",
+        "user": "analyst02",
+        "text": "Traffic isolated. No evidence of SCADA system compromise."
+      },
+      {
+        "ts": "2026-01-20T10:30:00.000000",
+        "user": "cc_admin02",
+        "text": "Reviewed. Recommend enhanced monitoring on SCADA segment."
+      }
+    ],
+    "sla_hours": 12.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst02",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst02",
+    "analyst_closed_at": "2026-01-20T09:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2026-01-20T11:00:00.000000",
+    "closed_at": "2026-01-21T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_dec25_01",
+    "title": "Holiday Season DDoS Campaign",
+    "description": "Volumetric DDoS attack during peak holiday period. Targeted e-commerce and customer portals.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01",
+      "analyst03"
+    ],
+    "analyst": "admin",
+    "created": "2025-12-24T02:15:00.000000",
+    "notes": [
+      {
+        "ts": "2025-12-24T03:00:00.000000",
+        "user": "analyst01",
+        "text": "DDoS mitigation activated. Traffic scrubbing engaged."
+      },
+      {
+        "ts": "2025-12-24T06:30:00.000000",
+        "user": "analyst03",
+        "text": "Attack subsided. Services restored. Peak traffic: 42 Gbps."
+      },
+      {
+        "ts": "2025-12-26T09:00:00.000000",
+        "user": "cc_admin01",
+        "text": "Post-incident review complete. Recommend upgrading DDoS protection tier."
+      }
+    ],
+    "sla_hours": 4.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "analyst03",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-12-26T08:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-12-26T10:00:00.000000",
+    "closed_at": "2025-12-27T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_dec25_02",
+    "title": "Year-End Audit \u00e2\u20ac\u201d Unauthorized Access Attempt",
+    "description": "Multiple unauthorized access attempts on financial systems during year-end audit period. Possible insider threat.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst05"
+    ],
+    "analyst": "admin",
+    "created": "2025-12-30T10:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-12-30T11:00:00.000000",
+        "user": "analyst05",
+        "text": "Access logs reviewed. Attempts from 2 contractor accounts. Accounts suspended."
+      },
+      {
+        "ts": "2025-12-31T14:00:00.000000",
+        "user": "analyst05",
+        "text": "Investigation complete. No data exfiltration confirmed."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst05",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst05",
+    "analyst_closed_at": "2025-12-31T15:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2026-01-02T08:00:00.000000",
+    "closed_at": "2026-01-02T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_nov25_01",
+    "title": "Password Spraying Attack",
+    "description": "Systematic password spraying targeting Office 365 accounts. Over 2,000 accounts targeted from rotating proxy IPs.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst02"
+    ],
+    "analyst": "admin",
+    "created": "2025-11-08T09:30:00.000000",
+    "notes": [
+      {
+        "ts": "2025-11-08T10:15:00.000000",
+        "user": "analyst02",
+        "text": "Conditional access policies updated. 12 compromised accounts reset."
+      },
+      {
+        "ts": "2025-11-10T14:00:00.000000",
+        "user": "analyst02",
+        "text": "All affected accounts secured. MFA enforced org-wide."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst02",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst02",
+    "analyst_closed_at": "2025-11-10T15:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-11-11T09:00:00.000000",
+    "closed_at": "2025-11-12T10:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_oct25_01",
+    "title": "Cryptocurrency Miner Detected",
+    "description": "Unauthorized cryptomining malware found on 8 production servers. High CPU usage triggered alert.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst04"
+    ],
+    "analyst": "admin",
+    "created": "2025-10-05T13:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-10-05T14:00:00.000000",
+        "user": "analyst04",
+        "text": "Miner process identified and killed. Persistence mechanisms removed."
+      },
+      {
+        "ts": "2025-10-07T10:00:00.000000",
+        "user": "analyst04",
+        "text": "Systems clean. Entry vector: unpatched SSH vulnerability. Patched."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst04",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst04",
+    "analyst_closed_at": "2025-10-07T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-10-08T09:00:00.000000",
+    "closed_at": "2025-10-09T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_oct25_02",
+    "title": "Network Reconnaissance Campaign",
+    "description": "Sustained port scanning and service enumeration targeting DMZ from external IP range. Possible pre-attack reconnaissance.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2025-10-21T16:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-10-21T17:00:00.000000",
+        "user": "analyst01",
+        "text": "IP range blocked at perimeter firewall. Honeypot deployed."
+      },
+      {
+        "ts": "2025-10-23T09:00:00.000000",
+        "user": "analyst01",
+        "text": "No further activity. Honeypot shows no follow-up intrusion attempts."
+      }
+    ],
+    "sla_hours": 48.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-10-23T10:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-10-24T08:00:00.000000",
+    "closed_at": "2025-10-25T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_sep25_01",
+    "title": "Advanced Persistent Threat \u00e2\u20ac\u201d APT29",
+    "description": "Indicators of compromise matching APT29 TTPs detected. Spear-phishing emails and lateral movement observed.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01",
+      "analyst05"
+    ],
+    "analyst": "admin",
+    "created": "2025-09-11T08:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-09-11T09:30:00.000000",
+        "user": "analyst01",
+        "text": "4 endpoints isolated. Forensic imaging in progress."
+      },
+      {
+        "ts": "2025-09-13T14:00:00.000000",
+        "user": "analyst05",
+        "text": "Lateral movement contained to 2 subnets. No data exfil confirmed."
+      },
+      {
+        "ts": "2025-09-15T10:00:00.000000",
+        "user": "analyst01",
+        "text": "Full remediation complete. IOCs shared with ISAC."
+      },
+      {
+        "ts": "2025-09-16T09:00:00.000000",
+        "user": "cc_admin01",
+        "text": "Excellent response. Recommend threat intel report for leadership."
+      }
+    ],
+    "sla_hours": 8.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "analyst05",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-09-16T08:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-09-16T10:00:00.000000",
+    "closed_at": "2025-09-17T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_aug25_01",
+    "title": "C2 Communication Detected",
+    "description": "Beaconing traffic to known C2 infrastructure on port 443. Compromised endpoint communicating every 60 seconds.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst03"
+    ],
+    "analyst": "admin",
+    "created": "2025-08-07T11:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-08-07T12:00:00.000000",
+        "user": "analyst03",
+        "text": "Host isolated. Sinkholed C2 domain. Malware sample sent to sandbox."
+      },
+      {
+        "ts": "2025-08-09T10:00:00.000000",
+        "user": "analyst03",
+        "text": "Malware: Cobalt Strike beacon. No additional infected hosts found."
+      }
+    ],
+    "sla_hours": 12.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst03",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst03",
+    "analyst_closed_at": "2025-08-09T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-08-10T09:00:00.000000",
+    "closed_at": "2025-08-11T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_aug25_02",
+    "title": "Credential Stuffing \u00e2\u20ac\u201d Customer Portal",
+    "description": "120,000 credential stuffing attempts against customer login portal. 340 accounts successfully compromised.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst02",
+      "analyst04"
+    ],
+    "analyst": "admin",
+    "created": "2025-08-19T15:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-08-19T16:00:00.000000",
+        "user": "analyst02",
+        "text": "340 accounts locked and owners notified. CAPTCHA enforcement enabled."
+      },
+      {
+        "ts": "2025-08-21T10:00:00.000000",
+        "user": "analyst04",
+        "text": "Breach notifications sent per regulations. Rate limiting enhanced."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst02",
+      "analyst04",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst02",
+    "analyst_closed_at": "2025-08-21T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-08-22T09:00:00.000000",
+    "closed_at": "2025-08-23T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jul25_01",
+    "title": "Zero-Day Exploit Attempt \u00e2\u20ac\u201d Citrix",
+    "description": "Exploitation attempts against CVE-2025-0001 (Citrix). Multiple external sources probing vulnerable endpoint.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2025-07-03T09:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-07-03T10:00:00.000000",
+        "user": "analyst01",
+        "text": "Citrix endpoint taken offline. Emergency patch applied."
+      },
+      {
+        "ts": "2025-07-04T14:00:00.000000",
+        "user": "analyst01",
+        "text": "System back online. No evidence of successful exploitation."
+      }
+    ],
+    "sla_hours": 8.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-07-04T15:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-07-05T09:00:00.000000",
+    "closed_at": "2025-07-06T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jul25_02",
+    "title": "Supply Chain Alert \u00e2\u20ac\u201d Third-Party Library",
+    "description": "Malicious code found in widely-used npm package (v3.2.1). 6 internal applications using affected version.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst05"
+    ],
+    "analyst": "admin",
+    "created": "2025-07-18T13:30:00.000000",
+    "notes": [
+      {
+        "ts": "2025-07-18T14:30:00.000000",
+        "user": "analyst05",
+        "text": "All 6 applications updated to safe version 3.2.2."
+      },
+      {
+        "ts": "2025-07-20T10:00:00.000000",
+        "user": "analyst05",
+        "text": "Code audit complete. No malicious execution detected in logs."
+      }
+    ],
+    "sla_hours": 48.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst05",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst05",
+    "analyst_closed_at": "2025-07-20T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-07-21T09:00:00.000000",
+    "closed_at": "2025-07-22T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jun25_01",
+    "title": "Data Exfiltration Attempt",
+    "description": "Large outbound data transfer detected \u00e2\u20ac\u201d 8 GB to external cloud storage. Insider threat suspected.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst03",
+      "analyst04"
+    ],
+    "analyst": "admin",
+    "created": "2025-06-14T10:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-06-14T11:00:00.000000",
+        "user": "analyst03",
+        "text": "Transfer blocked. Source: developer workstation. Account suspended."
+      },
+      {
+        "ts": "2025-06-16T14:00:00.000000",
+        "user": "analyst04",
+        "text": "Forensic review: proprietary source code transferred. Legal notified."
+      },
+      {
+        "ts": "2025-06-18T10:00:00.000000",
+        "user": "cc_admin01",
+        "text": "HR and Legal involved. Criminal referral under consideration."
+      }
+    ],
+    "sla_hours": 8.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst03",
+      "analyst04",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst03",
+    "analyst_closed_at": "2025-06-18T09:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-06-18T11:00:00.000000",
+    "closed_at": "2025-06-19T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_may25_01",
+    "title": "Insider Threat Incident",
+    "description": "Departing employee accessing sensitive HR and financial records outside working hours over a 3-week period.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2025-05-06T09:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-05-06T10:30:00.000000",
+        "user": "analyst01",
+        "text": "Access logs confirm 47 unauthorized file accesses. Account terminated."
+      },
+      {
+        "ts": "2025-05-08T14:00:00.000000",
+        "user": "analyst01",
+        "text": "HR and legal informed. DLP policies updated."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-05-08T15:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-05-09T09:00:00.000000",
+    "closed_at": "2025-05-10T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_may25_02",
+    "title": "Web Application Attack \u00e2\u20ac\u201d SQLi/XSS",
+    "description": "Automated SQL injection and XSS probes against public-facing web app. WAF blocked 99.8% of attempts.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst02"
+    ],
+    "analyst": "admin",
+    "created": "2025-05-22T14:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-05-22T15:00:00.000000",
+        "user": "analyst02",
+        "text": "WAF rules tuned. Source IPs blacklisted. No successful injection confirmed."
+      }
+    ],
+    "sla_hours": 48.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst02",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst02",
+    "analyst_closed_at": "2025-05-24T10:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-05-25T09:00:00.000000",
+    "closed_at": "2025-05-26T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_apr25_01",
+    "title": "Phishing Campaign \u00e2\u20ac\u201d Executive Impersonation",
+    "description": "Targeted spear-phishing campaign impersonating the CEO. 12 employees targeted, 3 clicked. Credential harvesting attempted.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst04"
+    ],
+    "analyst": "admin",
+    "created": "2025-04-10T08:30:00.000000",
+    "notes": [
+      {
+        "ts": "2025-04-10T09:30:00.000000",
+        "user": "analyst04",
+        "text": "3 compromised accounts reset. Phishing domain taken down."
+      },
+      {
+        "ts": "2025-04-11T14:00:00.000000",
+        "user": "analyst04",
+        "text": "Awareness training issued to all staff. DMARC enforcement tightened."
+      }
+    ],
+    "sla_hours": 12.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst04",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst04",
+    "analyst_closed_at": "2025-04-11T15:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-04-12T09:00:00.000000",
+    "closed_at": "2025-04-13T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_mar25_01",
+    "title": "Botnet Activity \u00e2\u20ac\u201d Mirai Variant",
+    "description": "Mirai botnet variant detected on IoT devices. 23 devices recruited into botnet pool.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Medium",
+    "assigned_to": [
+      "analyst05"
+    ],
+    "analyst": "admin",
+    "created": "2025-03-05T11:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-03-05T12:30:00.000000",
+        "user": "analyst05",
+        "text": "23 IoT devices factory-reset and segmented to dedicated VLAN."
+      },
+      {
+        "ts": "2025-03-07T10:00:00.000000",
+        "user": "analyst05",
+        "text": "Firmware updated across all IoT devices. Default credentials changed."
+      }
+    ],
+    "sla_hours": 48.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst05",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst05",
+    "analyst_closed_at": "2025-03-07T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-03-08T09:00:00.000000",
+    "closed_at": "2025-03-09T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_mar25_02",
+    "title": "Port Scan Analysis \u00e2\u20ac\u201d Pre-attack Footprinting",
+    "description": "Systematic port scanning of entire IP range from 3 external sources. Stealth scan techniques used to evade detection.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Low",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2025-03-19T14:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-03-19T15:00:00.000000",
+        "user": "analyst01",
+        "text": "Source IPs geo-blocked. Firewall rules updated. No follow-up attack observed."
+      }
+    ],
+    "sla_hours": 72.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-03-21T10:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-03-22T09:00:00.000000",
+    "closed_at": "2025-03-23T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_feb25_01",
+    "title": "Brute Force Campaign \u00e2\u20ac\u201d SSH",
+    "description": "Sustained brute-force attack against SSH on 12 internet-facing servers. 800,000 attempts over 72 hours.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst03"
+    ],
+    "analyst": "admin",
+    "created": "2025-02-08T06:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-02-08T07:00:00.000000",
+        "user": "analyst03",
+        "text": "Fail2ban tuned. SSH moved to non-standard port. Key-only auth enforced."
+      },
+      {
+        "ts": "2025-02-09T10:00:00.000000",
+        "user": "analyst03",
+        "text": "Attack stopped. No successful logins. VPN required for SSH access."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst03",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst03",
+    "analyst_closed_at": "2025-02-09T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-02-10T09:00:00.000000",
+    "closed_at": "2025-02-11T08:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_feb25_02",
+    "title": "Ransomware Attempt \u00e2\u20ac\u201d Blocked",
+    "description": "Ransomware execution attempt intercepted by EDR on 2 endpoints. Payload: LockBit 3.0 variant.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst02",
+      "analyst03"
+    ],
+    "analyst": "admin",
+    "created": "2025-02-21T09:30:00.000000",
+    "notes": [
+      {
+        "ts": "2025-02-21T10:30:00.000000",
+        "user": "analyst02",
+        "text": "EDR blocked execution. Endpoints isolated and reimaged."
+      },
+      {
+        "ts": "2025-02-22T14:00:00.000000",
+        "user": "analyst03",
+        "text": "Entry vector: malicious email attachment. Email filter updated."
+      },
+      {
+        "ts": "2025-02-24T09:00:00.000000",
+        "user": "cc_admin01",
+        "text": "Full remediation confirmed. No encryption occurred. Well handled."
+      }
+    ],
+    "sla_hours": 8.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst02",
+      "analyst03",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst02",
+    "analyst_closed_at": "2025-02-24T08:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-02-24T10:00:00.000000",
+    "closed_at": "2025-02-25T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jan25_01",
+    "title": "DDoS Attack on Web Server",
+    "description": "Volumetric DDoS attack targeting ports 80 and 443. Peak traffic: 28 Gbps from 3 distinct botnets.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "Critical",
+    "assigned_to": [
+      "analyst01"
+    ],
+    "analyst": "admin",
+    "created": "2025-01-05T09:15:00.000000",
+    "notes": [
+      {
+        "ts": "2025-01-05T10:00:00.000000",
+        "user": "analyst01",
+        "text": "CDN-level mitigation activated. Traffic scrubbing engaged across 3 PoPs."
+      },
+      {
+        "ts": "2025-01-07T08:00:00.000000",
+        "user": "analyst01",
+        "text": "Attack resolved. Services stable. Post-incident report drafted."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst01",
+      "cc_admin01"
+    ],
+    "closed_by_analyst": "analyst01",
+    "analyst_closed_at": "2025-01-07T09:00:00.000000",
+    "closed_by_cc_admin": "cc_admin01",
+    "cc_closed_at": "2025-01-07T11:00:00.000000",
+    "closed_at": "2025-01-08T09:00:00.000000",
+    "archived": true
+  },
+  {
+    "id": "arc_jan25_02",
+    "title": "SQL Injection \u00e2\u20ac\u201d Production Database",
+    "description": "Automated SQL injection attack against production login endpoint. Blind SQLi technique used to enumerate tables.",
+    "scan_ids": [],
+    "status": "closed",
+    "priority": "High",
+    "assigned_to": [
+      "analyst04"
+    ],
+    "analyst": "admin",
+    "created": "2025-01-20T14:00:00.000000",
+    "notes": [
+      {
+        "ts": "2025-01-20T15:00:00.000000",
+        "user": "analyst04",
+        "text": "Vulnerable endpoint patched. Parameterized queries enforced. WAF updated."
+      },
+      {
+        "ts": "2025-01-22T10:00:00.000000",
+        "user": "analyst04",
+        "text": "DB audit: no data extracted. Attack signatures added to WAF ruleset."
+      }
+    ],
+    "sla_hours": 24.0,
+    "attachments": [],
+    "seen_by": [
+      "admin",
+      "analyst04",
+      "cc_admin02"
+    ],
+    "closed_by_analyst": "analyst04",
+    "analyst_closed_at": "2025-01-22T11:00:00.000000",
+    "closed_by_cc_admin": "cc_admin02",
+    "cc_closed_at": "2025-01-23T09:00:00.000000",
+    "closed_at": "2025-01-24T08:00:00.000000",
+    "archived": true
+  }
+]

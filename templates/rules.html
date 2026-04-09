@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Alert Rules title') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Alert Rules title') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up" style="display:flex;align-items:center;justify-content:space-between">
+  <div>
+    <h1 class="page-title">{{ t('Alert Rules title') }}</h1>
+    <p class="page-subtitle">{{ t('Alert Rules subtitle') }}</p>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-rule-modal').style.display='flex'">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    {{ t('New Rule') }}
+  </button>
+</div>
+
+{% if rules %}
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Rules card') }} ({{ rules | length }})</div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>{{ t('Name th') }}</th>
+          <th>{{ t('Condition th') }}</th>
+          <th>{{ t('Action') }}</th>
+          <th>{{ t('Status') }}</th>
+          <th>{{ t('Created') }}</th>
+          <th>{{ t('Actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rules %}
+        <tr>
+          <td style="font-weight:600;color:var(--text-1)">{{ r.name }}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-2)">{{ r.condition }}</td>
+          <td>
+            <span class="badge badge-medium">
+              {% if r.action == 'email' %}{{ t('Email option') }}
+              {% elif r.action == 'webhook' %}{{ t('Webhook option') }}
+              {% elif r.action == 'both' %}{{ t('Both option') }}
+              {% else %}{{ r.action }}{% endif %}
+            </span>
+          </td>
+          <td>
+            <span class="badge {% if r.enabled %}badge-safe{% else %}badge-high{% endif %}">
+              {{ t('Enabled') if r.enabled else t('Disabled') }}
+            </span>
+          </td>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">
+            {{ r.created_at[:10] if r.created_at else '—' }}
+          </td>
+          <td style="display:flex;gap:6px">
+            <form method="POST" action="{{ url_for('alert_rules') }}" style="display:inline">
+              <input type="hidden" name="action" value="toggle">
+              <input type="hidden" name="rule_id" value="{{ r.id }}">
+              <button type="submit" class="btn btn-secondary btn-sm">
+                {{ t('Disable') if r.enabled else t('Enable') }}
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('alert_rules') }}" style="display:inline"
+                  onsubmit="return confirm({{ t('Delete rule confirm') | tojson }})">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="rule_id" value="{{ r.id }}">
+              <button type="submit" class="btn btn-danger btn-sm">{{ t('Delete') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card anim-fade-up">
+  <div class="card-body">
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <p>{{ t('No alert rules') }}</p>
+      <button class="btn btn-primary" onclick="document.getElementById('add-rule-modal').style.display='flex'">
+        {{ t('Create First Rule') }}
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Help Card -->
+<div class="card anim-fade-up" style="margin-top:16px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--amber)"></div>{{ t('Condition Syntax') }}</div>
+  </div>
+  <div class="card-body">
+    <p style="font-size:12px;color:var(--text-2);line-height:1.8">
+      {{ t('Supported conditions') }}
+    </p>
+    <ul style="font-size:12px;color:var(--text-2);line-height:2;margin-left:18px">
+      <li><code style="color:var(--cyan)">attack_count &gt; 100 from same IP in 5min</code> {{ t('rule fire desc') }}</li>
+      <li>{{ t('Adjust threshold') }}</li>
+    </ul>
+    <p style="font-size:12px;color:var(--text-3);margin-top:8px">
+      {{ t('alert settings note') }} <a href="{{ url_for('settings') }}" style="color:var(--cyan)">{{ t('Settings') }}</a>.
+    </p>
+  </div>
+</div>
+
+<!-- Add Rule Modal -->
+<div id="add-rule-modal" style="display:none;position:fixed;inset:0;background:rgba(5,10,20,0.85);
+     backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:500px;padding:0">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('New Alert Rule') }}</div>
+      <button onclick="document.getElementById('add-rule-modal').style.display='none'"
+              style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('alert_rules') }}">
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+          <label class="form-label">{{ t('Rule Name label') }}</label>
+          <input type="text" name="name" class="form-input" placeholder="{{ t('ph rule name') }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Condition label') }}</label>
+          <input type="text" name="condition" class="form-input"
+                 placeholder="{{ t('ph rule condition') }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Action select') }}</label>
+          <select name="rule_action" class="form-input">
+            <option value="email">{{ t('Email option') }}</option>
+            <option value="webhook">{{ t('Webhook option') }}</option>
+            <option value="both">{{ t('Both option') }}</option>
+          </select>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" name="enabled" id="rule-enabled" checked style="width:16px;height:16px;accent-color:var(--cyan)">
+          <label for="rule-enabled" class="form-label" style="margin:0">{{ t('Enable immediately') }}</label>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+          <button type="button" class="btn btn-secondary"
+                  onclick="document.getElementById('add-rule-modal').style.display='none'">{{ t('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">{{ t('Create Rule btn') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

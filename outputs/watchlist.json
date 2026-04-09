@@ -1,0 +1,39 @@
+[
+  {
+    "ip": "192.168.10.5",
+    "added_at": "2026-03-21T05:45:13.013950",
+    "note": "important",
+    "hit_count": 142071,
+    "threat_level": "Critical",
+    "alert_on_hit": false,
+    "expires_at": "2026-04-10",
+    "last_seen": "2026-04-03T08:03:09.084447"
+  },
+  {
+    "ip": "192.168.10.0/24",
+    "added_at": "2026-03-21T06:01:19.945526",
+    "note": "important",
+    "hit_count": 0,
+    "threat_level": "High",
+    "alert_on_hit": false,
+    "expires_at": ""
+  },
+  {
+    "ip": "172.16.0.200",
+    "added_at": "2026-03-21T06:36:53.533482",
+    "note": "Imported from watchlist_sample.csv",
+    "threat_level": "",
+    "hit_count": 0,
+    "alert_on_hit": false
+  },
+  {
+    "ip": "172.16.0.1",
+    "added_at": "2026-03-21T06:39:21.711217",
+    "note": "Correlated attacker \u2014 SSH-Patator, Heartbleed, DoS GoldenEye,...",
+    "hit_count": 722876,
+    "threat_level": "",
+    "alert_on_hit": false,
+    "expires_at": "",
+    "last_seen": "2026-04-03T20:47:00.395133"
+  }
+]

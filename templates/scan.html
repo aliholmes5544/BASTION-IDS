@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block title %}{{ t('New Scan') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('New Scan') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+<rect x="8" y="8" width="8" height="8"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <h1 class="page-title">{{ t('Network Flow Analysis') }}</h1>
+  <p class="page-subtitle">{{ t('Upload subtitle') }}</p>
+</div>
+
+<!-- Upload Card — full width -->
+<div class="card anim-fade-up" style="margin-bottom:24px">
+  <div class="card-header-custom">
+    <div class="card-title" style="font-size:17px"><div class="card-title-dot"></div>{{ t('Upload Traffic Capture') }}</div>
+    {% if model_loaded %}
+      <span style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--green)">
+        <div class="status-dot online"></div> {{ t('Model Ready') }}
+      </span>
+    {% else %}
+      <span style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--red)">
+        <div class="status-dot offline"></div> {{ t('Model Offline') }}
+      </span>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <!-- Tab toggle -->
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <button class="btn btn-secondary" id="tab-single" onclick="showTab('single')" style="color:var(--cyan);font-size:14px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        {{ t('Single File') }}
+      </button>
+      <button class="btn btn-secondary" id="tab-multi" onclick="showTab('multi')" style="font-size:14px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+        {{ t('Multiple Files') }}
+      </button>
+    </div>
+
+    <!-- Single file form -->
+    <div id="form-single">
+    <form id="scan-form" method="POST" enctype="multipart/form-data" action="{{ url_for('scan') }}">
+      <label class="upload-zone" id="upload-zone" style="padding:80px 50px;display:block;cursor:pointer">
+      <input type="file" id="file-input" name="file" accept=".csv,.pcap,.pcapng" style="display:none">
+        <div class="upload-icon" style="width:100px;height:100px;margin-bottom:24px">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-title" style="font-size:22px;margin-bottom:10px">{{ t('Drop your file here') }}</div>
+        <div class="upload-sub" style="font-size:15px;margin-bottom:24px">{{ t('or click to browse') }}</div>
+        <div class="upload-formats" style="font-size:13px;padding:8px 20px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          {{ t('file formats max') }}
+        </div>
+      </label>
+
+      <div id="file-info" style="display:none;margin-top:16px">
+        <div class="alert alert-success" id="file-preview-box" style="font-size:14px"></div>
+      </div>
+
+      <div style="display:flex;gap:14px;margin-top:22px">
+        <button type="submit" class="btn btn-primary" style="font-size:15px;padding:12px 28px" {% if not model_loaded %}disabled{% endif %}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+            <polyline points="13 2 13 9 20 9"/>
+          </svg>
+          {{ t('Analyze Flows') }}
+        </button>
+        <button type="button" onclick="document.getElementById('file-input').value='';document.getElementById('file-info').style.display='none';"
+                class="btn btn-secondary" style="font-size:15px;padding:12px 24px">
+          {{ t('Clear') }}
+        </button>
+      </div>
+    </form>
+    </div>
+
+    <!-- Multi file form -->
+    <div id="form-multi" style="display:none">
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('scan_multi') }}">
+      <label class="upload-zone" style="padding:80px 50px;display:block;cursor:pointer">
+      <input type="file" id="multi-file-input" name="files" accept=".csv,.pcap,.pcapng" multiple style="display:none" onchange="showMultiFiles(this)">
+        <div class="upload-icon" style="width:100px;height:100px;margin-bottom:24px">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-title" style="font-size:22px;margin-bottom:10px">{{ t('Select multiple files') }}</div>
+        <div class="upload-sub" style="font-size:15px;margin-bottom:24px">{{ t('Hold Ctrl select') }}</div>
+        <div class="upload-formats" style="font-size:13px;padding:8px 20px">
+          {{ t('file formats supported') }}
+        </div>
+      </label>
+      <div id="multi-file-info" style="margin-top:14px;font-size:13px;color:var(--text-2)"></div>
+      <div style="margin-top:22px">
+        <button type="submit" class="btn btn-primary" style="font-size:15px;padding:12px 28px" {% if not model_loaded %}disabled{% endif %}>
+          {{ t('Analyze All Files') }}
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+<!-- Info Cards — 3 columns -->
+<div class="grid-3">
+  <div class="card anim-fade-up delay-1">
+    <div class="card-body" style="padding:28px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+        <div style="width:48px;height:48px;background:var(--purple-dim);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--purple)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div style="font-weight:700;font-size:16px">{{ t('Attack Classes') }}</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        {% for cls in ['DDoS','DoS GoldenEye','DoS Hulk','DoS Slowhttptest','DoS slowloris','PortScan','Bot','FTP-Patator','SSH-Patator','Heartbleed','Infiltration','Web Attack Brute Force','Web Attack Sql Injection','Web Attack XSS'] %}
+          <span class="badge badge-high" style="font-size:11px">{{ cls }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card anim-fade-up delay-2">
+    <div class="card-body" style="padding:28px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+        <div style="width:48px;height:48px;background:var(--cyan-dim);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--cyan)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div style="font-weight:700;font-size:16px">{{ t('How Scan Works') }}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        {% for step in ['scan step 1','scan step 2','scan step 3','scan step 4'] %}
+          <div style="font-size:13px;color:var(--text-2);line-height:1.6">{{ t(step) }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card anim-fade-up delay-3">
+    <div class="card-body" style="padding:28px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+        <div style="width:48px;height:48px;background:var(--green-dim);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--green)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div style="font-weight:700;font-size:16px">{{ t('Model Performance') }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        {% for key, val in [('Accuracy','99.9%'),('Macro F1','89.9%'),('ROC-AUC','100.0%'),('Model','ThresholdClassifier')] %}
+          <div>
+            <div style="font-size:22px;font-weight:800;color:var(--cyan)">{{ val }}</div>
+            <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:1px">{{ t(key) }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scan Overlay -->
+<div class="scan-overlay" id="scan-overlay">
+  <div class="scan-ring">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  </div>
+  <div class="scan-text" id="scan-status-text" style="font-size:20px">{{ t('INITIALIZING SCAN') }}</div>
+  <div style="font-size:13px;color:var(--text-3);margin-top:-6px">{{ t('Processing flows') }}</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TXT_FILES_SEL = {{ t('files selected:') | tojson }};
+
+// Single-file change/dragdrop is handled by initUploadZone() in bastion.js
+// (no duplicate handlers needed here)
+
+function showTab(tab) {
+  document.getElementById('form-single').style.display = tab === 'single' ? '' : 'none';
+  document.getElementById('form-multi').style.display  = tab === 'multi'  ? '' : 'none';
+  document.getElementById('tab-single').style.color = tab === 'single' ? 'var(--cyan)' : '';
+  document.getElementById('tab-multi').style.color  = tab === 'multi'  ? 'var(--cyan)' : '';
+}
+
+function showMultiFiles(input) {
+  const infoDiv = document.getElementById('multi-file-info');
+  infoDiv.innerHTML = '';
+  if (!input.files.length) return;
+  // Build list via DOM API so filenames are never interpreted as HTML
+  const hdr = document.createElement('strong');
+  hdr.style.color = 'var(--cyan)';
+  hdr.textContent = input.files.length + ' ' + TXT_FILES_SEL;
+  const ul = document.createElement('ul');
+  ul.style.cssText = 'margin:8px 0 0 20px';
+  for (const f of input.files) {
+    const li = document.createElement('li');
+    li.style.marginBottom = '4px';
+    li.textContent = f.name + ' \u00a0';
+    const sizeSpan = document.createElement('span');
+    sizeSpan.style.color = 'var(--text-3)';
+    sizeSpan.textContent = (f.size / 1024 / 1024).toFixed(2) + ' MB';
+    li.appendChild(sizeSpan);
+    ul.appendChild(li);
+  }
+  infoDiv.appendChild(hdr);
+  infoDiv.appendChild(ul);
+}
+</script>
+{% endblock %}

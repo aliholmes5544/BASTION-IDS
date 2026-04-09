@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+{% block title %}{{ case.title }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Case Detail title') }}{% endblock %}
+{% block topbar_icon %}
+<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;font-size:12px;color:var(--text-3)" class="anim-fade-up">
+  <a href="{{ url_for('cases') }}" style="color:var(--text-3);text-decoration:none">{{ t('Cases breadcrumb') }}</a>
+  <span>›</span>
+  <span style="color:var(--cyan)">{{ case.title }}</span>
+</div>
+
+<!-- Case Header -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-body">
+    <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+          <h1 style="font-size:22px;font-weight:800;color:var(--text-1)">{{ case.title }}</h1>
+          <span class="case-status {{ case.status }}">{{ tstat(case.status) }}</span>
+          {% set pr = case.priority or 'Medium' %}
+          <span class="badge badge-{% if pr=='Critical' %}critical{% elif pr=='High' %}high{% elif pr=='Medium' %}medium{% else %}safe{% endif %}">{{ t(pr) }}</span>
+        </div>
+        {% if case.description %}
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">{{ case.description }}</p>
+        {% endif %}
+        <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--text-3)">
+          <span>{{ t('Analyst:') }} <strong style="color:var(--cyan)">{{ case.analyst }}</strong></span>
+          {% if is_admin %}
+            {% set assignees = get_assignees(case) %}
+            {% if assignees %}
+            <span>{{ t('Assignees') }}: {% for u in assignees %}<strong style="color:var(--amber)">{{ u }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}</span>
+            {% endif %}
+          {% elif is_cc_admin %}
+            {% set assignees = get_assignees(case) | in_set(managed_analysts) %}
+            {% if assignees %}
+            <span>{{ t('Assignees') }}: {% for u in assignees %}<strong style="color:var(--amber)">{{ u }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}</span>
+            {% endif %}
+          {% endif %}
+          <span>{{ t('Case ID:') }} <span class="mono">{{ case.id }}</span></span>
+          <span>{{ t('Created:') }} {{ case.created[:16].replace('T',' ') if case.created else t('N/A rep') }} {{ t('UTC label') }}</span>
+          <span>{{ case.notes | length }} {{ t('comments suffix') }}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+        <a href="{{ url_for('cases') }}" class="btn btn-secondary btn-sm">{{ t('Back to Cases') }}</a>
+        <a href="{{ url_for('case_export_pdf', case_id=case.id) }}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          {{ t('Export PDF') }}
+        </a>
+        {% if is_analyst and case.status in ('open', 'returned') %}
+        <form method="POST" action="{{ url_for('case_analyst_close', case_id=case.id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('analyst close confirm') | tojson }})">
+          <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--cyan);border-color:rgba(0,212,255,0.3)">
+            {{ t('analyst close btn') }}
+          </button>
+        </form>
+        {% endif %}
+        {% if is_cc_admin and case.status == 'pending_cc_review' %}
+        <form method="POST" action="{{ url_for('case_cc_close', case_id=case.id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('cc close confirm') | tojson }})">
+          <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--amber);border-color:rgba(255,184,0,0.3)">
+            {{ t('cc close btn') }}
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('case_return_to_analyst', case_id=case.id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('return analyst confirm') | tojson }})">
+          <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--text-2);border-color:rgba(136,153,187,0.3)">
+            {{ t('Return to Analyst') }}
+          </button>
+        </form>
+        {% endif %}
+        {% if is_admin and case.status == 'pending_admin_close' %}
+        <form method="POST" action="{{ url_for('case_close', case_id=case.id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('Close case confirm') | tojson }})">
+          <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--amber);border-color:rgba(255,184,0,0.3)">
+            {{ t('permanently close btn') }}
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('case_return_to_cc_admin', case_id=case.id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('return cc confirm') | tojson }})">
+          <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--text-2);border-color:rgba(136,153,187,0.3)">
+            {{ t('Return to CC Admin') }}
+          </button>
+        </form>
+        {% endif %}
+        {% if is_admin and case.status in ('open', 'pending_cc_review') %}
+        <form method="POST" action="{{ url_for('case_close', case_id=case.id) }}" style="display:inline"
+          onsubmit="return confirm({{ t('Close case confirm') | tojson }})">
+          <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--amber);border-color:rgba(255,184,0,0.3)">
+            {{ t('Close Case') }}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Returned notice -->
+{% if case.get('returned_by') and case.status == 'returned' and current_user == case.get('returned_to') %}
+<div class="anim-fade-up" style="margin-bottom:20px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,119,48,.35);background:linear-gradient(135deg,rgba(255,119,48,.08),transparent);display:flex;align-items:center;gap:12px">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff7730" stroke-width="2.5" style="flex-shrink:0">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+  </svg>
+  <span style="font-size:13px;color:var(--text-1)">
+    <span style="font-weight:700;color:#ff7730">↩ {{ t('RETURNED badge') }}</span>
+    &nbsp;—&nbsp;
+    {{ t('Returned by notice') }} <strong>{{ case.returned_by }}</strong>
+    {% if case.get('returned_at') %}
+    &nbsp;{{ t('Created:') | replace(':','') }} <strong>{{ case.returned_at[:16].replace('T',' ') }}</strong>
+    {% endif %}
+    &nbsp;·&nbsp; <span style="color:var(--text-2)">{{ t('for further work notice') }}</span>
+  </span>
+</div>
+{% elif case.get('returned_by_admin') and case.status == 'pending_cc_review' and current_user == case.get('returned_to_cc') %}
+<div class="anim-fade-up" style="margin-bottom:20px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,119,48,.35);background:linear-gradient(135deg,rgba(255,119,48,.08),transparent);display:flex;align-items:center;gap:12px">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff7730" stroke-width="2.5" style="flex-shrink:0">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+  </svg>
+  <span style="font-size:13px;color:var(--text-1)">
+    <span style="font-weight:700;color:#ff7730">↩ {{ t('RETURNED badge') }}</span>
+    &nbsp;—&nbsp;
+    {{ t('Returned by notice') }} <strong>{{ case.returned_by_admin }}</strong>
+    {% if case.get('returned_by_admin_at') %}
+    &nbsp;{{ t('Created:') | replace(':','') }} <strong>{{ case.returned_by_admin_at[:16].replace('T',' ') }}</strong>
+    {% endif %}
+    &nbsp;·&nbsp; <span style="color:var(--text-2)">{{ t('for re-review notice') }}</span>
+  </span>
+</div>
+{% endif %}
+
+<!-- Assign / Priority -->
+{% if case.status != 'closed' %}
+{% set _show_assign = can_assign and available_assignees %}
+{% set _show_priority = is_admin %}
+{% if can_assign or _show_priority %}
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--amber)"></div>{{ t('Assignment Priority') }}</div>
+  </div>
+  <div class="card-body">
+    {% if can_assign %}
+    <style>
+    .asgn-wrap{position:relative;width:100%}
+    .asgn-trigger{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;
+      background:var(--input-bg,rgba(255,255,255,.05));border:1px solid var(--border);border-radius:8px;
+      cursor:pointer;font-size:13px;color:var(--text-1);min-height:38px;gap:8px;user-select:none}
+    .asgn-trigger:hover{border-color:var(--cyan)}
+    .asgn-trigger .chev{flex-shrink:0;opacity:.5;transition:transform .2s}
+    .asgn-portal{position:fixed;z-index:99999;display:none;
+      background:var(--card-bg,#0d1929);border:1px solid var(--border);border-radius:8px;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);max-height:220px;overflow-y:auto}
+    .asgn-portal.open{display:block}
+    .asgn-opt{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;
+      font-size:13px;color:var(--text-2);transition:background .15s}
+    .asgn-opt:hover{background:rgba(0,212,255,.08);color:var(--text-1)}
+    .asgn-opt:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04)}
+    .asgn-opt input[type=checkbox]{accent-color:var(--cyan);width:15px;height:15px;flex-shrink:0;cursor:pointer}
+    .asgn-opt.sel{color:var(--cyan)}
+    .asgn-tags{display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:0}
+    .asgn-tag{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.25);
+      border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+    .asgn-ph{color:var(--text-3);font-size:12px}
+    </style>
+    <form method="POST" action="{{ url_for('case_assign', case_id=case.id) }}">
+      {% set current_assignees = get_assignees(case) %}
+      <div style="display:grid;grid-template-columns:{% if _show_assign and _show_priority %}2fr 1fr{% else %}1fr{% endif %};gap:14px;margin-bottom:14px">
+        {% if _show_assign %}
+        <div class="form-group" style="margin:0">
+          <label class="form-label">{{ t('Assign To (multiple)') }}</label>
+          <div class="asgn-wrap" id="asgn-wrap">
+            <div class="asgn-trigger" id="asgn-trigger" onclick="asgnToggle()">
+              <div class="asgn-tags" id="asgn-tags">
+                {% if current_assignees %}
+                  {% for u in current_assignees %}<span class="asgn-tag">{{ u }}</span>{% endfor %}
+                {% else %}
+                  <span class="asgn-ph">{{ t('None label') }}</span>
+                {% endif %}
+              </div>
+              <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div id="asgn-hidden"></div>
+          <!-- Portal panel — lives in body, positioned by JS -->
+          <div class="asgn-portal" id="asgn-portal">
+            {% for u in available_assignees %}
+            <label class="asgn-opt {% if u in current_assignees %}sel{% endif %}">
+              <input type="checkbox" name="assigned_to" value="{{ u }}"
+                {% if u in current_assignees %}checked{% endif %}
+                onchange="asgnUpdate()">
+              <span style="flex:1">{{ u }}</span>
+              <span style="font-size:10px;opacity:.5">{{ get_user_role(u) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% if _show_priority %}
+        <div class="form-group" style="margin:0">
+          <label class="form-label">{{ t('Priority') }}</label>
+          <select name="priority" class="form-input">
+            {% for p in ['Low','Medium','High','Critical'] %}
+            <option value="{{ p }}" {% if (case.priority or 'Medium') == p %}selected{% endif %}>{{ t(p) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+      </div>
+      {% if not _show_assign and not _show_priority %}
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 14px">{{ t('No analysts assigned') }}</p>
+      {% endif %}
+      <button type="submit" class="btn btn-primary btn-sm">{{ t('Update btn') }}</button>
+    </form>
+    <script>
+    (function() {
+      var wrap    = document.getElementById('asgn-wrap');
+      var trigger = document.getElementById('asgn-trigger');
+      var portal  = document.getElementById('asgn-portal');
+      var chev    = trigger ? trigger.querySelector('.chev') : null;
+
+      // Move portal to body so it escapes all overflow/stacking constraints
+      document.body.appendChild(portal);
+
+      function position() {
+        var r = trigger.getBoundingClientRect();
+        portal.style.top   = (r.bottom + 4) + 'px';
+        portal.style.width = r.width + 'px';
+        var rtl = document.documentElement.dir === 'rtl';
+        portal.style.left  = rtl ? 'auto' : r.left + 'px';
+        portal.style.right = rtl ? (window.innerWidth - r.right) + 'px' : 'auto';
+      }
+
+      window.asgnToggle = function() {
+        var opening = !portal.classList.contains('open');
+        if (opening) { position(); }
+        portal.classList.toggle('open');
+        if (chev) chev.style.transform = portal.classList.contains('open') ? 'rotate(180deg)' : '';
+      };
+
+      window.asgnUpdate = function() {
+        var checks = portal.querySelectorAll('input[type=checkbox]');
+        var tags   = document.getElementById('asgn-tags');
+        var hidden = document.getElementById('asgn-hidden');
+        var sel    = Array.from(checks).filter(function(c){ return c.checked; }).map(function(c){ return c.value; });
+        checks.forEach(function(c){ c.closest('.asgn-opt').classList.toggle('sel', c.checked); });
+        // Build tags via DOM API so usernames are never injected as HTML
+        tags.innerHTML = '';
+        if (sel.length) {
+          sel.forEach(function(u) {
+            var sp = document.createElement('span');
+            sp.className = 'asgn-tag';
+            sp.textContent = u;
+            tags.appendChild(sp);
+          });
+        } else {
+          tags.innerHTML = '<span class="asgn-ph">{{ t("None label") }}</span>';
+        }
+        if (hidden) {
+          hidden.innerHTML = '';
+          sel.forEach(function(u) {
+            var inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'assigned_to';
+            inp.value = u;
+            hidden.appendChild(inp);
+          });
+        }
+      };
+      // Sync hidden inputs on page load for pre-checked assignees
+      asgnUpdate();
+
+      document.addEventListener('click', function(e) {
+        if (!portal.contains(e.target) && !trigger.contains(e.target)) {
+          portal.classList.remove('open');
+          if (chev) chev.style.transform = '';
+        }
+      });
+
+      window.addEventListener('scroll', function() {
+        if (portal.classList.contains('open')) position();
+      }, true);
+    })();
+    </script>
+    {% else %}
+    <div style="font-size:13px;color:var(--text-2)">
+      {{ t('Priority:') }} <strong style="color:var(--amber)">{{ t(case.priority or 'Medium') }}</strong>
+      {% if is_admin %}
+        {% set assignees = get_assignees(case) %}
+        {% if assignees %}
+        &nbsp;·&nbsp; {{ t('Assignees') }}: {% for u in assignees %}<strong style="color:var(--cyan)">{{ u }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}
+        {% else %}
+        &nbsp;·&nbsp; {{ t('Assigned inline') }} <strong style="color:var(--text-3)">—</strong>
+        {% endif %}
+      {% elif is_cc_admin %}
+        {% set assignees = get_assignees(case) | in_set(managed_analysts) %}
+        {% if assignees %}
+        &nbsp;·&nbsp; {{ t('Assignees') }}: {% for u in assignees %}<strong style="color:var(--cyan)">{{ u }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}
+        {% endif %}
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Linked Scans -->
+{% if linked_scans %}
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Linked Scans') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ linked_scans | length }} {{ t('scans suffix') }}</span>
+  </div>
+  <div class="card-body" style="padding:0">
+    <table class="data-table">
+      <thead><tr>
+        <th>{{ t('Scan ID') }}</th>
+        <th>{{ t('File th') }}</th>
+        <th>{{ t('Timestamp') }}</th>
+        <th>{{ t('Threats th') }}</th>
+        <th>{{ t('Severity') }}</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        {% for scan in linked_scans %}
+        {% set sev_bd = scan.get('severity_breakdown', {}) %}
+        {% set top = 'SAFE' %}
+        {% if sev_bd.get('CRITICAL', 0) > 0 %}{% set top = 'CRITICAL' %}
+        {% elif sev_bd.get('HIGH', 0) > 0 %}{% set top = 'HIGH' %}
+        {% elif sev_bd.get('MEDIUM', 0) > 0 %}{% set top = 'MEDIUM' %}
+        {% endif %}
+        <tr>
+          <td class="mono" style="font-size:11px;color:var(--text-3)">{{ scan.scan_id }}</td>
+          <td style="font-weight:600">{{ scan.filename }}</td>
+          <td class="mono" style="font-size:11px">{{ scan.timestamp[:16].replace('T',' ') if scan.timestamp else t('N/A rep') }}</td>
+          <td style="color:{% if scan.malicious_flows > 0 %}var(--red){% else %}var(--green){% endif %};font-weight:700">
+            {{ scan.malicious_flows }}
+          </td>
+          <td><span class="badge badge-{{ top | lower }}">{{ tsev(top) }}</span></td>
+          <td><a href="{{ url_for('result', scan_id=scan.scan_id) }}" class="btn btn-secondary btn-sm">{{ t('View btn') }}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Attachments -->
+{% if attachments or is_admin %}
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--green)"></div>{{ t('Attachments') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ attachments | length }} {{ t('files suffix') }}</span>
+  </div>
+  <div class="card-body">
+    {% if attachments %}
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:{% if is_admin %}20px{% else %}0{% endif %}">
+      {% for fname in attachments %}
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <span style="flex:1;font-size:13px;color:var(--text-1)">{{ fname }}</span>
+        <a href="{{ url_for('case_attachment', case_id=case.id, filename=fname) }}" class="btn btn-secondary btn-sm" download>{{ t('Download btn') }}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--text-3);font-size:13px;margin-bottom:{% if is_admin %}16px{% else %}0{% endif %}">{{ t('No attachments yet') }}</p>
+    {% endif %}
+    {% if is_admin %}
+    <form method="POST" action="{{ url_for('case_attach', case_id=case.id) }}" enctype="multipart/form-data">
+      <div class="form-group">
+        <label class="form-label">{{ t('Add Attachments label') }}</label>
+        <input type="file" name="attachments" class="form-input" multiple style="padding:6px 12px;cursor:pointer">
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">{{ t('Any file type allowed') }}</div>
+      </div>
+      <div style="margin-top:10px">
+        <button type="submit" class="btn btn-primary btn-sm">{{ t('Upload btn') }}</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Comments Timeline -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Investigation Comments') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ case.notes | length }} {{ t('comments suffix') }}</span>
+  </div>
+  <div class="card-body">
+    {% if case.notes %}
+    <div style="margin-bottom:24px">
+      {% for note in case.notes %}
+      <div class="case-note" style="position:relative">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div class="case-note-user">
+            {{ (note.user or note.author or t('Unknown author')) | upper }}
+          </div>
+          {% if is_admin or is_cc_admin %}
+          <form method="POST" action="{{ url_for('case_delete_comment', case_id=case.id, comment_idx=loop.index0) }}"
+                style="flex-shrink:0;margin:0"
+                onsubmit="return confirm({{ t('delete comment confirm') | tojson }})">
+            <button type="submit" title="{{ t('delete comment confirm') }}"
+                    style="background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text-3);opacity:.6;line-height:1"
+                    onmouseover="this.style.color='var(--red)';this.style.opacity='1'"
+                    onmouseout="this.style.color='var(--text-3)';this.style.opacity='.6'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            </button>
+          </form>
+          {% endif %}
+        </div>
+        <div class="case-note-text">{{ note.text }}</div>
+        {% if note.get('attachment') %}
+        <div style="margin-top:6px">
+          <a href="{{ url_for('case_comment_attachment', case_id=case.id, filename=note.attachment) }}"
+             class="btn btn-secondary btn-sm" download style="font-size:11px;padding:3px 10px">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            {{ note.attachment.split('_', 1)[1] if '_' in note.attachment else note.attachment }}
+          </a>
+        </div>
+        {% endif %}
+        <div class="case-note-ts">{{ (note.ts or note.timestamp or '')[:16].replace('T',' ') }} UTC</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--text-3);font-size:13px;margin-bottom:20px">{{ t('No comments yet') }}</p>
+    {% endif %}
+
+    <!-- Add Comment Form -->
+    {% if case.status not in ('closed', 'pending_admin_close') %}
+    <form method="POST" action="{{ url_for('case_add_note', case_id=case.id) }}" enctype="multipart/form-data">
+      <div class="form-group">
+        <label class="form-label">{{ t('Add Comment label') }}</label>
+        <textarea name="text" class="form-input" rows="3" placeholder="{{ t('Add Comment placeholder') }}" style="resize:vertical"></textarea>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="form-label">{{ t('Attach File label') }} <span style="font-size:11px;color:var(--text-3);font-weight:400">{{ t('optional any type') }}</span></label>
+        <input type="file" name="attachment" class="form-input" style="padding:6px 12px;cursor:pointer">
+      </div>
+      <div style="margin-top:10px;text-align:right">
+        <button type="submit" class="btn btn-primary">{{ t('Add Comment btn') }}</button>
+      </div>
+    </form>
+    {% else %}
+    <div style="color:var(--text-3);font-size:12px;font-style:italic">{{ t('Case closed note') }}</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

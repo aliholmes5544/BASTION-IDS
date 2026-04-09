@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Settings') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Settings') }}{% endblock %}
+{% block topbar_icon %}
+<circle cx="12" cy="12" r="3"/>
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('Settings') }}</div>
+  <div class="page-subtitle">{{ t('Settings subtitle') }}</div>
+</div>
+
+<form method="POST" action="{{ url_for('settings') }}">
+  <!-- SMTP -->
+  <div class="card anim-fade-up" style="margin-bottom:20px">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Email Alerts (SMTP)') }}</div>
+      <div style="display:flex;gap:10px">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="testEmail()">{{ t('Test Email') }}</button>
+        <span id="email-result" style="font-size:12px;display:flex;align-items:center;color:var(--text-3)"></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="settings-grid">
+        <div class="form-group">
+          <label class="form-label">{{ t('SMTP Host') }}</label>
+          <input type="text" name="smtp_host" class="form-input"
+                 value="{{ config.get('smtp_host', '') }}" placeholder="smtp.gmail.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('SMTP Port') }}</label>
+          <input type="number" name="smtp_port" class="form-input"
+                 value="{{ config.get('smtp_port', 587) }}" placeholder="587">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('SMTP User / From') }}</label>
+          <input type="email" name="smtp_user" class="form-input"
+                 value="{{ config.get('smtp_user', '') }}" placeholder="alerts@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('SMTP Password') }}</label>
+          <input type="password" name="smtp_pass" class="form-input"
+                 placeholder="{{ t('Leave blank') }}">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">{{ t('Alert Recipient') }}</label>
+          <input type="email" name="smtp_to" class="form-input"
+                 value="{{ config.get('smtp_to', '') }}" placeholder="soc@example.com">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Webhook -->
+  <div class="card anim-fade-up" style="margin-bottom:20px">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Webhook Alerts') }}</div>
+      <div style="display:flex;gap:10px">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="testWebhook()">{{ t('Test Webhook') }}</button>
+        <span id="webhook-result" style="font-size:12px;display:flex;align-items:center;color:var(--text-3)"></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">{{ t('Webhook URL') }}</label>
+        <input type="url" name="webhook_url" class="form-input"
+               value="{{ config.get('webhook_url', '') }}"
+               placeholder="https://hooks.slack.com/services/…">
+      </div>
+    </div>
+  </div>
+
+  <!-- AbuseIPDB -->
+  <div class="card anim-fade-up" style="margin-bottom:20px">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('IP Reputation') }}</div>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">{{ t('AbuseIPDB API Key') }}</label>
+        <input type="password" name="abuseipdb_key" class="form-input"
+               placeholder="{{ t('Leave blank') }}">
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px">
+          {{ t('Get API key at') }} <a href="https://www.abuseipdb.com/register" target="_blank" style="color:var(--cyan)">abuseipdb.com</a> {{ t('free tier checks') }}
+          {% if config.get('abuseipdb_key') %}
+          — <span style="color:var(--green)">✓ {{ t('Key configured') }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VirusTotal -->
+  <div class="card anim-fade-up" style="margin-bottom:20px">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot" style="background:#394eff"></div>{{ t('VirusTotal Lookup') }}</div>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">{{ t('VirusTotal API Key') }}</label>
+        <input type="password" name="virustotal_key" class="form-input"
+               placeholder="{{ t('Leave blank') }}">
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px">
+          {{ t('Get free API key at') }} <a href="https://www.virustotal.com/gui/join-us" target="_blank" style="color:var(--cyan)">virustotal.com</a> {{ t('lookups free') }}
+          {% if config.get('virustotal_key') %}
+          — <span style="color:var(--green)">✓ {{ t('Key configured') }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shodan -->
+  <div class="card anim-fade-up" style="margin-bottom:20px">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot" style="background:#f90"></div>{{ t('Shodan Host Intel') }}</div>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">{{ t('Shodan API Key') }}</label>
+        <input type="password" name="shodan_key" class="form-input"
+               placeholder="{{ t('Leave blank') }}">
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px">
+          {{ t('Get API key at') }} <a href="https://account.shodan.io/register" target="_blank" style="color:var(--cyan)">shodan.io</a> {{ t('free tier available') }}
+          {% if config.get('shodan_key') %}
+          — <span style="color:var(--green)">✓ {{ t('Key configured') }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Triggers -->
+  <div class="card anim-fade-up" style="margin-bottom:24px">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Alert Triggers') }}</div>
+    </div>
+    <div class="card-body">
+      <label style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:14px">
+        <input type="checkbox" name="alert_on_critical"
+               {% if config.get('alert_on_critical', True) %}checked{% endif %}
+               style="width:18px;height:18px;accent-color:var(--red)">
+        <div>
+          <div style="font-weight:600;color:var(--text-1)">{{ t('Alert on CRITICAL') }}</div>
+          <div style="font-size:12px;color:var(--text-3)">{{ t('CRITICAL alert desc') }}</div>
+        </div>
+      </label>
+      <label style="display:flex;align-items:center;gap:12px;cursor:pointer">
+        <input type="checkbox" name="alert_on_high"
+               {% if config.get('alert_on_high', False) %}checked{% endif %}
+               style="width:18px;height:18px;accent-color:var(--orange)">
+        <div>
+          <div style="font-weight:600;color:var(--text-1)">{{ t('Alert on HIGH') }}</div>
+          <div style="font-size:12px;color:var(--text-3)">{{ t('HIGH alert desc') }}</div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;gap:10px">
+    <button type="submit" class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+      {{ t('Save Settings') }}
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TXT_SENDING   = {{ t('Sending') | tojson }};
+const TXT_NET_ERR   = {{ t('Network error') | tojson }};
+const TXT_ERR_PFX   = {{ t('ERROR prefix') | tojson }};
+function testEmail() {
+  const el = document.getElementById('email-result');
+  el.textContent = TXT_SENDING;
+  el.style.color = 'var(--amber)';
+  fetch('/settings/test_email', { method: 'POST' })
+    .then(r => r.json())
+    .then(d => {
+      el.textContent = d.status || (TXT_ERR_PFX + d.error);
+      el.style.color = d.error ? 'var(--red)' : 'var(--green)';
+    })
+    .catch(e => { el.textContent = TXT_NET_ERR; el.style.color = 'var(--red)'; });
+}
+
+function testWebhook() {
+  const el = document.getElementById('webhook-result');
+  el.textContent = TXT_SENDING;
+  el.style.color = 'var(--amber)';
+  fetch('/settings/test_webhook', { method: 'POST' })
+    .then(r => r.json())
+    .then(d => {
+      el.textContent = d.status || (TXT_ERR_PFX + d.error);
+      el.style.color = d.error ? 'var(--red)' : 'var(--green)';
+    })
+    .catch(e => { el.textContent = TXT_NET_ERR; el.style.color = 'var(--red)'; });
+}
+</script>
+{% endblock %}

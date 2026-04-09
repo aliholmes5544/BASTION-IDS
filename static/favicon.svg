@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1f3c"/>
+      <stop offset="100%" stop-color="#060d1a"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shield body -->
+  <path d="M16 2L29 7V16.5C29 23.5 23 28.5 16 31C9 28.5 3 23.5 3 16.5V7Z"
+        fill="url(#shieldGrad)"/>
+
+  <!-- Shield border with glow -->
+  <path d="M16 2L29 7V16.5C29 23.5 23 28.5 16 31C9 28.5 3 23.5 3 16.5V7Z"
+        fill="none" stroke="#00d4ff" stroke-width="1.6" stroke-linejoin="round" filter="url(#glow)"/>
+
+  <!-- Inner shield highlight (top edge) -->
+  <path d="M16 4.5L27 8.8V9.5L16 5.3L5 9.5V8.8Z" fill="#00d4ff" opacity="0.15"/>
+
+  <!-- Bold B -->
+  <text x="16" y="22"
+        font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="900"
+        font-size="15.5"
+        fill="#00d4ff"
+        text-anchor="middle"
+        filter="url(#glow)">B</text>
+</svg>

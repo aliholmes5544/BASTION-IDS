@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Correlation title') }} — {{ entry.scan_id }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Correlation title') }}{% endblock %}
+{% block topbar_icon %}
+<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+<line x1="6" y1="9" x2="6" y2="15"/>
+<path d="M9 18h3a6 6 0 0 0 6-6V9"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+    <a href="{{ url_for('result', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      {{ t('Back') }}
+    </a>
+    <div>
+      <div class="page-title">{{ t('Correlation title') }}</div>
+      <div class="page-subtitle mono">{{ entry.scan_id }}</div>
+    </div>
+  </div>
+</div>
+
+{% if correlations %}
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Threat Actors') }} ({{ correlations | length }})</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ t('Threat Score formula') }}</span>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{{ t('Src IP') }}</th>
+          <th>{{ t('Attack Types th') }}</th>
+          <th>{{ t('Flow Count th') }}</th>
+          <th>{{ t('Max Severity') }}</th>
+          <th>{{ t('Avg Confidence') }}</th>
+          <th>{{ t('Threat Score') }}</th>
+          <th>{{ t('Actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in correlations %}
+        <tr class="correlation-row">
+          <td style="color:var(--text-3)">{{ loop.index }}</td>
+          <td class="mono" style="font-weight:700;color:var(--cyan)">{{ c.src_ip }}</td>
+          <td style="max-width:200px">
+            {% for at in c.attack_types %}
+              {% set sev_tuple = get_severity(at) %}
+              <span class="badge badge-{{ sev_tuple[0] | lower }}" style="font-size:9px;margin:1px">{{ at }}</span>
+            {% endfor %}
+          </td>
+          <td style="font-weight:700;color:var(--text-1)">{{ c.flow_count }}</td>
+          <td>
+            <span class="badge badge-{{ c.max_severity | lower }}">{{ tsev(c.max_severity) }}</span>
+          </td>
+          <td class="mono" style="font-size:12px">{{ c.avg_confidence }}%</td>
+          <td>
+            <span style="font-size:16px;font-weight:800;
+              color:{% if c.threat_score >= 20 %}var(--red){% elif c.threat_score >= 10 %}var(--orange){% else %}var(--amber){% endif %}">
+              {{ c.threat_score }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-secondary btn-sm watch-btn"
+                    data-ip="{{ c.src_ip }}"
+                    data-note="{{ t('Correlation note prefix') }} {{ entry.scan_id }}"
+                    title="{{ t('Add to Watchlist') }}">
+              {{ t('Watch btn') }}
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card anim-fade-up">
+  <div class="card-body">
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <p>{{ t('No malicious correlation') }}</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

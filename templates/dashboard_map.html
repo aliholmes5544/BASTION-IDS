@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Global IP Geolocation Map') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('IP Map nav') }}{% endblock %}
+{% block topbar_icon %}
+<polygon points="3 11 22 2 13 21 11 13 3 11"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up" style="display:flex;align-items:center;justify-content:space-between">
+  <div>
+    <h1 class="page-title">{{ t('Global IP Geolocation Map') }}</h1>
+    <p class="page-subtitle">{{ t('dashboard map subtitle') }}</p>
+  </div>
+  <button class="btn btn-secondary btn-sm" onclick="loadMapData()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="23 4 23 10 17 10"/>
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+    </svg>
+    {{ t('Refresh') }}
+  </button>
+</div>
+
+<!-- Geo Map -->
+<div class="card anim-fade-up" style="margin-bottom:16px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--cyan)"></div>{{ t('Public IP Map') }}</div>
+    <span id="map-status" style="font-size:12px;color:var(--text-3)">{{ t('Loading') }}</span>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div id="map" style="height:460px;border-radius:0 0 12px 12px"></div>
+  </div>
+</div>
+
+<!-- Summary stats -->
+<div id="map-stat-strip" class="stat-grid" style="margin-bottom:20px"></div>
+
+<!-- IP Table -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot" style="background:var(--red)"></div>{{ t('All Attack IPs') }}</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="search-box" style="width:200px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="ip-search" placeholder="{{ t('Filter IPs') }}" aria-label="{{ t('Filter IPs') }}" oninput="filterIPs(this.value)">
+      </div>
+      <label style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="chk-mal-only" onchange="filterIPs(document.getElementById('ip-search').value)"> {{ t('Malicious only') }}
+      </label>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="ip-table">
+      <thead>
+        <tr>
+          <th>{{ t('IP Address') }}</th>
+          <th>{{ t('Type') }}</th>
+          <th>{{ t('Flows') }}</th>
+          <th>{{ t('Attack Labels') }}</th>
+          <th>{{ t('Status') }}</th>
+        </tr>
+      </thead>
+      <tbody id="ip-tbody">
+        <tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:30px">{{ t('Loading') }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TXT = {
+  loading:      {{ t('Loading') | tojson }},
+  flows:        {{ t('Flows:') | tojson }},
+  status:       {{ t('Status:') | tojson }},
+  mal:          {{ t('MALICIOUS') | tojson }},
+  ben:          {{ t('BENIGN badge') | tojson }},
+  noPublicIPs:  {{ t('No public IPs msg') | tojson }},
+  plotted:      {{ t('public IPs plotted') | tojson }},
+  noData:       {{ t('No IP data found') | tojson }},
+  failLoad:     {{ t('Failed to load') | tojson }},
+  uniqueIPs:    {{ t('Unique IPs') | tojson }},
+  malIPs:       {{ t('Malicious IPs') | tojson }},
+  privIPs:      {{ t('Private IPs') | tojson }},
+  totalFlows:   {{ t('Total Flows') | tojson }},
+  errPrefix:    {{ t('Error: prefix') | tojson }},
+  privateLabel: {{ t('Private badge') | tojson }},
+  publicLabel:  {{ t('Public badge') | tojson }},
+};
+const mapEl = document.getElementById('map');
+const lmap = L.map(mapEl, { center: [20, 0], zoom: 2, preferCanvas: true });
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  subdomains: 'abcd', maxZoom: 19
+}).addTo(lmap);
+
+let allIPs = [];
+
+function loadMapData() {
+  document.getElementById('map-status').textContent = TXT.loading;
+  document.getElementById('ip-tbody').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:30px">${TXT.loading}</td></tr>`;
+
+  fetch('/api/dashboard/geo')
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById('map-status').textContent = TXT.errPrefix + data.error;
+        return;
+      }
+
+      const geo   = data.geo   || [];
+      const table = data.table || [];
+      allIPs = table;
+
+      // Plot geo points
+      lmap.eachLayer(l => { if (l instanceof L.CircleMarker) lmap.removeLayer(l); });
+      let malCount = 0, benCount = 0;
+      geo.forEach(item => {
+        const color = item.is_malicious ? '#ff3e5f' : '#00d4ff';
+        const radius = Math.min(20, 4 + Math.log1p(item.count) * 3);
+        L.circleMarker([item.lat, item.lon], {
+          color, fillColor: color, fillOpacity: 0.7, radius, weight: 1
+        }).addTo(lmap).bindPopup(
+          `<div style="font-family:monospace;font-size:12px">
+            <strong>${escHtml(item.ip)}</strong><br>
+            ${escHtml(item.country)}<br>
+            ${TXT.flows} ${item.count}<br>
+            ${TXT.status} <span style="color:${color}">${item.is_malicious ? TXT.mal : TXT.ben}</span>
+          </div>`
+        );
+        if (item.is_malicious) malCount++; else benCount++;
+      });
+
+      if (geo.length === 0) {
+        document.getElementById('map-status').textContent = TXT.noPublicIPs;
+      } else {
+        document.getElementById('map-status').textContent = `${geo.length} ${TXT.plotted}`;
+      }
+
+      // Summary strip
+      const malIPs = table.filter(r => r.is_malicious).length;
+      const privIPs = table.filter(r => r.is_private).length;
+      const totalFlows = table.reduce((s,r) => s+r.count, 0);
+      document.getElementById('map-stat-strip').innerHTML = `
+        <div class="stat-card cyan"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="stat-value">${table.length}</div><div class="stat-label">${TXT.uniqueIPs}</div></div>
+        <div class="stat-card red"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="stat-value">${malIPs}</div><div class="stat-label">${TXT.malIPs}</div></div>
+        <div class="stat-card amber"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div><div class="stat-value">${privIPs}</div><div class="stat-label">${TXT.privIPs}</div></div>
+        <div class="stat-card green"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-value">${totalFlows.toLocaleString()}</div><div class="stat-label">${TXT.totalFlows}</div></div>
+      `;
+
+      // Render IP table
+      renderIPTable(table);
+    })
+    .catch(e => {
+      document.getElementById('map-status').textContent = TXT.failLoad;
+      const errTr = document.createElement('tr');
+      const errTd = document.createElement('td');
+      errTd.colSpan = 5;
+      errTd.style.cssText = 'color:var(--red);text-align:center;padding:20px';
+      errTd.textContent = String(e);
+      errTr.appendChild(errTd);
+      const tb = document.getElementById('ip-tbody');
+      tb.innerHTML = '';
+      tb.appendChild(errTr);
+    });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderIPTable(rows) {
+  if (!rows.length) {
+    document.getElementById('ip-tbody').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:30px">${TXT.noData}</td></tr>`;
+    return;
+  }
+  let html = '';
+  rows.forEach(r => {
+    const typeLabel = r.is_private
+      ? `<span class="badge badge-medium">${TXT.privateLabel}</span>`
+      : `<span class="badge badge-safe">${TXT.publicLabel}</span>`;
+    const statusLabel = r.is_malicious
+      ? `<span class="badge badge-critical">${TXT.mal}</span>`
+      : `<span class="badge badge-safe">${TXT.ben}</span>`;
+    // Escape label values — they come from user-uploaded CSV data
+    const labelsHtml = (r.labels || []).map(l => `<span class="badge badge-high" style="font-size:9px">${escHtml(l)}</span>`).join(' ');
+    html += `<tr data-ip="${escHtml(r.ip)}" data-mal="${r.is_malicious}">
+      <td class="mono" style="font-weight:600;color:var(--cyan)">${escHtml(r.ip)}</td>
+      <td>${typeLabel}</td>
+      <td class="mono">${r.count.toLocaleString()}</td>
+      <td>${labelsHtml || '<span style="color:var(--text-3);font-size:11px">—</span>'}</td>
+      <td>${statusLabel}</td>
+    </tr>`;
+  });
+  document.getElementById('ip-tbody').innerHTML = html;
+}
+
+function filterIPs(q) {
+  q = q.toLowerCase();
+  const malOnly = document.getElementById('chk-mal-only').checked;
+  const filtered = allIPs.filter(r => {
+    if (malOnly && !r.is_malicious) return false;
+    if (q && !r.ip.includes(q) && !(r.labels||[]).join(' ').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  renderIPTable(filtered);
+}
+
+document.addEventListener('DOMContentLoaded', loadMapData);
+</script>
+{% endblock %}

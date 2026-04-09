@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" {% if current_lang == 'ar' %}dir="rtl"{% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}BASTION IDS{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bastion.css') }}?v=20260322g">
+  <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/lucide.min.js') }}"></script>
+  <!-- Leaflet for maps -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet.css') }}"/>
+  <script src="{{ url_for('static', filename='vendor/leaflet.js') }}"></script>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="page-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="{{ t('Toggle sidebar') }}">&#9776;</button>
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">Bastion</span>
+          <span class="logo-sub">{{ t('IDS Platform') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">{{ t('Main') }}</div>
+      <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" title="{{ t('Dashboard') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Dashboard') }}</span>
+      </a>
+      <a href="{{ url_for('scan') }}" class="nav-link {% if request.endpoint == 'scan' %}active{% endif %}" title="{{ t('New Scan') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <rect x="8" y="8" width="8" height="8"/>
+        </svg>
+        <span class="nav-link-text">{{ t('New Scan') }}</span>
+      </a>
+
+      <a href="{{ url_for('threat_intel') }}" class="nav-link {% if request.endpoint == 'threat_intel' %}active{% endif %}" title="{{ t('Threat Intel') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Threat Intel') }}</span>
+      </a>
+      <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint in ('history','history_detail') %}active{% endif %}" title="{{ t('Scan History') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Scan History') }}</span>
+      </a>
+
+      <div class="nav-section" style="margin-top:16px">{{ t('Analysis') }}</div>
+      <a href="{{ url_for('watchlist') }}" class="nav-link {% if request.endpoint == 'watchlist' %}active{% endif %}" title="{{ t('Watchlist') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Watchlist') }}</span>
+      </a>
+      <a href="{{ url_for('compare_select') }}" class="nav-link {% if request.endpoint in ('compare_select','compare') %}active{% endif %}" title="{{ t('Compare Scans') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Compare Scans') }}</span>
+      </a>
+      <a href="{{ url_for('global_correlation') }}" class="nav-link {% if request.endpoint == 'global_correlation' %}active{% endif %}" title="{{ t('Correlation nav') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Correlation nav') }}</span>
+      </a>
+      <a href="{{ url_for('dashboard_map') }}" class="nav-link {% if request.endpoint == 'dashboard_map' %}active{% endif %}" title="{{ t('IP Map nav') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        <span class="nav-link-text">{{ t('IP Map nav') }}</span>
+      </a>
+      <a href="{{ url_for('threat_hunt') }}" class="nav-link {% if request.endpoint == 'threat_hunt' %}active{% endif %}" title="{{ t('Threat Hunt') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Threat Hunt') }}</span>
+      </a>
+      <a href="{{ url_for('attack_timeline') }}" class="nav-link {% if request.endpoint == 'attack_timeline' %}active{% endif %}" title="{{ t('Timeline') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="17" y1="12" x2="3" y2="12"/>
+          <path d="M11 6l-6 6 6 6"/>
+          <line x1="21" y1="12" x2="21" y2="12"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Timeline') }}</span>
+      </a>
+
+      <div class="nav-section" style="margin-top:16px">{{ t('System') }}</div>
+      <a href="{{ url_for('cases') }}" class="nav-link {% if request.endpoint in ('cases','case_detail') %}active{% endif %}" title="{{ t('Cases') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Cases') }}</span>
+      </a>
+      {% if is_admin %}
+      <a href="{{ url_for('alert_rules') }}" class="nav-link {% if request.endpoint == 'alert_rules' %}active{% endif %}" title="{{ t('Alert Rules') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Alert Rules') }}</span>
+      </a>
+      <a href="{{ url_for('schedule') }}" class="nav-link {% if request.endpoint == 'schedule' %}active{% endif %}" title="{{ t('Schedules') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Schedules') }}</span>
+      </a>
+      {% endif %}
+      <a href="{{ url_for('model_page') }}" class="nav-link {% if request.endpoint == 'model_page' %}active{% endif %}" title="{{ t('Model') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Model') }}</span>
+      </a>
+      <a href="{{ url_for('api_status_page') }}" class="nav-link {% if request.endpoint == 'api_status_page' %}active{% endif %}" title="{{ t('API Status') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 20V10M12 20V4M6 20v-6"/>
+        </svg>
+        <span class="nav-link-text">{{ t('API Status') }}</span>
+      </a>
+      <a href="{{ url_for('change_password') }}" class="nav-link {% if request.endpoint == 'change_password' %}active{% endif %}" title="{{ t('Change Password') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Change Password') }}</span>
+      </a>
+      {% if is_cc_admin %}
+      <a href="{{ url_for('cc_admin_manage') }}" class="nav-link {% if request.endpoint == 'cc_admin_manage' %}active{% endif %}" title="{{ t('CC Admin') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
+        <span class="nav-link-text">{{ t('CC Admin') }}</span>
+      </a>
+      <a href="{{ url_for('activity_log') }}" class="nav-link {% if request.endpoint == 'activity_log' %}active{% endif %}" title="{{ t('Activity Log') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Activity Log') }}</span>
+      </a>
+      {% endif %}
+      {% if is_admin %}
+      <a href="{{ url_for('admin') }}" class="nav-link {% if request.endpoint == 'admin' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Admin') }}</span>
+      </a>
+      <a href="{{ url_for('settings') }}" class="nav-link {% if request.endpoint == 'settings' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Settings') }}</span>
+      </a>
+      <a href="{{ url_for('audit_log') }}" class="nav-link {% if request.endpoint == 'audit_log' %}active{% endif %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Audit Log') }}</span>
+      </a>
+      <a href="{{ url_for('activity_log') }}" class="nav-link {% if request.endpoint == 'activity_log' %}active{% endif %}" title="{{ t('Activity Log') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Activity Log') }}</span>
+      </a>
+      <a href="{{ url_for('dashboard_export_pdf') }}" class="nav-link" title="{{ t('Export Dashboard PDF') }}" target="_blank" rel="noopener">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <polyline points="9 15 12 18 15 15"/>
+        </svg>
+        <span class="nav-link-text">{{ t('Export Dashboard PDF') }}</span>
+      </a>
+      <a href="{{ url_for('fp_feedback') }}" class="nav-link {% if request.endpoint == 'fp_feedback' %}active{% endif %}" title="{{ t('FP Feedback') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span class="nav-link-text">{{ t('FP Feedback') }}</span>
+      </a>
+      <a href="{{ url_for('whitelist_ips') }}" class="nav-link {% if request.endpoint == 'whitelist_ips' %}active{% endif %}" title="{{ t('IP Whitelist') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+        <span class="nav-link-text">{{ t('IP Whitelist') }}</span>
+      </a>
+      {% endif %}
+      {% if HAS_2FA %}
+      <a href="{{ url_for('two_fa_setup') }}" class="nav-link {% if request.endpoint == 'two_fa_setup' %}active{% endif %}" title="{{ t('2FA Setup') }}">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span class="nav-link-text">{{ t('2FA Setup') }}</span>
+      </a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="model-status">
+        <div class="status-dot {% if model_loaded %}online{% else %}offline{% endif %}"></div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text-1)">
+            {% if model_loaded %}{{ t('Model Online') }}{% else %}{{ t('Model Offline') }}{% endif %}
+          </div>
+          <div style="font-size:10px;color:var(--text-3)">{{ t('XGBoost acc label') }}</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <button class="topbar-sidebar-toggle" onclick="toggleSidebar()" title="{{ t('Toggle sidebar') }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2">
+          {% block topbar_icon %}
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          {% endblock %}
+        </svg>
+        {% block topbar_title %}{{ t('Dashboard') }}{% endblock %}
+      </div>
+      <div class="topbar-right">
+        <span class="live-clock" id="live-clock"></span>
+
+        <!-- Live Threat Count Badge -->
+        <span class="topbar-threat-badge" id="topbar-threat-badge" title="{{ t('Active threats') }}">
+          <span class="threat-dot"></span>
+          <span id="topbar-threat-count">0</span> {{ t('THREATS label') }}
+        </span>
+
+        <!-- Language Toggle -->
+        <div class="lang-toggle">
+          <a href="{{ url_for('set_language', lang='en', next=request.path) }}"
+             class="lang-btn {% if current_lang == 'en' %}active{% endif %}" title="{{ t('English') }}">EN</a>
+          <a href="{{ url_for('set_language', lang='ar', next=request.path) }}"
+             class="lang-btn {% if current_lang == 'ar' %}active{% endif %}" title="{{ t('Arabic') }}">AR</a>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" id="theme-toggle" title="{{ t('Toggle theme') }}" onclick="toggleTheme()">
+          <svg id="theme-icon-dark" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg id="theme-icon-light" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+
+        <!-- Notification Bell -->
+        <a href="{{ url_for('notifications') }}" class="notif-bell" title="{{ t('Notifications') }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          {% if unread_count > 0 %}
+          <span class="notif-badge" id="dash-unread-count">{{ unread_count if unread_count < 10 else '9+' }}</span>
+          {% else %}
+          <span class="notif-badge" id="dash-unread-count" style="display:none">0</span>
+          {% endif %}
+        </a>
+
+        <span class="user-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          {{ session.get('user', 'admin') | upper }}
+          {% if is_admin %}<span class="role-pip admin">A</span>{% endif %}
+        </span>
+        <a href="{{ url_for('logout') }}" class="btn-logout">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+          {{ t('Logout') }}
+        </a>
+      </div>
+    </header>
+
+    <!-- Threat Feed Ticker (dashboard only, populated by JS) -->
+    <div class="threat-ticker-bar" id="threat-ticker-bar" style="display:none">
+      <div class="threat-ticker-label">&#9888; {{ t('LIVE FEED') }}</div>
+      <div class="threat-ticker-track">
+        <div class="threat-ticker-inner" id="threat-ticker-inner">
+          <span class="ticker-item" style="color:var(--text-3);font-family:var(--mono);font-size:11px">
+            {{ t('Loading threat feed') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Flash Messages -->
+      <div id="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'error' if category == 'error' else 'success' }} flash-message anim-fade-up">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                {% if category == 'error' %}
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                {% else %}
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                {% endif %}
+              </svg>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endwith %}
+      </div>
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<div id="page-progress"></div>
+<div id="page-loader">
+  <div class="page-loader-ring"></div>
+  <div class="page-loader-text">{{ t('LOADING') }}</div>
+</div>
+<div class="heatmap-tooltip" id="heatmap-tooltip"></div>
+
+<script>
+window.BASTION_I18N = {
+  whoisPrivate:       {{ t('whois private IP')        | tojson }},
+  whoisNoData:        {{ t('whois no data')            | tojson }},
+  whoisFailed:        {{ t('whois lookup failed')      | tojson }},
+  noIP:               {{ t('no IP address')            | tojson }},
+  addedToWatchlist:   {{ t('IP added watchlist toast') | tojson }},
+  watching:           {{ t('watching label')           | tojson }},
+  failedToAdd:        {{ t('failed to add')            | tojson }},
+  watchLabel:         {{ t('watch label')              | tojson }},
+  markedAsRead:       {{ t('marked as read')           | tojson }},
+  flowMarkedAs:       {{ t('flow marked as')           | tojson }},
+  triageFailed:       {{ t('triage failed')            | tojson }},
+  tagAdded:           {{ t('tag added')                | tojson }},
+  failedAddTag:       {{ t('failed to add tag')        | tojson }},
+  tagRemoved:         {{ t('tag removed')              | tojson }},
+  failedRemoveTag:    {{ t('failed to remove tag')     | tojson }},
+  allNotifsRead:      {{ t('all notifs read')          | tojson }},
+  notifDeleted:       {{ t('notification deleted')     | tojson }},
+  triageConfirmed:    {{ t('triage confirmed')         | tojson }},
+  triageInvestigated: {{ t('triage investigated')      | tojson }},
+  triageFalsePos:     {{ t('triage false positive')    | tojson }},
+  loading:            {{ t('LOADING')                  | tojson }},
+  onlyCSV:            {{ t('only CSV accepted')        | tojson }},
+  selectCSV:          {{ t('select CSV first')         | tojson }},
+  scanPhase1:         {{ t('INITIALIZING SCAN')        | tojson }},
+  scanPhase2:         {{ t('LOADING MODELS')           | tojson }},
+  scanPhase3:         {{ t('ANALYZING FLOWS')          | tojson }},
+  scanPhase4:         {{ t('CLASSIFYING THREATS')      | tojson }},
+  flowsLabel:         {{ t('flows label')              | tojson }},
+  benign:             {{ t('Benign')                   | tojson }},
+  malicious:          {{ t('Malicious')                | tojson }},
+  detectedFlows:      {{ t('Detected Flows')           | tojson }},
+  toastSuccess:       {{ t('toast SUCCESS')            | tojson }},
+  toastError:         {{ t('toast ERROR')              | tojson }},
+  toastWarning:       {{ t('toast WARNING')            | tojson }},
+  toastInfo:          {{ t('toast INFO')               | tojson }},
+  gaugeMinimal:       {{ t('gauge MINIMAL')            | tojson }},
+  gaugeLow:           {{ t('gauge LOW')                | tojson }},
+  gaugeMedium:        {{ t('gauge MEDIUM')             | tojson }},
+  gaugeHigh:          {{ t('gauge HIGH')               | tojson }},
+  gaugeCritical:      {{ t('gauge CRITICAL')           | tojson }},
+  threatsChart:       {{ t('Threats chart')            | tojson }},
+  totalFlowsChart:    {{ t('Total Flows')              | tojson }},
+  networkError:       {{ t('Network error')            | tojson }},
+  days:   {{ [t('day Sun'),t('day Mon'),t('day Tue'),t('day Wed'),t('day Thu'),t('day Fri'),t('day Sat')] | tojson }},
+  months: {{ [t('month Jan'),t('month Feb'),t('month Mar'),t('month Apr'),t('month May'),t('month Jun'),t('month Jul'),t('month Aug'),t('month Sep'),t('month Oct'),t('month Nov'),t('month Dec')] | tojson }},
+};
+</script>
+<script src="{{ url_for('static', filename='js/bastion.js') }}?v=20260324e"></script>
+<script>
+// ── Theme toggle ──────────────────────────────────────────
+function toggleTheme() {
+  const body = document.body;
+  const isLight = body.classList.toggle('light');
+  localStorage.setItem('bastion-theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-icon-dark').style.display = isLight ? 'none' : 'block';
+  document.getElementById('theme-icon-light').style.display = isLight ? 'block' : 'none';
+}
+
+(function() {
+  const saved = localStorage.getItem('bastion-theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    const d = document.getElementById('theme-icon-dark');
+    const l = document.getElementById('theme-icon-light');
+    if (d) d.style.display = 'none';
+    if (l) l.style.display = 'block';
+  }
+})();
+
+// initPageLoader() is now in bastion.js — runs on all pages automatically
+
+// ── Topbar threat badge update ────────────────────────────
+(function initTopbarThreat() {
+  var badge = document.getElementById('topbar-threat-badge');
+  var count = document.getElementById('topbar-threat-count');
+  if (!badge || !count) return;
+
+  function setCount(n) {
+    n = parseInt(n) || 0;
+    count.textContent = n;
+    badge.style.display = n > 0 ? '' : 'none';
+  }
+
+  // Pick up existing value from dashboard stat card if on dashboard
+  var threatEl = document.getElementById('dash-total-threats');
+  if (threatEl) {
+    setCount(parseInt(threatEl.textContent.replace(/[^0-9]/g,'')) || 0);
+    var obs = new MutationObserver(function() {
+      setCount(parseInt(threatEl.textContent.replace(/[^0-9]/g,'')) || 0);
+    });
+    obs.observe(threatEl, { childList: true, characterData: true, subtree: true });
+  } else {
+    // On other pages, try to fetch from threat feed
+    fetch('/api/threat/feed')
+      .then(function(r) { return r.json(); })
+      .then(function(items) {
+        var total = items.reduce(function(s, i) { return s + (i.count || 0); }, 0);
+        setCount(total);
+      })
+      .catch(function() { badge.style.display = 'none'; });
+  }
+})();
+</script>
+{% block scripts %}{% endblock %}
+
+<!-- Session Timeout Warning -->
+{% if session.get('user') %}
+<div id="session-warning" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:var(--surface-2,#1a1f2e);border:1px solid var(--amber,#ffb800);border-radius:16px;padding:36px 40px;max-width:420px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.6)">
+    <div style="width:56px;height:56px;background:rgba(255,184,0,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--amber,#ffb800)" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div style="font-size:18px;font-weight:700;color:var(--amber,#ffb800);margin-bottom:10px">{{ t('Session Expiring') }}</div>
+    <div style="font-size:14px;color:var(--text-2,#8899bb);margin-bottom:24px">
+      {{ t('Session warning message') }} <strong id="session-countdown" style="color:var(--cyan,#00d4ff)">5:00</strong>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <button onclick="keepAlive()" style="background:var(--cyan,#00d4ff);color:#000;border:none;border-radius:8px;padding:10px 24px;font-weight:700;cursor:pointer;font-size:14px">
+        {{ t('Stay Logged In') }}
+      </button>
+      <a href="/logout" style="background:transparent;color:var(--text-3,#6677aa);border:1px solid var(--border,#2a3050);border-radius:8px;padding:10px 24px;font-weight:600;cursor:pointer;font-size:14px;text-decoration:none;display:inline-flex;align-items:center">
+        {{ t('Logout') }}
+      </a>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var WARNING_BEFORE = 5; // show warning 5 minutes before expiry
+  var warningShown   = false;
+  var countdownTimer = null;
+  var warningEl      = document.getElementById('session-warning');
+  var countdownEl    = document.getElementById('session-countdown');
+
+  function fmtTime(secs) {
+    var m = Math.floor(secs / 60);
+    var s = Math.floor(secs % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function showWarning(remainingSecs) {
+    warningEl.style.display = 'flex';
+    warningShown = true;
+    var left = remainingSecs;
+    countdownEl.textContent = fmtTime(left);
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(function() {
+      left -= 1;
+      if (left <= 0) {
+        clearInterval(countdownTimer);
+        window.location.href = '/logout';
+      } else {
+        countdownEl.textContent = fmtTime(left);
+      }
+    }, 1000);
+  }
+
+  window.keepAlive = function() {
+    fetch('/api/session/keepalive', { method: 'POST' })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        warningEl.style.display = 'none';
+        warningShown = false;
+        if (countdownTimer) clearInterval(countdownTimer);
+      })
+      .catch(function() {});
+  };
+
+  // Poll session status every 60 seconds
+  setInterval(function() {
+    fetch('/api/session/status')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var remainingMins = data.remaining_minutes;
+        if (remainingMins <= WARNING_BEFORE && !warningShown) {
+          showWarning(Math.floor(remainingMins * 60));
+        }
+      })
+      .catch(function() {});
+  }, 60000);
+})();
+</script>
+{% endif %}
+<script>
+(function(){
+  var _ct = document.querySelector('meta[name="csrf-token"]');
+  if (!_ct) return;
+  var _tok = _ct.getAttribute('content');
+  // Inject into all forms that don't already have the token
+  document.querySelectorAll('form[method="post"],form[method="POST"]').forEach(function(f){
+    if (!f.querySelector('[name="_csrf_token"]')) {
+      var h = document.createElement('input');
+      h.type = 'hidden'; h.name = '_csrf_token'; h.value = _tok;
+      f.appendChild(h);
+    }
+  });
+  // Patch fetch() to send token as header
+  var _origFetch = window.fetch;
+  window.fetch = function(url, opts) {
+    opts = opts || {};
+    var method = (opts.method || 'GET').toUpperCase();
+    if (['POST','PUT','PATCH','DELETE'].indexOf(method) !== -1) {
+      opts.headers = opts.headers || {};
+      if (opts.headers instanceof Headers) {
+        opts.headers.set('X-CSRF-Token', _tok);
+      } else {
+        opts.headers['X-CSRF-Token'] = _tok;
+      }
+    }
+    return _origFetch.call(this, url, opts);
+  };
+  // Patch XMLHttpRequest
+  var _origOpen = XMLHttpRequest.prototype.open;
+  var _origSend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function(method) {
+    this._csrfMethod = method.toUpperCase();
+    return _origOpen.apply(this, arguments);
+  };
+  XMLHttpRequest.prototype.send = function() {
+    if (['POST','PUT','PATCH','DELETE'].indexOf(this._csrfMethod) !== -1) {
+      this.setRequestHeader('X-CSRF-Token', _tok);
+    }
+    return _origSend.apply(this, arguments);
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Cases') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Cases') }}{% endblock %}
+{% block topbar_icon %}
+<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+{% endblock %}
+
+{% block content %}
+{% set overdue_cases = cases | selectattr('sla_breached') | list %}
+{% set open_cases    = cases | rejectattr('status','equalto','closed') | list %}
+{% set closed_cases  = cases | selectattr('status','equalto','closed') | list %}
+
+{# ── Page header ─────────────────────────────────────────────────────────── #}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('Case Management') }}</h1>
+      <p class="page-subtitle">
+        {{ cases | length }} {{ t('cases') }}
+        &nbsp;·&nbsp; {{ open_cases | length }} {{ t('open') }}
+        &nbsp;·&nbsp; {{ closed_cases | length }} {{ t('closed') }}
+        {% if overdue_cases %}
+        &nbsp;·&nbsp; <span style="color:var(--red);font-weight:700">{{ overdue_cases | length }} {{ t('overdue cases') }}</span>
+        {% endif %}
+      </p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <a href="{{ url_for('case_archive') }}" class="btn btn-secondary" style="position:relative">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle">
+          <polyline points="21 8 21 21 3 21 3 8"/>
+          <rect x="1" y="3" width="22" height="5"/>
+          <line x1="10" y1="12" x2="14" y2="12"/>
+        </svg>
+        {{ t('Archive') }}
+        {% if archived_count %}<span style="margin-left:6px;background:rgba(136,153,187,.25);color:var(--text-2);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700">{{ archived_count }}</span>{% endif %}
+      </a>
+      <button class="btn btn-primary" onclick="document.getElementById('new-case-modal').classList.add('active')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        {{ t('New Case') }}
+      </button>
+    </div>
+  </div>
+</div>
+
+{% if cases %}
+
+{# ── Search bar ──────────────────────────────────────────────────────────── #}
+<div class="anim-fade-up" style="margin-bottom:20px">
+  <div style="position:relative">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-3);pointer-events:none">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="cases-search" class="form-input"
+           placeholder="{{ t('Search cases label') }}" aria-label="{{ t('Search cases label') }}"
+           oninput="filterCases(this.value)"
+           style="padding-left:42px;font-size:14px">
+  </div>
+  <div id="search-no-results" style="display:none;text-align:center;padding:24px;color:var(--text-3);font-size:13px">
+    {{ t('No results match') }}
+  </div>
+</div>
+
+{# ── Overdue section ─────────────────────────────────────────────────────── #}
+{% if overdue_cases %}
+<div id="section-overdue" class="card anim-fade-up" style="margin-bottom:24px;border-color:rgba(255,62,95,.35);background:linear-gradient(135deg,rgba(255,62,95,.06),transparent)">
+  <div class="card-header-custom" style="border-bottom-color:rgba(255,62,95,.2)">
+    <div class="card-title" style="color:var(--red)">
+      <div class="card-title-dot" style="background:var(--red)"></div>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ t('Overdue Cases') }}
+    </div>
+    <span class="badge badge-critical" style="font-size:11px">{{ overdue_cases | length }} {{ t('OVERDUE') }}</span>
+  </div>
+  <div class="card-body" style="padding:12px 20px;display:flex;flex-direction:column;gap:10px">
+    {% for case in overdue_cases %}
+    <a href="{{ url_for('case_detail', case_id=case.id) }}"
+       class="case-card case-searchable" data-search="{{ (case.title ~ ' ' ~ case.analyst ~ ' ' ~ (get_assignees(case)|join(' ')) ~ ' ' ~ (case.description or '') ~ ' ' ~ case.id) | lower }}"
+       style="border-color:rgba(255,62,95,.25);margin-bottom:0">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
+          <span style="font-weight:700;font-size:14px;color:var(--text-1)">{{ case.title }}</span>
+          <span class="case-status {{ case.status }}">{{ tstat(case.status) }}</span>
+          {% set pr = case.priority or 'Medium' %}
+          <span class="badge badge-{% if pr=='Critical' %}critical{% elif pr=='High' %}high{% elif pr=='Medium' %}medium{% else %}safe{% endif %}" style="font-size:10px">{{ t(pr) }}</span>
+          {% if current_user not in case.get('seen_by', [current_user]) %}<span class="badge" style="font-size:9px;background:rgba(0,212,255,0.15);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)">{{ t('NEW badge') }}</span>{% endif %}
+          <span class="badge badge-critical" style="font-size:9px">{{ t('OVERDUE') }}</span>
+          {% if (case.get('returned_to') and current_user == case.get('returned_to')) or (case.get('returned_to_cc') and current_user == case.get('returned_to_cc')) %}<span class="badge" style="font-size:9px;background:rgba(255,119,48,.15);color:#ff7730;border:1px solid rgba(255,119,48,.3)">↩ {{ t('RETURNED badge') }}</span>{% endif %}
+        </div>
+        <div class="case-meta">
+          {{ t('Analyst:') }} <strong>{{ case.analyst }}</strong>
+          {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
+          &nbsp;·&nbsp; {{ t('Open time') }} <strong style="color:var(--red)">{{ case.hours_open }}h</strong> / {{ t('SLA label') }} {{ case.sla_hours }}h
+        </div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{# ── Open Cases section ──────────────────────────────────────────────────── #}
+<div id="section-open" style="margin-bottom:28px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase">
+      {{ t('Open Cases') }}
+    </div>
+    <span class="badge badge-medium" style="font-size:10px" id="open-count">{{ open_cases | length }}</span>
+  </div>
+  <div id="open-cases-list">
+    {% if open_cases %}
+      {% for case in open_cases %}
+      <a href="{{ url_for('case_detail', case_id=case.id) }}"
+         class="case-card anim-fade-up case-searchable"
+         data-search="{{ (case.title ~ ' ' ~ case.analyst ~ ' ' ~ (get_assignees(case)|join(' ')) ~ ' ' ~ (case.description or '') ~ ' ' ~ case.id) | lower }}">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
+            <span style="font-weight:700;font-size:14px;color:var(--text-1)">{{ case.title }}</span>
+            <span class="case-status {{ case.status }}">{{ tstat(case.status) }}</span>
+            {% set pr = case.priority or 'Medium' %}
+            <span class="badge badge-{% if pr=='Critical' %}critical{% elif pr=='High' %}high{% elif pr=='Medium' %}medium{% else %}safe{% endif %}" style="font-size:10px">{{ t(pr) }}</span>
+            {% if current_user not in case.get('seen_by', [current_user]) %}<span class="badge" style="font-size:9px;background:rgba(0,212,255,0.15);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)">{{ t('NEW badge') }}</span>{% endif %}
+            {% if (case.get('returned_to') and current_user == case.get('returned_to')) or (case.get('returned_to_cc') and current_user == case.get('returned_to_cc')) %}<span class="badge" style="font-size:9px;background:rgba(255,119,48,.15);color:#ff7730;border:1px solid rgba(255,119,48,.3)">↩ {{ t('RETURNED badge') }}</span>{% endif %}
+          </div>
+          <div class="case-meta">
+            {{ t('Analyst:') }} <strong>{{ case.analyst }}</strong>
+            {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
+            &nbsp;·&nbsp; {{ t('Created:') }} {{ case.created[:16].replace('T',' ') if case.created else t('N/A rep') }}
+            &nbsp;·&nbsp; <strong>{{ case.scan_ids | length }}</strong> {{ t('scans suffix') }}
+            &nbsp;·&nbsp; <strong>{{ case.notes | length }}</strong> {{ t('comments') }}
+            {% if case.get('hours_open') is not none %}
+            &nbsp;·&nbsp; {{ t('Open time') }}
+            <strong style="color:{% if case.sla_breached %}var(--red){% elif case.hours_open > case.sla_hours * 0.8 %}var(--amber){% else %}var(--green){% endif %}">{{ case.hours_open }}h</strong>
+            / {{ t('SLA label') }} {{ case.sla_hours }}h
+            {% if case.sla_breached %}<span class="badge badge-critical" style="font-size:9px;margin-left:4px">{{ t('OVERDUE') }}</span>
+            {% elif case.hours_open > case.sla_hours * 0.8 %}<span class="badge badge-high" style="font-size:9px;margin-left:4px">{{ t('SLA WARNING') }}</span>
+            {% else %}<span class="badge badge-safe" style="font-size:9px;margin-left:4px">{{ t('ON TRACK') }}</span>{% endif %}
+            {% endif %}
+          </div>
+          {% if case.description %}
+          <div style="font-size:12px;color:var(--text-2);margin-top:6px">{{ case.description[:120] }}{% if case.description|length > 120 %}…{% endif %}</div>
+          {% endif %}
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      {% endfor %}
+    {% else %}
+      <div id="open-empty" style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">{{ t('No open cases') }}</div>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Closed Cases section ────────────────────────────────────────────────── #}
+<div id="section-closed">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer" onclick="toggleClosedSection()">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase">
+      {{ t('Closed Cases') }}
+    </div>
+    <span class="badge badge-safe" style="font-size:10px" id="closed-count">{{ closed_cases | length }}</span>
+    <svg id="closed-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"
+         style="margin-left:auto;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div id="closed-cases-list" style="display:none">
+    {% if closed_cases %}
+      {% for case in closed_cases %}
+      <a href="{{ url_for('case_detail', case_id=case.id) }}"
+         class="case-card case-searchable"
+         data-search="{{ (case.title ~ ' ' ~ case.analyst ~ ' ' ~ (get_assignees(case)|join(' ')) ~ ' ' ~ (case.description or '') ~ ' ' ~ case.id) | lower }}"
+         style="opacity:.75;border-color:rgba(136,153,187,.2)">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
+            <span style="font-weight:700;font-size:14px;color:var(--text-2)">{{ case.title }}</span>
+            <span class="case-status {{ case.status }}">{{ tstat(case.status) }}</span>
+            {% set pr = case.priority or 'Medium' %}
+            <span class="badge badge-{% if pr=='Critical' %}critical{% elif pr=='High' %}high{% elif pr=='Medium' %}medium{% else %}safe{% endif %}" style="font-size:10px">{{ t(pr) }}</span>
+            {% if (case.get('returned_to') and current_user == case.get('returned_to')) or (case.get('returned_to_cc') and current_user == case.get('returned_to_cc')) %}<span class="badge" style="font-size:9px;background:rgba(255,119,48,.15);color:#ff7730;border:1px solid rgba(255,119,48,.3)">↩ {{ t('RETURNED badge') }}</span>{% endif %}
+          </div>
+          <div class="case-meta">
+            {{ t('Analyst:') }} <strong>{{ case.analyst }}</strong>
+            {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
+            &nbsp;·&nbsp; {{ t('Created:') }} {{ case.created[:16].replace('T',' ') if case.created else t('N/A rep') }}
+            &nbsp;·&nbsp; <strong>{{ case.scan_ids | length }}</strong> {{ t('scans suffix') }}
+            &nbsp;·&nbsp; <strong>{{ case.notes | length }}</strong> {{ t('comments') }}
+          </div>
+          {% if case.description %}
+          <div style="font-size:12px;color:var(--text-2);margin-top:6px">{{ case.description[:120] }}{% if case.description|length > 120 %}…{% endif %}</div>
+          {% endif %}
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      {% endfor %}
+    {% else %}
+      <div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">{{ t('No closed cases') }}</div>
+    {% endif %}
+  </div>
+</div>
+
+{% else %}
+<div class="empty-state" style="margin-top:60px">
+  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+  </svg>
+  <p style="font-size:16px;color:var(--text-2)">{{ t('No cases yet') }}</p>
+  <button class="btn btn-primary" onclick="document.getElementById('new-case-modal').classList.add('active')">{{ t('Create First Case') }}</button>
+</div>
+{% endif %}
+
+{# ── New Case Modal ───────────────────────────────────────────────────────── #}
+<div class="modal-overlay" id="new-case-modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal">
+    <div class="modal-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" style="margin-right:8px;vertical-align:middle">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+      {{ t('New Investigation Case') }}
+    </div>
+    <form method="POST" action="{{ url_for('cases_new') }}" enctype="multipart/form-data">
+      <div class="form-group">
+        <label class="form-label">{{ t('Case Title') }}</label>
+        <input type="text" name="title" class="form-input" placeholder="{{ t('e.g. DDoS Campaign') }}" required>
+      </div>
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">{{ t('Description') }}</label>
+        <textarea name="description" class="form-input" rows="3" placeholder="{{ t('Brief description') }}" style="resize:vertical"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+        <div class="form-group">
+          <label class="form-label">{{ t('Priority') }}</label>
+          <select name="priority" class="form-input">
+            <option value="Low">{{ t('Low') }}</option>
+            <option value="Medium" selected>{{ t('Medium') }}</option>
+            <option value="High">{{ t('High') }}</option>
+            <option value="Critical">{{ t('Critical') }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Assign To (multiple)') }}</label>
+          {% if can_assign and available_assignees %}
+          <div class="asgn-wrap" id="nc-asgn-wrap">
+            <div class="asgn-trigger" id="nc-asgn-trigger" onclick="ncAsgnToggle()">
+              <div class="asgn-tags" id="nc-asgn-tags">
+                <span class="asgn-ph">{{ t('None label') }}</span>
+              </div>
+              <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div id="nc-asgn-hidden"></div>
+          <div class="asgn-portal" id="nc-asgn-portal">
+            {% for u in available_assignees %}
+            <label class="asgn-opt">
+              <input type="checkbox" name="assigned_to" value="{{ u }}" onchange="ncAsgnUpdate()">
+              <span style="flex:1">{{ u }}</span>
+            </label>
+            {% endfor %}
+          </div>
+          {% else %}
+          <input type="text" class="form-input" placeholder="{{ t('Username placeholder') }}" disabled style="opacity:.5">
+          {% endif %}
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">{{ t('Link Scan ID') }}</label>
+        <input type="text" name="scan_id" class="form-input" placeholder="{{ t('e.g. scan id') }}">
+      </div>
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">{{ t('SLA Hours') }}</label>
+        <input type="number" name="sla_hours" class="form-input" value="24" min="1" max="720" step="1">
+      </div>
+      {% if is_admin %}
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">{{ t('Attachments') }}</label>
+        <input type="file" name="attachments" class="form-input" multiple style="padding:6px 12px;cursor:pointer">
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">{{ t('Attachment types hint') }}</div>
+      </div>
+      {% endif %}
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('new-case-modal').classList.remove('active')">{{ t('Cancel') }}</button>
+        <button type="submit" class="btn btn-primary">{{ t('Create Case') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.asgn-wrap{position:relative;width:100%}
+.asgn-trigger{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;
+  background:var(--input-bg,rgba(255,255,255,.05));border:1px solid var(--border);border-radius:8px;
+  cursor:pointer;font-size:13px;color:var(--text-1);min-height:38px;gap:8px;user-select:none}
+.asgn-trigger:hover{border-color:var(--cyan)}
+.asgn-trigger .chev{flex-shrink:0;opacity:.5;transition:transform .2s}
+.asgn-portal{position:fixed;z-index:99999;display:none;
+  background:var(--card-bg,#0d1929);border:1px solid var(--border);border-radius:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);max-height:220px;overflow-y:auto}
+.asgn-portal.open{display:block}
+.asgn-opt{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;
+  font-size:13px;color:var(--text-2);transition:background .15s}
+.asgn-opt:hover{background:rgba(0,212,255,.08);color:var(--text-1)}
+.asgn-opt:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04)}
+.asgn-opt input[type=checkbox]{accent-color:var(--cyan);width:15px;height:15px;flex-shrink:0;cursor:pointer}
+.asgn-opt.sel{color:var(--cyan)}
+.asgn-tags{display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:0}
+.asgn-tag{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.25);
+  border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.asgn-ph{color:var(--text-3);font-size:12px}
+</style>
+<script>
+// ── Search / filter ─────────────────────────────────────────────────────────
+function filterCases(q) {
+  q = q.trim().toLowerCase();
+  var cards   = document.querySelectorAll('.case-searchable');
+  var od      = document.getElementById('section-overdue');
+  var visible = 0;
+
+  cards.forEach(function(card) {
+    var text = card.dataset.search || '';
+    var show = !q || text.includes(q);
+    card.style.display = show ? '' : 'none';
+    // Only count as visible if not inside the overdue section (hidden during search)
+    if (show && (!q || !od || !od.contains(card))) visible++;
+  });
+
+  // Show/hide section wrappers based on visible children
+  updateSectionVisibility('open-cases-list',   'section-open');
+  updateSectionVisibility('closed-cases-list', null);
+
+  // Overdue section — hide when searching (results already appear in open section)
+  if (od) od.style.display = q ? 'none' : '';
+
+  // No-results message
+  document.getElementById('search-no-results').style.display = (q && visible === 0) ? '' : 'none';
+}
+
+function updateSectionVisibility(listId, sectionId) {
+  var list = document.getElementById(listId);
+  if (!list) return;
+  var q = document.getElementById('cases-search').value.trim();
+  var anyVisible = Array.from(list.querySelectorAll('.case-searchable')).some(function(c) {
+    return c.style.display !== 'none';
+  });
+  // When searching, auto-expand closed section so results show; hide it when empty
+  if (listId === 'closed-cases-list' && q) {
+    list.style.display = anyVisible ? '' : 'none';
+  }
+  // Show/hide the section wrapper (header + list) when searching
+  if (sectionId) {
+    var section = document.getElementById(sectionId);
+    if (section) section.style.display = (q && !anyVisible) ? 'none' : '';
+  }
+}
+
+// ── Closed section toggle ───────────────────────────────────────────────────
+function toggleClosedSection() {
+  var list     = document.getElementById('closed-cases-list');
+  var chevron  = document.getElementById('closed-chevron');
+  var isOpen   = list.style.display !== 'none';
+  list.style.display    = isOpen ? 'none' : '';
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+// ── New-case assignee portal dropdown ────────────────────────────────────────
+(function() {
+  var trigger = document.getElementById('nc-asgn-trigger');
+  var portal  = document.getElementById('nc-asgn-portal');
+  if (!trigger || !portal) return;
+
+  document.body.appendChild(portal);
+
+  function position() {
+    var r = trigger.getBoundingClientRect();
+    portal.style.top   = (r.bottom + 4) + 'px';
+    portal.style.width = r.width + 'px';
+    var rtl = document.documentElement.dir === 'rtl';
+    portal.style.left  = rtl ? 'auto' : r.left + 'px';
+    portal.style.right = rtl ? (window.innerWidth - r.right) + 'px' : 'auto';
+  }
+
+  window.ncAsgnToggle = function() {
+    var opening = !portal.classList.contains('open');
+    if (opening) position();
+    portal.classList.toggle('open');
+    var chev = trigger.querySelector('.chev');
+    if (chev) chev.style.transform = portal.classList.contains('open') ? 'rotate(180deg)' : '';
+  };
+
+  window.ncAsgnUpdate = function() {
+    var checks = portal.querySelectorAll('input[type=checkbox]');
+    var tags   = document.getElementById('nc-asgn-tags');
+    var hidden = document.getElementById('nc-asgn-hidden');
+    var sel    = Array.from(checks).filter(function(c){ return c.checked; }).map(function(c){ return c.value; });
+    checks.forEach(function(c){ c.closest('.asgn-opt').classList.toggle('sel', c.checked); });
+    // Build tags via DOM API so usernames are never injected as HTML
+    tags.innerHTML = '';
+    if (sel.length) {
+      sel.forEach(function(u) {
+        var sp = document.createElement('span');
+        sp.className = 'asgn-tag';
+        sp.textContent = u;
+        tags.appendChild(sp);
+      });
+    } else {
+      tags.innerHTML = '<span class="asgn-ph">—</span>';
+    }
+    // Sync hidden inputs inside the form so assigned_to is submitted correctly
+    if (hidden) {
+      hidden.innerHTML = '';
+      sel.forEach(function(u) {
+        var inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'assigned_to';
+        inp.value = u;
+        hidden.appendChild(inp);
+      });
+    }
+  };
+
+  document.addEventListener('click', function(e) {
+    if (!portal.contains(e.target) && !trigger.contains(e.target)) {
+      portal.classList.remove('open');
+      var chev = trigger.querySelector('.chev');
+      if (chev) chev.style.transform = '';
+    }
+  });
+
+  window.addEventListener('scroll', function() {
+    if (portal.classList.contains('open')) position();
+  }, true);
+})();
+
+</script>
+{% endblock %}

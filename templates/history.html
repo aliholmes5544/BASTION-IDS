@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Scan History') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Scan History') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('Scan History') }}</h1>
+      <p class="page-subtitle">{{ history | length }} {{ t('scans recorded') }}</p>
+    </div>
+    <div style="display:flex;gap:10px">
+      <div class="search-box" style="width:260px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="history-search" placeholder="{{ t('Search scans') }}" aria-label="{{ t('Search scans') }}">
+      </div>
+      <a href="{{ url_for('scan') }}" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        {{ t('New Scan') }}
+      </a>
+    </div>
+  </div>
+</div>
+
+{% if history %}
+  {% for h in history %}
+  {% set sev_bd = h.get('severity_breakdown', {}) %}
+  {% set top = 'SAFE' %}
+  {% if sev_bd.get('CRITICAL', 0) > 0 %}{% set top = 'CRITICAL' %}
+  {% elif sev_bd.get('HIGH', 0) > 0 %}{% set top = 'HIGH' %}
+  {% elif sev_bd.get('MEDIUM', 0) > 0 %}{% set top = 'MEDIUM' %}
+  {% endif %}
+  <a href="{{ url_for('history_detail', scan_id=h.scan_id) }}"
+     class="history-item anim-fade-up"
+     style="animation-delay:{{ loop.index0 * 0.04 }}s">
+    <div class="history-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+    </div>
+    <div class="history-meta">
+      <div class="history-filename">{{ h.filename }}</div>
+      <div class="history-date mono">
+        {{ h.timestamp[:16].replace('T', ' ') if h.timestamp else t('N/A rep') }} UTC &nbsp;·&nbsp;
+        <span class="mono" style="font-size:10px">{{ h.scan_id }}</span>
+      </div>
+      <!-- Tags -->
+      <div id="tags-{{ h.scan_id }}" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center" onclick="event.preventDefault()">
+        {% for tag in h.get('tags', []) %}
+        <span class="tag-chip">{{ tag }}<button class="tag-chip-remove" onclick='removeTag({{ h.scan_id | tojson }},{{ tag | tojson }},this)'>×</button></span>
+        {% endfor %}
+        <span class="tag-add-form">
+          <input type="text" class="tag-add-input" placeholder="{{ t('Add tag placeholder') }}" id="tag-input-{{ h.scan_id }}"
+            onkeydown='if(event.key==="Enter"){addTag({{ h.scan_id | tojson }},this.value,this);event.preventDefault();}'>
+          <button class="tag-add-btn" onclick='addTag({{ h.scan_id | tojson }},document.getElementById("tag-input-{{ h.scan_id }}").value,document.getElementById("tag-input-{{ h.scan_id }}"))'>+</button>
+        </span>
+      </div>
+    </div>
+    <div class="history-stats">
+      <div class="hstat">
+        <div class="hstat-val">{{ h.total_flows | default(0) | int }}</div>
+        <div class="hstat-lbl">{{ t('Flows') }}</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val" style="color:{% if h.get('malicious_flows', 0) > 0 %}var(--red){% else %}var(--green){% endif %}">
+          {{ h.get('malicious_flows', 0) | int }}
+        </div>
+        <div class="hstat-lbl">{{ t('Threats') }}</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val mono" style="font-size:14px">{{ h.get('avg_confidence', 0) }}%</div>
+        <div class="hstat-lbl">{{ t('Confidence') }}</div>
+      </div>
+      <div class="hstat" style="min-width:80px">
+        <span class="badge badge-{{ top | lower }}">{{ tsev(top) }}</span>
+      </div>
+    </div>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  </a>
+  {% endfor %}
+{% else %}
+  <div class="empty-state" style="margin-top:60px">
+    <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+      <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+    </svg>
+    <p style="font-size:16px;color:var(--text-2)">{{ t('No scans on record') }}</p>
+    <a href="{{ url_for('scan') }}" class="btn btn-primary">{{ t('Run First Scan') }}</a>
+  </div>
+{% endif %}
+{% endblock %}

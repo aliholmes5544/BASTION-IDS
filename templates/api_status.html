@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ t('API Status title') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('API Status title') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M18 20V10M12 20V4M6 20v-6"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('API Status title') }}</h1>
+      <p class="page-subtitle">{{ t('Last checked:') }} {{ checked_at }}</p>
+    </div>
+    <a href="{{ url_for('api_status_page') }}" class="btn btn-secondary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      {{ t('Refresh') }}
+    </a>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="stat-grid anim-fade-up" style="margin-bottom:28px">
+  <div class="stat-card">
+    <div class="stat-label">{{ t('Online stat') }}</div>
+    <div class="stat-value" style="color:var(--green)">{{ online }}</div>
+    <div style="font-size:11px;color:var(--text-3)">{{ t('services healthy') }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">{{ t('Warnings stat') }}</div>
+    <div class="stat-value" style="color:var(--amber)">{{ warning }}</div>
+    <div style="font-size:11px;color:var(--text-3)">{{ t('not configured') }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">{{ t('Errors stat') }}</div>
+    <div class="stat-value" style="color:var(--red)">{{ error }}</div>
+    <div style="font-size:11px;color:var(--text-3)">{{ t('connection failed') }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">{{ t('Total stat') }}</div>
+    <div class="stat-value">{{ services | length }}</div>
+    <div style="font-size:11px;color:var(--text-3)">{{ t('services checked') }}</div>
+  </div>
+</div>
+
+<!-- Service Cards -->
+<div style="display:flex;flex-direction:column;gap:12px">
+{% for svc in services %}
+<div class="card anim-fade-up" style="padding:20px 24px;display:flex;align-items:center;gap:20px">
+
+  <!-- Status dot -->
+  <div style="flex-shrink:0">
+    {% if svc.status == 'online' %}
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,255,136,0.12);display:flex;align-items:center;justify-content:center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+    {% elif svc.status == 'warning' %}
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,200,0,0.12);display:flex;align-items:center;justify-content:center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+    {% else %}
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,62,95,0.12);display:flex;align-items:center;justify-content:center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info -->
+  <div style="flex:1;min-width:0">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-weight:700;font-size:15px;color:var(--text-1)">{{ svc.name }}</span>
+      <span style="
+        font-size:11px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:20px;
+        {% if svc.status == 'online' %}background:rgba(0,255,136,0.15);color:var(--green)
+        {% elif svc.status == 'warning' %}background:rgba(255,200,0,0.15);color:var(--amber)
+        {% else %}background:rgba(255,62,95,0.15);color:var(--red){% endif %}
+      ">{{ tstat(svc.status) }}</span>
+    </div>
+    <div style="font-size:13px;color:var(--text-2);margin-bottom:2px">{{ svc.detail }}</div>
+    {% if svc.note %}
+    <div style="font-size:11px;color:var(--text-3)">{{ svc.note }}</div>
+    {% endif %}
+  </div>
+
+  {% if svc.status != 'online' and svc.name != 'IDS ML Model' and svc.name != 'Storage' %}
+  <a href="{{ url_for('settings') }}" class="btn btn-secondary" style="flex-shrink:0;font-size:12px;padding:6px 14px">{{ t('Configure') }}</a>
+  {% endif %}
+
+</div>
+{% endfor %}
+</div>
+{% endblock %}

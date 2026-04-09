@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Model') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Model') }}{% endblock %}
+{% block topbar_icon %}
+<rect x="2" y="3" width="20" height="14" rx="2"/>
+<line x1="8" y1="21" x2="16" y2="21"/>
+<line x1="12" y1="17" x2="12" y2="21"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div class="page-title">{{ t('Model') }}</div>
+      <div class="page-subtitle">{{ t('Model subtitle') }}</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      {% if is_admin %}
+      <form action="{{ url_for('model_reload') }}" method="post" style="display:inline">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-secondary btn-sm" id="reload-btn" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          {{ t('Reload Models') }}
+        </button>
+      </form>
+      <button class="btn btn-primary btn-sm" id="retrain-btn"
+              {% if retrain_running %}disabled{% endif %}
+              onclick="startRetrain()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        {% if retrain_running %}{{ t('Retraining') }}{% else %}{{ t('Start Retrain') }}{% endif %}
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Model Status Cards -->
+<div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+  <div class="stat-card {% if model_loaded %}green{% else %}red{% endif %} anim-fade-up delay-1">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        {% if model_loaded %}
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        {% else %}
+        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        {% endif %}
+      </svg>
+    </div>
+    <div class="stat-value">{% if model_loaded %}{{ t('Online') }}{% else %}{{ t('Offline') }}{% endif %}</div>
+    <div class="stat-label">{{ t('Model Status') }}</div>
+  </div>
+  <div class="stat-card cyan anim-fade-up delay-2">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+    </div>
+    <div class="stat-value">ThresholdClassifier</div>
+    <div class="stat-label">{{ t('Best Model') }}</div>
+  </div>
+  <div class="stat-card amber anim-fade-up delay-3">
+    <div class="stat-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 20V10M12 20V4M6 20v-6"/>
+      </svg>
+    </div>
+    <div class="stat-value">99.9%</div>
+    <div class="stat-label">{{ t('Test Accuracy') }}</div>
+
+  </div>
+</div>
+
+<!-- Training Report -->
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Training Report') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ t('training report source') }}</span>
+  </div>
+  <div class="card-body">
+    <pre style="font-family:var(--mono);font-size:11px;color:var(--text-2);
+                white-space:pre-wrap;max-height:400px;overflow-y:auto;
+                background:rgba(0,0,0,0.3);padding:16px;border-radius:8px;
+                border:1px solid var(--border)">{{ report_text }}</pre>
+  </div>
+</div>
+
+{% if is_admin %}
+<!-- Retrain Log -->
+<div class="card anim-fade-up" id="retrain-section" style="{% if not retrain_running %}display:none{% endif %}">
+  <div class="card-header-custom">
+    <div class="card-title">
+      <div class="card-title-dot" id="log-dot" style="background:var(--amber);animation:statusBlink 1s infinite"></div>
+      {{ t('Live Retrain Log') }}
+    </div>
+    <span id="retrain-status-label" style="font-size:12px;color:var(--amber)">{{ t('Running') }}</span>
+  </div>
+  <div class="card-body">
+    <div class="log-output" id="retrain-log"></div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+{% if is_admin %}
+const TXT_RETRAIN_CONFIRM = {{ t('Retrain confirm') | tojson }};
+const TXT_RETRAINING      = {{ t('Retraining') | tojson }};
+const TXT_START_RETRAIN   = {{ t('Start Retrain') | tojson }};
+const TXT_COMPLETED       = {{ t('Completed') | tojson }};
+const TXT_ERR_PFX         = {{ t('Error: prefix') | tojson }};
+let retraining = {{ retrain_running | tojson }};
+let es = null;
+
+function startRetrain() {
+  if (retraining) return;
+  if (!confirm(TXT_RETRAIN_CONFIRM)) return;
+
+  retraining = true;
+  document.getElementById('retrain-btn').disabled = true;
+  document.getElementById('retrain-btn').textContent = TXT_RETRAINING;
+  document.getElementById('retrain-section').style.display = 'block';
+  document.getElementById('retrain-log').textContent = '';
+
+  fetch('/model/retrain/start', { method: 'POST' })
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) {
+        alert(TXT_ERR_PFX + d.error);
+        retraining = false;
+        document.getElementById('retrain-btn').disabled = false;
+        document.getElementById('retrain-btn').textContent = TXT_START_RETRAIN;
+        return;
+      }
+      subscribeLog();
+    })
+    .catch(e => {
+      alert(TXT_ERR_PFX + e);
+      retraining = false;
+    });
+}
+
+function subscribeLog() {
+  if (es) es.close();
+  es = new EventSource('/api/model/retrain/status');
+  const log = document.getElementById('retrain-log');
+
+  es.onmessage = function(e) {
+    var d;
+    try { d = JSON.parse(e.data); } catch(ex) { return; }
+    if (d.done) {
+      es.close();
+      retraining = false;
+      document.getElementById('retrain-btn').disabled = false;
+      document.getElementById('retrain-btn').textContent = TXT_START_RETRAIN;
+      document.getElementById('retrain-status-label').textContent = TXT_COMPLETED;
+      document.getElementById('retrain-status-label').style.color = 'var(--green)';
+      document.getElementById('log-dot').style.background = 'var(--green)';
+      document.getElementById('reload-btn').style.display = 'inline-flex';
+      return;
+    }
+    if (d.line !== undefined) {
+      log.textContent += d.line + '\n';
+      log.scrollTop = log.scrollHeight;
+    }
+  };
+  es.onerror = function() {
+    es.close();
+    retraining = false;
+  };
+}
+
+{% if retrain_running %}
+subscribeLog();
+{% endif %}
+{% endif %}
+</script>
+{% endblock %}

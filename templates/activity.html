@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Activity Log title') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Activity') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('Activity Log title') }}</h1>
+      <p class="page-subtitle">{{ t('All system events') }} — {{ stats.total }} {{ t('entries') }}</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">{{ t('Back to Dashboard') }}</a>
+    </div>
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="stat-grid" style="margin-bottom:20px">
+  {% set scan_count   = stats.scan_count %}
+  {% set login_count  = stats.login_count %}
+  {% set triage_count = stats.triage_count %}
+  {% set alert_count  = stats.alert_count %}
+
+  <div class="stat-card cyan anim-fade-up delay-1">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <rect x="8" y="8" width="8" height="8"/>
+      </svg>
+    </div>
+    <div class="stat-value">{{ scan_count }}</div>
+    <div class="stat-label">{{ t('Scans Completed') }}</div>
+  </div>
+  <div class="stat-card green anim-fade-up delay-2">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <div class="stat-value">{{ login_count }}</div>
+    <div class="stat-label">{{ t('Login Events') }}</div>
+  </div>
+  <div class="stat-card amber anim-fade-up delay-3">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 11 12 14 22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+    </div>
+    <div class="stat-value">{{ triage_count }}</div>
+    <div class="stat-label">{{ t('Triage Actions') }}</div>
+  </div>
+  <div class="stat-card red anim-fade-up delay-4">
+    <div class="stat-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </div>
+    <div class="stat-value">{{ stats.total }}</div>
+    <div class="stat-label">{{ t('Total Events') }}</div>
+  </div>
+</div>
+
+<!-- Event Table -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('All Events') }}</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <select id="act-filter" onchange="filterActivity()" style="background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);padding:6px 10px;border-radius:8px;font-size:12px">
+        <option value="">{{ t('All Actions') }}</option>
+        <option value="scan">{{ t('Scans btn') }}</option>
+        <option value="login">{{ t('Logins filter') }}</option>
+        <option value="triage">{{ t('Triage filter') }}</option>
+        <option value="alert">{{ t('Alerts filter') }}</option>
+        <option value="settings">{{ t('Settings filter') }}</option>
+      </select>
+      <div class="search-box" style="width:200px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="act-search" placeholder="{{ t('Search log') }}" aria-label="{{ t('Search log') }}" oninput="filterActivity()">
+      </div>
+    </div>
+  </div>
+  {% if log %}
+  <div style="overflow-x:auto">
+    <table class="data-table" id="act-table">
+      <thead>
+        <tr>
+          <th style="width:160px">{{ t('Timestamp') }}</th>
+          <th style="width:110px">{{ t('User') }}</th>
+          <th style="width:160px">{{ t('Action') }}</th>
+          <th>{{ t('Detail') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in log %}
+        <tr data-action="{{ entry.action }}">
+          <td class="mono" style="font-size:12px;color:var(--text-3)">{{ entry.timestamp[:19].replace('T',' ') if entry.timestamp else '—' }}</td>
+          <td style="font-weight:600;color:var(--cyan)">{{ entry.user or '—' }}</td>
+          <td>
+            <span class="badge
+              {% if 'scan_complete' in entry.action %}badge-safe
+              {% elif 'scan_start' in entry.action %}badge-medium
+              {% elif 'login' in entry.action %}badge-high
+              {% elif 'triage' in entry.action or 'confirm' in entry.action or 'fp' in entry.action %}badge-critical
+              {% elif 'alert' in entry.action %}badge-high
+              {% elif 'settings' in entry.action %}badge-medium
+              {% else %}badge-medium{% endif %}
+              " style="font-size:10px">
+              {{ t('act ' + entry.action) }}
+            </span>
+          </td>
+          <td style="font-size:13px;color:var(--text-2)">{{ entry.detail or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body">
+    <div class="empty-state">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+      </svg>
+      <p style="font-size:16px;margin-top:16px">{{ t('No activity recorded') }}</p>
+      <p style="font-size:13px;color:var(--text-3);margin-bottom:20px">{{ t('Activity empty note') }}</p>
+      <a href="{{ url_for('scan') }}" class="btn btn-primary btn-sm">{{ t('Run First Scan') }}</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterActivity() {
+  const q   = document.getElementById('act-search').value.toLowerCase();
+  const cat = document.getElementById('act-filter').value.toLowerCase();
+  document.querySelectorAll('#act-table tbody tr').forEach(row => {
+    const action = (row.dataset.action || '').toLowerCase();
+    const text   = row.textContent.toLowerCase();
+    const catMatch = !cat ||
+      (cat === 'scan'     && action.includes('scan')) ||
+      (cat === 'login'    && action.includes('login')) ||
+      (cat === 'triage'   && (action.includes('triage') || action.includes('confirm') || action.includes('fp') || action.includes('invest'))) ||
+      (cat === 'alert'    && action.includes('alert')) ||
+      (cat === 'settings' && action.includes('settings'));
+    const qMatch = !q || text.includes(q);
+    row.style.display = (catMatch && qMatch) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

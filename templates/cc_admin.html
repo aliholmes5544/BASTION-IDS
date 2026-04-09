@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}{{ t('CC Admin') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('CC Admin') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+<circle cx="9" cy="7" r="4"/>
+<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+<path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div class="page-title">{{ t('CC Admin Panel title') }}</div>
+  <div class="page-subtitle">{{ t('CC Admin page subtitle') }}</div>
+</div>
+
+<div class="grid-2 anim-fade-up" style="margin-bottom:24px">
+
+  <!-- Analysts list -->
+  <div class="card">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Analysts') }} ({{ managed_users | length }})</div>
+    </div>
+    <div style="overflow-x:auto">
+      {% if managed_users %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ t('Username') }}</th>
+            <th>{{ t('Role') }}</th>
+            <th>{{ t('Last Login') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in managed_users %}
+          <tr>
+            <td style="font-weight:600;color:var(--text-1)">{{ u.username }}</td>
+            <td><span class="badge badge-safe">{{ t('role analyst') }}</span></td>
+            <td class="mono" style="font-size:11px;color:var(--text-3)">
+              {% if u.last_login and u.last_login != 'Never' %}
+                {{ u.last_login[:16].replace('T',' ') }}
+              {% else %}{{ t('Never') }}{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:30px"><p>{{ t('No analysts yet') }}</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Add Analyst Form -->
+  <div class="card">
+    <div class="card-header-custom">
+      <div class="card-title"><div class="card-title-dot"></div>{{ t('Add New Analyst') }}</div>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('cc_admin_add_user') }}">
+        <div class="form-group">
+          <label class="form-label">{{ t('Username') }} *</label>
+          <input type="text" name="username" class="form-input" required
+                 placeholder="{{ t('ph username example') }}" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t('Password') }} *</label>
+          <input type="password" name="password" class="form-input" required
+                 placeholder="{{ t('Min 8 characters') }}" autocomplete="new-password">
+        </div>
+        <div class="alert" style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);
+             border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-2);margin-bottom:16px">
+          {{ t('analyst only note') }}
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <line x1="20" y1="8" x2="20" y2="14"/>
+            <line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+          {{ t('Add Analyst') }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Activity Log -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Analyst Activity Log') }}</div>
+    <span style="font-size:11px;color:var(--text-3)">{{ t('Login Logout events') }}</span>
+  </div>
+  <div style="overflow-x:auto;max-height:420px;overflow-y:auto">
+    {% if activity_log %}
+    <table class="data-table">
+      <thead style="position:sticky;top:0;background:var(--bg-2);z-index:1">
+        <tr>
+          <th>{{ t('Time') }}</th>
+          <th>{{ t('Analyst') }}</th>
+          <th>{{ t('Action') }}</th>
+          <th>{{ t('Detail') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ev in activity_log %}
+        <tr>
+          <td class="mono" style="font-size:11px;color:var(--text-3);white-space:nowrap">
+            {{ ev.get('timestamp','')[:16].replace('T',' ') }}
+          </td>
+          <td style="font-weight:600;color:var(--cyan)">{{ ev.get('user','') }}</td>
+          <td>
+            {% if ev.get('action') == 'login' %}
+            <span class="badge badge-safe" style="font-size:10px">{{ t('LOGIN') }}</span>
+            {% else %}
+            <span class="badge" style="font-size:10px;background:rgba(136,153,187,0.15);color:var(--text-3)">{{ t('LOGOUT') }}</span>
+            {% endif %}
+          </td>
+          <td style="font-size:12px;color:var(--text-3)">{{ ev.get('detail','') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state" style="padding:40px">
+      <p>{{ t('No login events') }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

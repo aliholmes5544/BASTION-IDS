@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}{{ t('SHAP title') }} — {{ entry.scan_id }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('SHAP title') }}{% endblock %}
+{% block topbar_icon %}
+<path d="M18 20V10M12 20V4M6 20v-6"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+    <a href="{{ url_for('result', scan_id=entry.scan_id) }}" class="btn btn-secondary btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      {{ t('Back') }}
+    </a>
+    <div>
+      <div class="page-title">{{ t('SHAP title') }}</div>
+      <div class="page-subtitle">{{ t('Scan:') }} {{ entry.scan_id }} — {{ t('SHAP subtitle') }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card anim-fade-up" style="margin-bottom:20px">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Top 10 Features') }}</div>
+    <span id="shap-status" style="font-size:12px;color:var(--text-3)">{{ t('Computing SHAP') }}</span>
+  </div>
+  <div class="card-body">
+    <div id="shap-error" class="alert alert-error" style="display:none"></div>
+    <canvas id="shap-chart" style="max-height:380px"></canvas>
+  </div>
+</div>
+
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Feature Importance Table') }}</div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="shap-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{{ t('Feature th') }}</th>
+          <th>{{ t('Mean SHAP Value') }}</th>
+          <th>{{ t('Relative Importance') }}</th>
+        </tr>
+      </thead>
+      <tbody id="shap-tbody">
+        <tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:30px">{{ t('Loading') }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card anim-fade-up" style="margin-top:20px">
+  <div class="card-body">
+    <div style="font-size:13px;color:var(--text-2);line-height:1.8">
+      <strong style="color:var(--cyan)">{{ t('SHAP how to read') }}</strong>
+      {{ t('SHAP explanation') }}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const SCAN_ID = {{ entry.scan_id | tojson }};
+const TXT = {
+  noFlows:    {{ t('No mal flows scan') | tojson }},
+  featShown:  {{ t('features shown') | tojson }},
+  error:      {{ t('ERROR badge') | tojson }},
+  errPrefix:  {{ t('Error: prefix') | tojson }},
+  netErrPfx:  {{ t('Network error prefix') | tojson }},
+};
+let shapChart = null;
+
+fetch(`/api/shap/${SCAN_ID}`)
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById('shap-error').textContent = TXT.errPrefix + data.error;
+      document.getElementById('shap-error').style.display = 'flex';
+      document.getElementById('shap-status').textContent = TXT.error;
+      return;
+    }
+
+    const { features, importances } = data;
+    if (!features || features.length === 0) {
+      document.getElementById('shap-status').textContent = TXT.noFlows;
+      document.getElementById('shap-tbody').innerHTML =
+        `<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:30px">${TXT.noFlows}</td></tr>`;
+      return;
+    }
+
+    document.getElementById('shap-status').textContent = `${features.length} ${TXT.featShown}`;
+
+    // Chart
+    const ctx = document.getElementById('shap-chart').getContext('2d');
+    shapChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: features,
+        datasets: [{
+          label: 'Mean |SHAP|',
+          data: importances,
+          backgroundColor: features.map((_, i) =>
+            `rgba(0, ${Math.round(212 - i * 18)}, 255, ${0.8 - i * 0.05})`),
+          borderColor: 'rgba(0, 212, 255, 0.5)',
+          borderWidth: 1,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` SHAP: ${ctx.raw.toFixed(4)}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#8899bb', font: { family: 'JetBrains Mono', size: 11 } },
+            grid: { color: 'rgba(0,212,255,0.06)' },
+          },
+          y: {
+            ticks: { color: '#e8f0ff', font: { family: 'JetBrains Mono', size: 11 } },
+            grid: { display: false },
+          }
+        }
+      }
+    });
+
+    // Table
+    const maxVal = Math.max(...importances);
+    const tbody = document.getElementById('shap-tbody');
+    tbody.innerHTML = '';
+    features.forEach((feat, i) => {
+      const pct = maxVal > 0 ? (importances[i] / maxVal * 100).toFixed(1) : 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="color:var(--text-3)">${i + 1}</td>
+        <td class="mono" style="font-size:12px;color:var(--cyan)">${feat}</td>
+        <td class="mono" style="font-size:12px">${importances[i].toFixed(4)}</td>
+        <td style="min-width:160px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="progress-bar-wrap" style="width:120px">
+              <div class="progress-bar-fill" style="width:${pct}%;background:var(--cyan)"></div>
+            </div>
+            <span class="mono" style="font-size:11px;color:var(--text-3)">${pct}%</span>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  })
+  .catch(e => {
+    document.getElementById('shap-error').textContent = TXT.netErrPfx + e;
+    document.getElementById('shap-error').style.display = 'flex';
+    document.getElementById('shap-status').textContent = TXT.error;
+  });
+</script>
+{% endblock %}

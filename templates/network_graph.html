@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Network Graph') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Network Graph') }}{% endblock %}
+{% block topbar_icon %}
+<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+<line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+<line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+{% endblock %}
+
+{% block content %}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 class="page-title">{{ t('Network Graph') }}</h1>
+      <p class="page-subtitle">{{ t('Scan:') }} <span class="mono">{{ scan_id }}</span> &nbsp;·&nbsp; {{ entry.filename }}</p>
+    </div>
+    <a href="{{ url_for('result', scan_id=scan_id) }}" class="btn btn-secondary btn-sm">
+      &larr; {{ t('Back') }}
+    </a>
+  </div>
+</div>
+
+<!-- Stats row -->
+<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+  <div class="card" style="padding:14px 18px;text-align:center">
+    <div style="font-size:22px;font-weight:700;color:var(--cyan)" id="stat-nodes">{{ nodes|length }}</div>
+    <div style="font-size:11px;color:var(--text-3);margin-top:2px">{{ t('Unique IPs') }}</div>
+  </div>
+  <div class="card" style="padding:14px 18px;text-align:center">
+    <div style="font-size:22px;font-weight:700;color:var(--text-1)" id="stat-edges">{{ edges|length }}</div>
+    <div style="font-size:11px;color:var(--text-3);margin-top:2px">{{ t('Connections') }}</div>
+  </div>
+  <div class="card" style="padding:14px 18px;text-align:center">
+    <div style="font-size:22px;font-weight:700;color:#ff3e5f" id="stat-attackers">{{ nodes|selectattr('role','eq','src')|list|length }}</div>
+    <div style="font-size:11px;color:var(--text-3);margin-top:2px">{{ t('Attackers') }}</div>
+  </div>
+  <div class="card" style="padding:14px 18px;text-align:center">
+    <div style="font-size:22px;font-weight:700;color:#00d4ff" id="stat-victims">{{ nodes|selectattr('role','eq','dst')|list|length }}</div>
+    <div style="font-size:11px;color:var(--text-3);margin-top:2px">{{ t('Victims') }}</div>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="card anim-fade-up" style="margin-bottom:16px">
+  <div class="card-body" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;padding:12px 20px">
+    <span style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:1px">{{ t('NODE:') }}</span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:12px;height:12px;border-radius:50%;background:#ff3e5f;display:inline-block"></span>{{ t('Attacker src') }}
+    </span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:12px;height:12px;border-radius:50%;background:#00d4ff;display:inline-block"></span>{{ t('Victim dst') }}
+    </span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:12px;height:12px;border-radius:50%;background:#ffb800;display:inline-block"></span>{{ t('Both node') }}
+    </span>
+    <span style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:1px;margin-left:16px">{{ t('EDGE:') }}</span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:30px;height:3px;background:#00ff94;display:inline-block;border-radius:2px"></span>{{ t('Safe') }}
+    </span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:30px;height:3px;background:#ffb800;display:inline-block;border-radius:2px"></span>{{ t('Medium') }}
+    </span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:30px;height:3px;background:#ff6b35;display:inline-block;border-radius:2px"></span>{{ t('High') }}
+    </span>
+    <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="width:30px;height:3px;background:#ff3e5f;display:inline-block;border-radius:2px"></span>{{ t('Critical') }}
+    </span>
+  </div>
+</div>
+
+<!-- Graph -->
+<div class="card anim-fade-up">
+  <div class="card-header-custom">
+    <div class="card-title"><div class="card-title-dot"></div>{{ t('Force-Directed IP Topology') }}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="zoomIn()">+</button>
+      <button class="btn btn-secondary btn-sm" onclick="zoomOut()">&minus;</button>
+      <button class="btn btn-secondary btn-sm" onclick="resetZoom()">{{ t('Reset') }}</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="graph-loading" style="height:600px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--text-3)">
+    <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+    <span style="font-size:13px">{{ t('Building graph') }}</span>
+  </div>
+
+  <!-- Empty state -->
+  <div id="graph-empty" style="height:600px;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--text-3)">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+    </svg>
+    <span style="font-size:14px">{{ t('No IP connections') }}</span>
+    <span style="font-size:12px;opacity:0.6">{{ t('No IP connections hint') }}</span>
+  </div>
+
+  <!-- SVG canvas -->
+  <div id="graph-container" style="width:100%;height:600px;display:none;position:relative;overflow:hidden;background:rgba(5,10,20,0.4);border-radius:0 0 12px 12px">
+    <svg id="graph-svg" style="width:100%;height:100%"></svg>
+    <div id="graph-tooltip" style="
+      position:absolute;display:none;
+      background:var(--surface-2);border:1px solid var(--border);
+      border-radius:8px;padding:10px 14px;font-size:12px;
+      pointer-events:none;max-width:240px;z-index:10;color:var(--text-1);
+      box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/d3.v7.min.js') }}"></script>
+<script>
+const TXT_ROLE    = {{ t('Role:') | tojson }};
+const TXT_ATTACKS = {{ t('Attacks:') | tojson }};
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+(function() {
+  var rawNodes = {{ nodes | tojson }};
+  var rawEdges = {{ edges | tojson }};
+
+  var loading   = document.getElementById('graph-loading');
+  var empty     = document.getElementById('graph-empty');
+  var container = document.getElementById('graph-container');
+
+  if (!rawNodes || rawNodes.length === 0) {
+    loading.style.display = 'none';
+    empty.style.display   = 'flex';
+    return;
+  }
+
+  // Show canvas, hide loader
+  loading.style.display   = 'none';
+  container.style.display = 'block';
+
+  var width  = container.clientWidth  || 900;
+  var height = container.clientHeight || 600;
+
+  var SEV_COLOR = {
+    SAFE:     '#00ff94',
+    MEDIUM:   '#ffb800',
+    HIGH:     '#ff6b35',
+    CRITICAL: '#ff3e5f',
+    UNKNOWN:  '#8899bb',
+  };
+  var NODE_COLOR = {
+    src:  '#ff3e5f',
+    dst:  '#00d4ff',
+    both: '#ffb800',
+  };
+
+  var svg     = d3.select('#graph-svg');
+  var tooltip = document.getElementById('graph-tooltip');
+  var g       = svg.append('g');
+
+  var zoom = d3.zoom().scaleExtent([0.05, 10]).on('zoom', function(e) {
+    g.attr('transform', e.transform);
+  });
+  svg.call(zoom);
+
+  function zoomIn()    { svg.transition().duration(300).call(zoom.scaleBy, 1.5); }
+  function zoomOut()   { svg.transition().duration(300).call(zoom.scaleBy, 0.67); }
+  function resetZoom() {
+    svg.transition().duration(400).call(
+      zoom.transform,
+      d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8)
+    );
+  }
+  window.zoomIn    = zoomIn;
+  window.zoomOut   = zoomOut;
+  window.resetZoom = resetZoom;
+
+  // Cap nodes/edges for performance
+  var nodes = rawNodes.slice(0, 1000);
+  var nodeIds = new Set(nodes.map(function(n) { return n.id; }));
+  var edges = rawEdges.filter(function(e) {
+    return nodeIds.has(e.source) && nodeIds.has(e.target);
+  }).slice(0, 3000);
+
+  var simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(edges).id(function(d) { return d.id; }).distance(70).strength(0.5))
+    .force('charge', d3.forceManyBody().strength(nodes.length > 200 ? -30 : -120))
+    .force('center', d3.forceCenter(0, 0))
+    .force('collision', d3.forceCollide(14));
+
+  // Edges
+  var link = g.append('g')
+    .selectAll('line').data(edges).join('line')
+    .attr('stroke', function(d) { return SEV_COLOR[d.severity] || '#8899bb'; })
+    .attr('stroke-opacity', 0.35)
+    .attr('stroke-width', function(d) {
+      return d.severity === 'CRITICAL' ? 2.5 : d.severity === 'HIGH' ? 1.8 : 1;
+    });
+
+  // Nodes
+  var node = g.append('g')
+    .selectAll('circle').data(nodes).join('circle')
+    .attr('r', function(d) {
+      return d.attacks && d.attacks.length > 0 ? 10 : 7;
+    })
+    .attr('fill', function(d) { return NODE_COLOR[d.role] || '#8899bb'; })
+    .attr('stroke', 'rgba(255,255,255,0.25)')
+    .attr('stroke-width', 1)
+    .style('cursor', 'pointer')
+    .call(d3.drag()
+      .on('start', function(e, d) {
+        if (!e.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x; d.fy = d.y;
+      })
+      .on('drag', function(e, d) { d.fx = e.x; d.fy = e.y; })
+      .on('end', function(e, d) {
+        if (!e.active) simulation.alphaTarget(0);
+        d.fx = null; d.fy = null;
+      }))
+    .on('mouseover', function(e, d) {
+      var html = '<strong style="color:var(--cyan)">' + escHtml(d.id) + '</strong><br>';
+      html += '<span style="color:var(--text-3)">' + TXT_ROLE + ' </span>' + escHtml(d.role) + '<br>';
+      if (d.attacks && d.attacks.length) {
+        html += '<span style="color:var(--text-3)">' + TXT_ATTACKS + ' </span>' + d.attacks.slice(0, 4).map(escHtml).join(', ');
+      }
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+    })
+    .on('mousemove', function(e) {
+      var rect = container.getBoundingClientRect();
+      var x = e.clientX - rect.left + 12;
+      var y = e.clientY - rect.top  - 10;
+      if (x + 240 > width)  x = e.clientX - rect.left - 250;
+      if (y + 80  > height) y = e.clientY - rect.top  - 80;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top  = y + 'px';
+    })
+    .on('mouseout', function() { tooltip.style.display = 'none'; });
+
+  // Labels (only for small graphs)
+  var labels;
+  if (nodes.length <= 60) {
+    labels = g.append('g')
+      .selectAll('text').data(nodes).join('text')
+      .attr('font-size', 9)
+      .attr('fill', 'rgba(180,200,230,0.7)')
+      .attr('dx', 12).attr('dy', 4)
+      .text(function(d) { return d.id; })
+      .style('pointer-events', 'none');
+  }
+
+  simulation.on('tick', function() {
+    link
+      .attr('x1', function(d) { return d.source.x; })
+      .attr('y1', function(d) { return d.source.y; })
+      .attr('x2', function(d) { return d.target.x; })
+      .attr('y2', function(d) { return d.target.y; });
+    node
+      .attr('cx', function(d) { return d.x; })
+      .attr('cy', function(d) { return d.y; });
+    if (labels) {
+      labels.attr('x', function(d) { return d.x; })
+            .attr('y', function(d) { return d.y; });
+    }
+  });
+
+  // After simulation settles, fit to view
+  simulation.on('end', function() {
+    var xs = nodes.map(function(n) { return n.x; });
+    var ys = nodes.map(function(n) { return n.y; });
+    var minX = d3.min(xs), maxX = d3.max(xs);
+    var minY = d3.min(ys), maxY = d3.max(ys);
+    var gw = maxX - minX || 1, gh = maxY - minY || 1;
+    var scale = Math.min(width / (gw + 80), height / (gh + 80), 2);
+    var tx = width  / 2 - scale * (minX + gw / 2);
+    var ty = height / 2 - scale * (minY + gh / 2);
+    svg.transition().duration(600).call(
+      zoom.transform,
+      d3.zoomIdentity.translate(tx, ty).scale(scale)
+    );
+  });
+
+  // Initial rough centering while sim runs
+  svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8));
+})();
+</script>
+{% endblock %}

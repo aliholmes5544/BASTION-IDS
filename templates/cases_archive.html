@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}{{ t('Case Archive') }} — BASTION IDS{% endblock %}
+{% block topbar_title %}{{ t('Case Archive') }}{% endblock %}
+{% block topbar_icon %}
+<polyline points="21 8 21 21 3 21 3 8"/>
+<rect x="1" y="3" width="22" height="5"/>
+<line x1="10" y1="12" x2="14" y2="12"/>
+{% endblock %}
+
+{% block content %}
+{# ── Page header ─────────────────────────────────────────────────────────── #}
+<div class="page-header anim-fade-up">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="margin-bottom:10px">
+        <a href="{{ url_for('cases') }}" class="btn btn-secondary btn-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:4px;vertical-align:middle">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          {{ t('Back to Cases') }}
+        </a>
+      </div>
+      <h1 class="page-title">{{ t('Case Archive') }}</h1>
+      <p class="page-subtitle">
+        {{ total_archived }} {{ t('archived cases') }}
+        {% if grouped %}
+        &nbsp;·&nbsp; {{ grouped | length }} {{ t('years') }}
+        {% endif %}
+        &nbsp;·&nbsp; <span style="color:var(--text-3);font-size:12px">{{ t('Closed:') }} {{ t('Monthly Cases') }} / {{ t('Yearly Cases') }}</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% if grouped %}
+{# ── Year sections ─────────────────────────────────────────────────────── #}
+{% for year, months in grouped.items() %}
+{% set year_total = months.values() | map('length') | sum %}
+<div class="card anim-fade-up" style="margin-bottom:24px">
+  {# Year header #}
+  <div class="card-header-custom" style="cursor:pointer" onclick="toggleYear({{ year }})">
+    <div class="card-title">
+      <div class="card-title-dot" style="background:var(--amber)"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;opacity:.6">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      {{ t('Yearly Cases') }} — {{ year }}
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="badge badge-medium" style="font-size:11px">{{ year_total }} {{ t('cases') }}</span>
+      <span style="font-size:11px;color:var(--text-3)">{{ months | length }} {{ t('months') if months | length != 1 else t('month') }}</span>
+      <svg id="chev-year-{{ year }}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"
+           style="transition:transform .2s;transform:rotate(0deg)"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+
+  {# Month sections #}
+  <div id="year-body-{{ year }}">
+    {% for month_num, month_cases in months.items() %}
+    <div style="border-top:1px solid var(--border)">
+      {# Month header #}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 20px;
+                  cursor:pointer;background:rgba(255,255,255,.02);transition:background .15s"
+           onmouseover="this.style.background='rgba(0,212,255,.03)'"
+           onmouseout="this.style.background='rgba(255,255,255,.02)'"
+           onclick="toggleMonth({{ year }}, {{ month_num }})">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" style="opacity:.7">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span style="font-size:13px;font-weight:700;color:var(--text-1)">
+            {% if current_lang == 'ar' %}{{ month_names_ar[month_num] }}{% else %}{{ month_names[month_num] }}{% endif %}
+            {{ year }}
+          </span>
+          <span class="badge badge-safe" style="font-size:10px">{{ month_cases | length }} {{ t('cases') }}</span>
+        </div>
+        <svg id="chev-month-{{ year }}-{{ month_num }}" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"
+             style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      {# Case list (collapsed by default) #}
+      <div id="month-body-{{ year }}-{{ month_num }}" style="display:none">
+        {% for case in month_cases %}
+        {% set pr = case.priority or 'Medium' %}
+        {% set close_date = (case.get('closed_at') or case.get('cc_closed_at') or case.get('created',''))[:10] %}
+        <a href="{{ url_for('case_detail', case_id=case.id) }}"
+           style="display:flex;align-items:center;gap:14px;padding:12px 20px 12px 36px;
+                  text-decoration:none;border-top:1px solid rgba(136,153,187,.08);
+                  transition:background .15s"
+           onmouseover="this.style.background='rgba(0,212,255,.04)'"
+           onmouseout="this.style.background='transparent'">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+              <span style="font-weight:700;font-size:13px;color:var(--text-2)">{{ case.title }}</span>
+              <span class="badge badge-{% if pr=='Critical' %}critical{% elif pr=='High' %}high{% elif pr=='Medium' %}medium{% else %}safe{% endif %}" style="font-size:9px">{{ t(pr) }}</span>
+              <span class="badge" style="font-size:9px;background:rgba(136,153,187,.12);color:var(--text-3);border:1px solid rgba(136,153,187,.2)">{{ tstat('closed') }}</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-3);display:flex;gap:16px;flex-wrap:wrap">
+              <span>{{ t('Analyst:') }} <strong style="color:var(--text-2)">{{ case.analyst }}</strong></span>
+              <span>{{ t('Closed:') }} <strong style="color:var(--green)">{{ close_date }}</strong></span>
+              <span><strong>{{ case.notes | length }}</strong> {{ t('comments') }}</span>
+              {% if case.id %}
+              <span class="mono" style="font-size:10px;opacity:.5">{{ case.id }}</span>
+              {% endif %}
+            </div>
+            {% if case.description %}
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px;opacity:.8">
+              {{ case.description[:100] }}{% if case.description | length > 100 %}…{% endif %}
+            </div>
+            {% endif %}
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+{% else %}
+{# ── Empty state ──────────────────────────────────────────────────────────── #}
+<div class="empty-state" style="margin-top:60px">
+  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+    <polyline points="21 8 21 21 3 21 3 8"/>
+    <rect x="1" y="3" width="22" height="5"/>
+    <line x1="10" y1="12" x2="14" y2="12"/>
+  </svg>
+  <p style="font-size:16px;color:var(--text-2)">{{ t('No archived cases') }}</p>
+  <p style="font-size:12px;color:var(--text-3)">{{ t('Closed cases from previous months are automatically archived here.') }}</p>
+  <a href="{{ url_for('cases') }}" class="btn btn-secondary">{{ t('Back to Cases') }}</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleYear(year) {
+  var body  = document.getElementById('year-body-' + year);
+  var chev  = document.getElementById('chev-year-' + year);
+  var open  = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  if (chev) chev.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+function toggleMonth(year, month) {
+  var body = document.getElementById('month-body-' + year + '-' + month);
+  var chev = document.getElementById('chev-month-' + year + '-' + month);
+  var open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+}
+</script>
+{% endblock %}

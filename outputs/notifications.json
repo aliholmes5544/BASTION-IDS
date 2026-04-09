@@ -1,0 +1,508 @@
+[
+  {
+    "id": "notif_20260409_090609_178505",
+    "timestamp": "2026-04-09T09:06:09.541269",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260409_090609_178505 (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": false,
+    "scan_id": "20260409_090609_178505"
+  },
+  {
+    "id": "case_new_37abecff",
+    "timestamp": "2026-04-09T09:05:06.169492",
+    "type": "info",
+    "title": "New case: Test Case",
+    "message": "Case \"Test Case\" (ID: 37abecff) was created by admin.",
+    "read": true,
+    "case_id": "37abecff",
+    "target_roles": [
+      "admin",
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "notif_20260409_075838_146a88",
+    "timestamp": "2026-04-09T07:58:40.249289",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260409_075838_146a88 (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": true,
+    "scan_id": "20260409_075838_146a88"
+  },
+  {
+    "id": "notif_20260406_165859_393b95",
+    "timestamp": "2026-04-06T16:59:00.336310",
+    "type": "high",
+    "title": "HIGH: 100 threats detected",
+    "message": "Scan 20260406_165859_393b95 (test_dos_hulk.pcap) found 100 malicious flows out of 100.",
+    "read": true,
+    "scan_id": "20260406_165859_393b95"
+  },
+  {
+    "id": "notif_20260406_165132_226ee5",
+    "timestamp": "2026-04-06T16:51:33.476837",
+    "type": "medium",
+    "title": "MEDIUM: 3 threats detected",
+    "message": "Scan 20260406_165132_226ee5 (3439fc2b352e45632563fb4fedfd6f70.pcap) found 3 malicious flows out of 10.",
+    "read": true,
+    "scan_id": "20260406_165132_226ee5"
+  },
+  {
+    "id": "notif_20260406_165118_e33c5b",
+    "timestamp": "2026-04-06T16:51:19.133945",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260406_165118_e33c5b (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": true,
+    "scan_id": "20260406_165118_e33c5b"
+  },
+  {
+    "id": "notif_20260406_165100_9e0bde",
+    "timestamp": "2026-04-06T16:51:04.414689",
+    "type": "critical",
+    "title": "CRITICAL: 1424 threats detected",
+    "message": "Scan 20260406_165100_9e0bde (test_mixed.pcap) found 1424 malicious flows out of 1424.",
+    "read": true,
+    "scan_id": "20260406_165100_9e0bde"
+  },
+  {
+    "id": "notif_20260406_165047_2bfbba",
+    "timestamp": "2026-04-06T16:50:48.453110",
+    "type": "critical",
+    "title": "CRITICAL: 300 threats detected",
+    "message": "Scan 20260406_165047_2bfbba (test_ddos.pcap) found 300 malicious flows out of 300.",
+    "read": true,
+    "scan_id": "20260406_165047_2bfbba"
+  },
+  {
+    "id": "notif_20260406_164914_5b0d5e",
+    "timestamp": "2026-04-06T16:49:16.318387",
+    "type": "high",
+    "title": "HIGH: 100 threats detected",
+    "message": "Scan 20260406_164914_5b0d5e (test_dos_hulk.pcap) found 100 malicious flows out of 100.",
+    "read": true,
+    "scan_id": "20260406_164914_5b0d5e"
+  },
+  {
+    "id": "notif_20260406_100255_ba3489",
+    "timestamp": "2026-04-06T10:02:56.870049",
+    "type": "critical",
+    "title": "CRITICAL: 300 threats detected",
+    "message": "Scan 20260406_100255_ba3489 (test_ddos.pcap) found 300 malicious flows out of 300.",
+    "read": true,
+    "scan_id": "20260406_100255_ba3489"
+  },
+  {
+    "id": "notif_20260405_095238",
+    "timestamp": "2026-04-05T09:52:40.020285",
+    "type": "critical",
+    "title": "CRITICAL: 300 threats detected",
+    "message": "Scan 20260405_095238 (test_ddos.pcap) found 300 malicious flows out of 300.",
+    "read": true,
+    "scan_id": "20260405_095238"
+  },
+  {
+    "id": "notif_20260405_095158",
+    "timestamp": "2026-04-05T09:51:59.788041",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260405_095158 (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": true,
+    "scan_id": "20260405_095158"
+  },
+  {
+    "id": "notif_20260405_071335",
+    "timestamp": "2026-04-05T07:13:35.914652",
+    "type": "critical",
+    "title": "CRITICAL: 300 threats detected",
+    "message": "Scan 20260405_071335 (test_ddos.pcap) found 300 malicious flows out of 300.",
+    "read": true,
+    "scan_id": "20260405_071335"
+  },
+  {
+    "id": "notif_20260405_071237",
+    "timestamp": "2026-04-05T07:12:39.113147",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260405_071237 (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": true,
+    "scan_id": "20260405_071237"
+  },
+  {
+    "id": "notif_20260403_205449",
+    "timestamp": "2026-04-03T20:54:53.873742",
+    "type": "critical",
+    "title": "CRITICAL: 1324 threats detected",
+    "message": "Scan 20260403_205449 (test_mixed.pcap) found 1324 malicious flows out of 1820.",
+    "read": true,
+    "scan_id": "20260403_205449"
+  },
+  {
+    "id": "notif_20260403_205320",
+    "timestamp": "2026-04-03T20:53:21.422588",
+    "type": "critical",
+    "title": "CRITICAL: 300 threats detected",
+    "message": "Scan 20260403_205320 (test_ddos.pcap) found 300 malicious flows out of 300.",
+    "read": true,
+    "scan_id": "20260403_205320"
+  },
+  {
+    "id": "notif_20260403_204754",
+    "timestamp": "2026-04-03T20:47:56.686718",
+    "type": "medium",
+    "title": "MEDIUM: 1024 threats detected",
+    "message": "Scan 20260403_204754 (test_portscan.pcap) found 1024 malicious flows out of 1024.",
+    "read": true,
+    "scan_id": "20260403_204754"
+  },
+  {
+    "id": "notif_20260403_204654",
+    "timestamp": "2026-04-03T20:47:00.419342",
+    "type": "medium",
+    "title": "MEDIUM: 250 threats detected",
+    "message": "Scan 20260403_204654 (smallFlows.pcap) found 250 malicious flows out of 632.",
+    "read": true,
+    "scan_id": "20260403_204654"
+  },
+  {
+    "id": "notif_20260403_204617",
+    "timestamp": "2026-04-03T20:46:19.215412",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260403_204617 (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": true,
+    "scan_id": "20260403_204617"
+  },
+  {
+    "id": "notif_20260403_191634",
+    "timestamp": "2026-04-03T19:16:35.255944",
+    "type": "medium",
+    "title": "MEDIUM: 3 threats detected",
+    "message": "Scan 20260403_191634 (3439fc2b352e45632563fb4fedfd6f70.pcap) found 3 malicious flows out of 10.",
+    "read": true,
+    "scan_id": "20260403_191634"
+  },
+  {
+    "id": "notif_20260403_191603",
+    "timestamp": "2026-04-03T19:16:04.266629",
+    "type": "medium",
+    "title": "MEDIUM: 2 threats detected",
+    "message": "Scan 20260403_191603 (2f429bd5ed5ce816b00a23a17b1ad714.pcap) found 2 malicious flows out of 11.",
+    "read": true,
+    "scan_id": "20260403_191603"
+  },
+  {
+    "id": "notif_20260403_191520",
+    "timestamp": "2026-04-03T19:15:23.471549",
+    "type": "critical",
+    "title": "CRITICAL: 300 threats detected",
+    "message": "Scan 20260403_191520 (test_ddos.pcap) found 300 malicious flows out of 300.",
+    "read": true,
+    "scan_id": "20260403_191520"
+  },
+  {
+    "id": "notif_20260403_135847",
+    "timestamp": "2026-04-03T13:58:53.882099",
+    "type": "critical",
+    "title": "CRITICAL: 400 threats detected",
+    "message": "Scan 20260403_135847 (test_attacks.csv) found 400 malicious flows out of 400.",
+    "read": true,
+    "scan_id": "20260403_135847"
+  },
+  {
+    "id": "notif_20260403_072157",
+    "timestamp": "2026-04-03T08:03:09.317780",
+    "type": "critical",
+    "title": "CRITICAL: 128177 threats detected",
+    "message": "Scan 20260403_072157 (Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv) found 128177 malicious flows out of 225745.",
+    "read": true,
+    "scan_id": "20260403_072157"
+  },
+  {
+    "id": "notif_20260402_205802",
+    "timestamp": "2026-04-02T21:39:58.559021",
+    "type": "critical",
+    "title": "CRITICAL: 13422 threats detected",
+    "message": "Scan 20260402_205802 (Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv) found 13422 malicious flows out of 225745.",
+    "read": true,
+    "scan_id": "20260402_205802"
+  },
+  {
+    "id": "notif_20260402_164718",
+    "timestamp": "2026-04-02T17:35:48.791797",
+    "type": "critical",
+    "title": "CRITICAL: 45027 threats detected",
+    "message": "Scan 20260402_164718 (Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv) found 45027 malicious flows out of 225745.",
+    "read": true,
+    "scan_id": "20260402_164718"
+  },
+  {
+    "id": "case_cc_close_ccbafeba_1774932767",
+    "timestamp": "2026-03-31T07:52:47.548985",
+    "type": "high",
+    "title": "Case awaiting permanent closure: DDOS",
+    "message": "CC Admin cc_admin01 has reviewed and closed case \"DDOS\". Permanent closure required.",
+    "read": true,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "admin"
+    ]
+  },
+  {
+    "id": "case_return_cc_ccbafeba_1774932727",
+    "timestamp": "2026-03-31T07:52:07.423709",
+    "type": "high",
+    "title": "Case returned for re-review: DDOS",
+    "message": "Admin admin has returned case \"DDOS\" to CC Admin for re-review.",
+    "read": false,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_cc_close_ccbafeba_1774932257",
+    "timestamp": "2026-03-31T07:44:17.958330",
+    "type": "high",
+    "title": "Case awaiting permanent closure: DDOS",
+    "message": "CC Admin cc_admin01 has reviewed and closed case \"DDOS\". Permanent closure required.",
+    "read": true,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "admin"
+    ]
+  },
+  {
+    "id": "case_analyst_close_ccbafeba_1774932223",
+    "timestamp": "2026-03-31T07:43:43.716604",
+    "type": "medium",
+    "title": "Case closed by analyst: DDOS",
+    "message": "Analyst analyst01 has finished and closed case \"DDOS\". Please review and close.",
+    "read": false,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_return_analyst_ccbafeba_1774931814",
+    "timestamp": "2026-03-31T07:36:54.945039",
+    "type": "medium",
+    "title": "Case returned for further work: DDOS",
+    "message": "Case \"DDOS\" was returned to you by cc_admin01. Please continue working on it.",
+    "read": false,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "analyst"
+    ]
+  },
+  {
+    "id": "case_analyst_close_ccbafeba_1774931782",
+    "timestamp": "2026-03-31T07:36:22.850221",
+    "type": "medium",
+    "title": "Case closed by analyst: DDOS",
+    "message": "Analyst analyst01 has finished and closed case \"DDOS\". Please review and close.",
+    "read": false,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_return_analyst_ccbafeba_1774931729",
+    "timestamp": "2026-03-31T07:35:29.735485",
+    "type": "medium",
+    "title": "Case returned for further work: DDOS",
+    "message": "Case \"DDOS\" was returned to you by cc_admin01. Please continue working on it.",
+    "read": false,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "analyst"
+    ]
+  },
+  {
+    "id": "case_analyst_close_ccbafeba_1774931706",
+    "timestamp": "2026-03-31T07:35:06.013884",
+    "type": "medium",
+    "title": "Case closed by analyst: DDOS",
+    "message": "Analyst analyst01 has finished and closed case \"DDOS\". Please review and close.",
+    "read": false,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_new_ccbafeba",
+    "timestamp": "2026-03-31T07:33:32.336647",
+    "type": "info",
+    "title": "New case: DDOS",
+    "message": "Case \"DDOS\" (ID: ccbafeba) was created by admin.",
+    "read": true,
+    "case_id": "ccbafeba",
+    "target_roles": [
+      "admin",
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_new_701b2f96",
+    "timestamp": "2026-03-26T19:13:42.468250",
+    "type": "info",
+    "title": "New case: scan",
+    "message": "Case \"scan\" (ID: 701b2f96) was created by admin.",
+    "read": true,
+    "case_id": "701b2f96",
+    "target_roles": [
+      "admin",
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_cc_close_edca8f45_1774541240",
+    "timestamp": "2026-03-26T19:07:20.498822",
+    "type": "high",
+    "title": "Case awaiting permanent closure: scan",
+    "message": "CC Admin cc_admin01 has reviewed and closed case \"scan\". Permanent closure required.",
+    "read": true,
+    "case_id": "edca8f45",
+    "target_roles": [
+      "admin"
+    ]
+  },
+  {
+    "id": "case_analyst_close_edca8f45_1774541211",
+    "timestamp": "2026-03-26T19:06:51.813701",
+    "type": "medium",
+    "title": "Case closed by analyst: scan",
+    "message": "Analyst analyst01 has finished and closed case \"scan\". Please review and close.",
+    "read": false,
+    "case_id": "edca8f45",
+    "target_roles": [
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_new_edca8f45",
+    "timestamp": "2026-03-26T19:05:04.121147",
+    "type": "info",
+    "title": "New case: scan",
+    "message": "Case \"scan\" (ID: edca8f45) was created by admin.",
+    "read": true,
+    "case_id": "edca8f45",
+    "target_roles": [
+      "admin",
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_cc_close_67dd12c7_1774540387",
+    "timestamp": "2026-03-26T18:53:07.105758",
+    "type": "high",
+    "title": "Case awaiting permanent closure: scan",
+    "message": "CC Admin cc_admin01 has reviewed and closed case \"scan\". Permanent closure required.",
+    "read": true,
+    "case_id": "67dd12c7",
+    "target_roles": [
+      "admin"
+    ]
+  },
+  {
+    "id": "case_analyst_close_67dd12c7_1774540001",
+    "timestamp": "2026-03-26T18:46:41.136000",
+    "type": "medium",
+    "title": "Case closed by analyst: scan",
+    "message": "Analyst analyst01 has finished and closed case \"scan\". Please review and close.",
+    "read": false,
+    "case_id": "67dd12c7",
+    "target_roles": [
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "case_new_67dd12c7",
+    "timestamp": "2026-03-26T18:43:03.512084",
+    "type": "info",
+    "title": "New case: scan",
+    "message": "Case \"scan\" (ID: 67dd12c7) was created by admin.",
+    "read": true,
+    "case_id": "67dd12c7",
+    "target_roles": [
+      "admin",
+      "cc_admin"
+    ]
+  },
+  {
+    "id": "notif_20260324_004902",
+    "timestamp": "2026-03-24T00:53:48.252206",
+    "type": "critical",
+    "title": "CRITICAL: 2325 threats detected",
+    "message": "Scan 20260324_004902 (Friday-WorkingHours-Morning.pcap_ISCX.csv) found 2325 malicious flows out of 191033.",
+    "read": true,
+    "scan_id": "20260324_004902"
+  },
+  {
+    "id": "notif_20260323_184832",
+    "timestamp": "2026-03-23T18:53:56.676233",
+    "type": "critical",
+    "title": "CRITICAL: 2325 threats detected",
+    "message": "Scan 20260323_184832 (Friday-WorkingHours-Morning.pcap_ISCX.csv) found 2325 malicious flows out of 191033.",
+    "read": true,
+    "scan_id": "20260323_184832"
+  },
+  {
+    "id": "notif_20260322_012120",
+    "timestamp": "2026-03-22T01:26:32.585891",
+    "type": "high",
+    "title": "HIGH: 18 threats detected",
+    "message": "Scan 20260322_012120 (DrDoS_LDAP.csv) found 18 malicious flows out of 2181542.",
+    "read": true,
+    "scan_id": "20260322_012120"
+  },
+  {
+    "id": "notif_20260321_230405_0",
+    "timestamp": "2026-03-21T23:10:01.546642",
+    "type": "medium",
+    "title": "MEDIUM: 7 threats detected",
+    "message": "Scan 20260321_230405_0 (bigFlows.pcap) found 7 malicious flows out of 27285.",
+    "read": true,
+    "scan_id": "20260321_230405_0"
+  },
+  {
+    "id": "notif_20260321_230308_0",
+    "timestamp": "2026-03-21T23:07:04.292184",
+    "type": "medium",
+    "title": "MEDIUM: 7 threats detected",
+    "message": "Scan 20260321_230308_0 (bigFlows.pcap) found 7 malicious flows out of 27285.",
+    "read": true,
+    "scan_id": "20260321_230308_0"
+  },
+  {
+    "id": "notif_20260317_023220",
+    "timestamp": "2026-03-17T02:32:46.407846",
+    "type": "critical",
+    "title": "CRITICAL: 2067 threats detected",
+    "message": "Scan 20260317_023220 (Friday-WorkingHours-Morning.pcap_ISCX.csv) found 2067 malicious flows out of 191033.",
+    "read": true,
+    "scan_id": "20260317_023220"
+  },
+  {
+    "id": "notif_20260316_182451",
+    "timestamp": "2026-03-16T18:25:32.236393",
+    "type": "critical",
+    "title": "CRITICAL: 160051 threats detected",
+    "message": "Scan 20260316_182451 (Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv) found 160051 malicious flows out of 286467.",
+    "read": true,
+    "scan_id": "20260316_182451"
+  },
+  {
+    "id": "notif_20260315_021347",
+    "timestamp": "2026-03-15T02:14:24.874132",
+    "type": "critical",
+    "title": "CRITICAL: 2067 threats detected",
+    "message": "Scan 20260315_021347 (Friday-WorkingHours-Morning.pcap_ISCX.csv) found 2067 malicious flows out of 191033.",
+    "read": true,
+    "scan_id": "20260315_021347"
+  }
+]
