@@ -124,7 +124,7 @@ This produces model files in `models/` (~6.8 GB total).
 #### Pre-trained Models (recommended)
 Download the pre-trained models from Google Drive and place them in the `models/` folder:
 
-**[Download Models (6.8 GB)](https://drive.google.com/drive/folders/1GgvZN4_yTT-NB3nfCFX001qdE-iGaZuw?usp=sharing)**
+**[Download Models (6.8 GB)](https://drive.google.com/drive/folders/1BD7zoirn0I9FBzOLS6StNz8BPSLpSCgN?usp=sharing)**
 
 ```
 models/
