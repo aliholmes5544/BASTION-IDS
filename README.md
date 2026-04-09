@@ -121,15 +121,25 @@ python main.py
 
 This produces model files in `models/` (~6.8 GB total).
 
-#### Pre-trained Models
-If you have pre-trained model files, place them in `models/`:
+#### Pre-trained Models (recommended)
+Download the pre-trained models from Google Drive and place them in the `models/` folder:
+
+**[Download Models (6.8 GB)](https://drive.google.com/drive/folders/1GgvZN4_yTT-NB3nfCFX001qdE-iGaZuw?usp=sharing)**
+
 ```
 models/
-  best_model.pkl          # ThresholdClassifier (primary)
-  preprocessor.pkl        # StandardScaler pipeline
-  label_encoder.pkl       # Attack class labels (ndarray)
-  feature_names.pkl       # Selected feature names (70 features)
+  best_model.pkl          # ThresholdClassifier (primary — required)
+  preprocessor.pkl        # StandardScaler pipeline (required)
+  label_encoder.pkl       # Attack class labels (required)
+  feature_names.pkl       # Selected feature names (required)
+  xgb_model.pkl           # XGBoost standalone
+  rf_model.pkl            # Random Forest standalone
+  mlp_model.pkl           # MLP Neural Network standalone
+  ensemble_model.pkl      # Voting Classifier
+  tuned_model.pkl         # Threshold-tuned ensemble
 ```
+
+> **Minimum required:** `best_model.pkl`, `preprocessor.pkl`, `label_encoder.pkl`, `feature_names.pkl`
 
 ### 4. Run the Application
 ```bash
