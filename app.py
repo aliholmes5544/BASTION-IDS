@@ -2454,33 +2454,50 @@ def pcap_to_flows_cicflowmeter(pcap_path: Path) -> pd.DataFrame:
 
 # ── Rule-based detection engine (fallback for PCAP flows) ────────────────────
 # Thresholds calibrated against CIC-IDS2017 feature distributions.
-_RULE_THRESHOLDS = {
-    # (feature, operator, threshold, label, confidence)
-    # DDoS / DoS: very high packet rate with mostly SYN or no backward traffic
-    'ddos':         [('SYN Flag Count',   '>',  5),  ('Total Backward Packets', '<=', 2)],
-    # Web brute force — checked BEFORE dos_hulk; both target port 80 but brute force
-    # has high PSH bursts and very few backward packets (server rejects quickly).
-    'web_brute':    [('Destination Port', '==', 80), ('PSH Flag Count', '>=', 5),
-                     ('Flow Packets/s',   '>',  50), ('Total Backward Packets', '<=', 3)],
-    # DoS Hulk — HTTP flood; server does respond (bwd > 1) unlike brute force
-    'dos_hulk':     [('Destination Port',    '==', 80), ('Protocol',   '==', 6),
-                     ('Total Fwd Packets',  '>=', 3),  ('Flow Packets/s', '>',  50),
-                     ('PSH Flag Count',     '>=', 1)],
-    'dos_goldeneye':[('Flow Packets/s',   '>',  500), ('PSH Flag Count', '>',  2),
-                     ('Total Backward Packets', '<=', 3)],
-    'dos_slowloris':[('Flow Duration',    '>',  10_000_000), ('Total Fwd Packets', '<=', 20),
-                     ('Fwd Packets/s',    '<',  10)],
-    'dos_slowhttp': [('Flow Duration',    '>',  5_000_000),  ('Total Fwd Packets', '<=', 15),
-                     ('Fwd Packets/s',    '<',  5)],
-    # PortScan: very few packets, SYN only, very short duration
-    'portscan':     [('Total Fwd Packets','<=', 4),  ('SYN Flag Count', '>=', 1),
-                     ('Total Backward Packets', '<=', 2), ('Flow Duration', '<', 500_000)],
-    # Brute force SSH/FTP: many small flows to port 22 or 21
-    'ssh_patator':  [('Destination Port', '==', 22), ('Total Fwd Packets', '>=', 4),
-                     ('Flow Packets/s',   '>',  10)],
-    'ftp_patator':  [('Destination Port', '==', 21), ('Total Fwd Packets', '>=', 4),
-                     ('Flow Packets/s',   '>',  10)],
-}
+# These rules fire when the ML model says BENIGN but flow patterns match
+# known attack signatures.  Ordered by specificity (most specific first).
+# IMPORTANT: order matters — first match wins.  Port-specific rules MUST
+#            come before generic rules like portscan.
+_RULE_THRESHOLDS_LIST = [
+    # 1. FTP-Patator: port 21 brute force (before portscan catches it)
+    ('ftp_patator',  [('Destination Port', '==', 21), ('Protocol', '==', 6)]),
+    # 2. SSH-Patator: port 22, multiple packets with data
+    ('ssh_patator',  [('Destination Port', '==', 22), ('Protocol', '==', 6),
+                      ('Total Fwd Packets', '>=', 2)]),
+    # 3. Bot: unusual high ports (>=8000), small symmetric flows
+    ('bot',          [('Destination Port', '>=', 8000), ('Protocol', '==', 6),
+                      ('Total Fwd Packets', '<=', 5),
+                      ('Total Backward Packets', '<=', 5)]),
+    # 4. DDoS: SYN flood — many SYN flags, few backward packets
+    ('ddos',         [('SYN Flag Count',   '>=',  3),  ('Total Backward Packets', '<=', 2),
+                      ('Total Fwd Packets', '>=', 3)]),
+    # 5. Web brute force: HTTP port, high PSH, few backward
+    ('web_brute',    [('Destination Port', '==', 80), ('PSH Flag Count', '>=', 5),
+                      ('Total Backward Packets', '<=', 3)]),
+    # 6. DoS Hulk: HTTP flood, low Init_Win_fwd (200-300)
+    ('dos_hulk',     [('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Init_Win_bytes_forward', '<=', 300),
+                      ('Init_Win_bytes_forward', '>=', 200),
+                      ('Total Fwd Packets',  '>=', 3)]),
+    # 7. DoS slowloris: port 80, small payloads only, few bwd packets
+    ('dos_slowloris',[('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Fwd Packet Length Max', '<=', 250),
+                      ('Total Fwd Packets', '>=', 3),
+                      ('Total Backward Packets', '<=', 3)]),
+    # 8. DoS GoldenEye: HTTP flood, high Init_Win, has large fwd data
+    ('dos_goldeneye',[('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Init_Win_bytes_forward', '>=', 29000),
+                      ('Total Fwd Packets', '>=', 3),
+                      ('Fwd Packet Length Max', '>=', 300)]),
+    # 9. DoS Slowhttptest: long duration, fwd-only, no backward
+    ('dos_slowhttp', [('Destination Port', '==', 80),
+                      ('Flow Duration',    '>',  5_000_000),
+                      ('Total Backward Packets', '==', 0)]),
+    # 10. PortScan: generic catch-all — few packets, SYN, tiny/no payload
+    ('portscan',     [('Total Fwd Packets','<=', 4),  ('SYN Flag Count', '>=', 1),
+                      ('Total Backward Packets', '<=', 2),
+                      ('Fwd Packet Length Mean', '<=', 10)]),
+]
 
 _RULE_LABELS = {
     'ddos':          ('DDoS',                          90.0, 'CRITICAL'),
@@ -2492,6 +2509,7 @@ _RULE_LABELS = {
     'ssh_patator':   ('SSH-Patator',                    85.0, 'HIGH'),
     'ftp_patator':   ('FTP-Patator',                    85.0, 'HIGH'),
     'web_brute':     ('Web Attack Brute Force',         80.0, 'HIGH'),
+    'bot':           ('Bot',                            82.0, 'HIGH'),
 }
 
 def _rule_check(row: dict, conditions: list) -> bool:
@@ -2511,8 +2529,9 @@ def rule_based_label(row: dict):
     """
     Apply rule engine to a flow dict (using raw feature values, not scaled).
     Returns (label, confidence, severity) or None if no rule fires.
+    Uses ordered list so port-specific rules fire before generic ones.
     """
-    for rule_name, conditions in _RULE_THRESHOLDS.items():
+    for rule_name, conditions in _RULE_THRESHOLDS_LIST:
         if _rule_check(row, conditions):
             label, conf, sev = _RULE_LABELS[rule_name]
             return label, conf, sev
@@ -2834,12 +2853,10 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
             for j, (label, conf) in enumerate(zip(lbls, confs)):
                 idx = i + j
 
-                # Rule engine: run when ML says BENIGN or DDoS.
-                # DDoS is included because Hulk (HTTP flood on port 80) is
-                # commonly confused with DDoS by the model; the rule engine
-                # can re-label it more precisely.
+                # Rule engine: run when ML says BENIGN, or when ML says
+                # DDoS with low confidence (DDoS/Hulk confusion).
                 rule_triggered = False
-                if label.upper() in ('BENIGN', 'DDOS'):
+                if label.upper() == 'BENIGN' or (label.upper() == 'DDOS' and conf < 70):
                     rule_result = rule_based_label(raw_rows[idx])
                     if rule_result:
                         label, conf, _ = rule_result
