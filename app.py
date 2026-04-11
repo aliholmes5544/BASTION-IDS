@@ -2199,7 +2199,7 @@ def pcap_to_flows_df(pcap_path):
             cwe = 1 if flags & 0x80 else 0
 
             if direction == 'fwd':
-                f['fwd_lens'].append(pkt_len)
+                f['fwd_lens'].append(payload)
                 f['fwd_times'].append(ts)
                 f['fwd_hdr'] += hdr_len
                 f['fwd_payload'].append(payload)
@@ -2211,7 +2211,7 @@ def pcap_to_flows_df(pcap_path):
                 if payload > 0:
                     f['min_seg_fwd'] = min(f['min_seg_fwd'], payload)
             else:
-                f['bwd_lens'].append(pkt_len)
+                f['bwd_lens'].append(payload)
                 f['bwd_times'].append(ts)
                 f['bwd_hdr'] += hdr_len
                 f['bwd_payload'].append(payload)
@@ -2231,9 +2231,9 @@ def pcap_to_flows_df(pcap_path):
         bwd_times = sorted(f['bwd_times'])
         all_times = sorted(f['all_times'])
 
-        fwd_iat  = np.diff(fwd_times) if len(fwd_times) > 1 else np.array([0.0])
-        bwd_iat  = np.diff(bwd_times) if len(bwd_times) > 1 else np.array([0.0])
-        flow_iat = np.diff(all_times) if len(all_times) > 1 else np.array([0.0])
+        fwd_iat  = np.diff(fwd_times) * 1_000_000 if len(fwd_times) > 1 else np.array([0.0])
+        bwd_iat  = np.diff(bwd_times) * 1_000_000 if len(bwd_times) > 1 else np.array([0.0])
+        flow_iat = np.diff(all_times) * 1_000_000 if len(all_times) > 1 else np.array([0.0])
 
         duration = (all_times[-1] - all_times[0]) if len(all_times) > 1 else 1e-9
         if duration <= 0:
@@ -2249,6 +2249,25 @@ def pcap_to_flows_df(pcap_path):
         min_seg    = f['min_seg_fwd'] if f['min_seg_fwd'] < 999999 else 0
 
         down_up = (total_bwd / total_fwd) if total_fwd > 0 else 0.0
+
+        # Active/Idle periods (CIC-IDS2017 uses 5-second idle threshold)
+        active_periods = []
+        idle_periods = []
+        if len(flow_iat) > 0:
+            idle_threshold = 5_000_000  # 5 seconds in microseconds
+            active_start = 0.0
+            for iat_val in flow_iat:
+                if iat_val > idle_threshold:
+                    if active_start > 0:
+                        active_periods.append(active_start)
+                    idle_periods.append(float(iat_val))
+                    active_start = 0.0
+                else:
+                    active_start += float(iat_val)
+            if active_start > 0:
+                active_periods.append(active_start)
+        if not active_periods:
+            active_periods = [duration * 1_000_000]
 
         records.append({
             'src_ip':   f['src_ip'],   'dst_ip':   f['dst_ip'],
@@ -2331,15 +2350,15 @@ def pcap_to_flows_df(pcap_path):
             # Other
             'Down/Up Ratio':            down_up,
             'act_data_pkt_fwd':         fwd_act,
-            # Active/Idle
-            'Active Mean':              duration * 1_000_000,
-            'Active Std':               0.0,
-            'Active Max':               duration * 1_000_000,
-            'Active Min':               duration * 1_000_000,
-            'Idle Mean':                0.0,
-            'Idle Std':                 0.0,
-            'Idle Max':                 0.0,
-            'Idle Min':                 0.0,
+            # Active/Idle (threshold = 5 seconds = 5_000_000 µs)
+            'Active Mean':              float(np.mean(active_periods)) if active_periods else 0.0,
+            'Active Std':               float(np.std(active_periods)) if len(active_periods) > 1 else 0.0,
+            'Active Max':               float(np.max(active_periods)) if active_periods else 0.0,
+            'Active Min':               float(np.min(active_periods)) if active_periods else 0.0,
+            'Idle Mean':                float(np.mean(idle_periods)) if idle_periods else 0.0,
+            'Idle Std':                 float(np.std(idle_periods)) if len(idle_periods) > 1 else 0.0,
+            'Idle Max':                 float(np.max(idle_periods)) if idle_periods else 0.0,
+            'Idle Min':                 float(np.min(idle_periods)) if idle_periods else 0.0,
         })
 
     if not records:
@@ -2370,6 +2389,12 @@ class ThresholdClassifier:
     def predict_proba(self, X):
         return self.base_model.predict_proba(X)
 
+
+import sys as _sys
+# Register ThresholdClassifier in __main__ so joblib can unpickle models
+# that were originally saved from main.py (where the class was in __main__)
+if not hasattr(_sys.modules.get('__main__', None), 'ThresholdClassifier'):
+    _sys.modules['__main__'].ThresholdClassifier = ThresholdClassifier
 
 def load_models():
     global model, preprocessor, label_encoder, feature_names, model_error
