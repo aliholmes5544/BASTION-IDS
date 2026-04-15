@@ -55,7 +55,7 @@
           </svg>
           {{ t('Export PDF') }}
         </a>
-        {% if is_analyst and case.status in ('open', 'returned') %}
+        {% if is_analyst and case.status == 'open' %}
         <form method="POST" action="{{ url_for('case_analyst_close', case_id=case.id) }}" style="display:inline"
           onsubmit="return confirm({{ t('analyst close confirm') | tojson }})">
           <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;color:var(--cyan);border-color:rgba(0,212,255,0.3)">
@@ -105,7 +105,7 @@
 </div>
 
 <!-- Returned notice -->
-{% if case.get('returned_by') and case.status == 'returned' and current_user == case.get('returned_to') %}
+{% if case.get('returned_by') and case.status == 'open' and current_user == case.get('returned_to') %}
 <div class="anim-fade-up" style="margin-bottom:20px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,119,48,.35);background:linear-gradient(135deg,rgba(255,119,48,.08),transparent);display:flex;align-items:center;gap:12px">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff7730" stroke-width="2.5" style="flex-shrink:0">
     <polyline points="1 4 1 10 7 10"/>
