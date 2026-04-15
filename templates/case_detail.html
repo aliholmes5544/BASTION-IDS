@@ -40,6 +40,8 @@
             {% if assignees %}
             <span>{{ t('Assignees') }}: {% for u in assignees %}<strong style="color:var(--amber)">{{ u }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}</span>
             {% endif %}
+          {% elif is_analyst and case.get('assigned_by') %}
+            <span>{{ t('Appointed by') }}: <strong style="color:var(--amber)">{{ case.assigned_by }}</strong></span>
           {% endif %}
           <span>{{ t('Case ID:') }} <span class="mono">{{ case.id }}</span></span>
           <span>{{ t('Created:') }} {{ case.created[:16].replace('T',' ') if case.created else t('N/A rep') }} {{ t('UTC label') }}</span>

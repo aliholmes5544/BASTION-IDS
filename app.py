@@ -527,6 +527,7 @@ TRANSLATIONS = {
         # Case Detail
         'Cases breadcrumb': 'Cases', 'Analyst:': 'Analyst:', 'Assigned:': 'Assigned:',
         'by': 'by',
+        'Appointed by': 'Appointed by',
         'Case ID:': 'Case ID:', 'Created:': 'Created:', 'comments suffix': 'comments',
         'Back to Cases': '← Back to Cases', 'Export PDF': 'Export PDF', 'Close Case': 'Close Case',
         'Attachments': 'Attachments', 'Any file type allowed': 'Any file type — multiple files allowed',
@@ -1375,6 +1376,7 @@ TRANSLATIONS = {
         # Case Detail
         'Cases breadcrumb': 'القضايا', 'Analyst:': 'المحلل:', 'Assigned:': 'مُسنَد إلى:',
         'by': 'بواسطة',
+        'Appointed by': 'عُيِّن بواسطة',
         'Case ID:': 'معرّف القضية:', 'Created:': 'أُنشئت:', 'comments suffix': 'تعليق',
         'Back to Cases': '← العودة إلى القضايا', 'Export PDF': 'تصدير PDF', 'Close Case': 'إغلاق القضية',
         'Attachments': 'المرفقات', 'Any file type allowed': 'أي نوع ملف — يمكن رفع ملفات متعددة',
