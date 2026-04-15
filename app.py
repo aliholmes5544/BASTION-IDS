@@ -7110,7 +7110,11 @@ def case_return_to_analyst(case_id):
         case['status'] = 'open'
         case['returned_by'] = me
         case['returned_at'] = datetime.now().isoformat()
-        case['returned_to'] = case.get('analyst', '')
+        # Return to assigned analysts AND the case creator
+        assignees = get_assignees(case)
+        creator = case.get('analyst', '')
+        returned_targets = list(set(assignees + ([creator] if creator else [])))
+        case['returned_to'] = returned_targets
         save_cases(all_cases)
     audit('case_return_analyst', detail=f'Case {case_id} returned to analyst by {me}')
     save_notification({
