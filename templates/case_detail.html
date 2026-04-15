@@ -105,7 +105,7 @@
 </div>
 
 <!-- Returned notice -->
-{% if case.get('returned_by') and case.status == 'open' and current_user == case.get('returned_to') and not is_admin %}
+{% if case.get('returned_by') and case.status == 'open' and current_user == case.get('returned_to') and is_analyst %}
 <div class="anim-fade-up" style="margin-bottom:20px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,119,48,.35);background:linear-gradient(135deg,rgba(255,119,48,.08),transparent);display:flex;align-items:center;gap:12px">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff7730" stroke-width="2.5" style="flex-shrink:0">
     <polyline points="1 4 1 10 7 10"/>
@@ -121,7 +121,7 @@
     &nbsp;·&nbsp; <span style="color:var(--text-2)">{{ t('for further work notice') }}</span>
   </span>
 </div>
-{% elif case.get('returned_by_admin') and case.status == 'pending_cc_review' and current_user == case.get('returned_to_cc') and not is_admin %}
+{% elif case.get('returned_by_admin') and case.status == 'pending_cc_review' and current_user == case.get('returned_to_cc') and is_cc_admin %}
 <div class="anim-fade-up" style="margin-bottom:20px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,119,48,.35);background:linear-gradient(135deg,rgba(255,119,48,.08),transparent);display:flex;align-items:center;gap:12px">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff7730" stroke-width="2.5" style="flex-shrink:0">
     <polyline points="1 4 1 10 7 10"/>
