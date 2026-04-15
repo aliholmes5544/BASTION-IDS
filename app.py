@@ -526,6 +526,7 @@ TRANSLATIONS = {
         'Configure': 'Configure',
         # Case Detail
         'Cases breadcrumb': 'Cases', 'Analyst:': 'Analyst:', 'Assigned:': 'Assigned:',
+        'by': 'by',
         'Case ID:': 'Case ID:', 'Created:': 'Created:', 'comments suffix': 'comments',
         'Back to Cases': '← Back to Cases', 'Export PDF': 'Export PDF', 'Close Case': 'Close Case',
         'Attachments': 'Attachments', 'Any file type allowed': 'Any file type — multiple files allowed',
@@ -1373,6 +1374,7 @@ TRANSLATIONS = {
         'Configure': 'ضبط',
         # Case Detail
         'Cases breadcrumb': 'القضايا', 'Analyst:': 'المحلل:', 'Assigned:': 'مُسنَد إلى:',
+        'by': 'بواسطة',
         'Case ID:': 'معرّف القضية:', 'Created:': 'أُنشئت:', 'comments suffix': 'تعليق',
         'Back to Cases': '← العودة إلى القضايا', 'Export PDF': 'تصدير PDF', 'Close Case': 'إغلاق القضية',
         'Attachments': 'المرفقات', 'Any file type allowed': 'أي نوع ملف — يمكن رفع ملفات متعددة',
@@ -7316,6 +7318,7 @@ def case_assign(case_id):
                 valid_users = set(get_users().keys())
                 new_assignees = [u for u in new_assignees if u in valid_users]
             case['assigned_to'] = new_assignees
+            case['assigned_by'] = me
             if is_admin:
                 priority = request.form.get('priority', '').strip()
                 if priority in ('Low', 'Medium', 'High', 'Critical'):

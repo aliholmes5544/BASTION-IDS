@@ -94,7 +94,7 @@
         </div>
         <div class="case-meta">
           {{ t('Analyst:') }} <strong>{{ case.analyst }}</strong>
-          {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
+          {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% if case.get('assigned_by') %}&nbsp;{{ t('by') }} <strong style="color:var(--amber)">{{ case.assigned_by }}</strong>{% endif %}{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
           &nbsp;·&nbsp; {{ t('Open time') }} <strong style="color:var(--red)">{{ case.hours_open }}h</strong> / {{ t('SLA label') }} {{ case.sla_hours }}h
         </div>
       </div>
@@ -130,7 +130,7 @@
           </div>
           <div class="case-meta">
             {{ t('Analyst:') }} <strong>{{ case.analyst }}</strong>
-            {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
+            {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% if case.get('assigned_by') %}&nbsp;{{ t('by') }} <strong style="color:var(--amber)">{{ case.assigned_by }}</strong>{% endif %}{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
             &nbsp;·&nbsp; {{ t('Created:') }} {{ case.created[:16].replace('T',' ') if case.created else t('N/A rep') }}
             &nbsp;·&nbsp; <strong>{{ case.scan_ids | length }}</strong> {{ t('scans suffix') }}
             &nbsp;·&nbsp; <strong>{{ case.notes | length }}</strong> {{ t('comments') }}
@@ -183,7 +183,7 @@
           </div>
           <div class="case-meta">
             {{ t('Analyst:') }} <strong>{{ case.analyst }}</strong>
-            {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
+            {% if is_admin %}{% set assignees = get_assignees(case) %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') if assignees else '—' }}</strong>{% if case.get('assigned_by') %}&nbsp;{{ t('by') }} <strong style="color:var(--amber)">{{ case.assigned_by }}</strong>{% endif %}{% elif is_cc_admin %}{% set assignees = get_assignees(case) | in_set(managed_analysts) %}{% if assignees %}&nbsp;·&nbsp; {{ t('Assigned to') }}: <strong style="color:var(--cyan)">{{ assignees | join(', ') }}</strong>{% endif %}{% endif %}
             &nbsp;·&nbsp; {{ t('Created:') }} {{ case.created[:16].replace('T',' ') if case.created else t('N/A rep') }}
             &nbsp;·&nbsp; <strong>{{ case.scan_ids | length }}</strong> {{ t('scans suffix') }}
             &nbsp;·&nbsp; <strong>{{ case.notes | length }}</strong> {{ t('comments') }}
