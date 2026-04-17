@@ -115,40 +115,29 @@ function loadMapData() {
       const table = data.table || [];
       allIPs = table;
 
-      // Plot geo points. Public IPs get their real geolocation; private IPs
-      // are laid out on a synthetic grid (flagged item.is_private) so every
-      // attacker IP is visible regardless of whether it has a world location.
+      // Plot geo points
       lmap.eachLayer(l => { if (l instanceof L.CircleMarker) lmap.removeLayer(l); });
-      let malCount = 0, benCount = 0, privCount = 0, pubCount = 0;
+      let malCount = 0, benCount = 0;
       geo.forEach(item => {
-        const mal  = item.is_malicious;
-        const priv = item.is_private;
-        // Public malicious = red, public benign = cyan,
-        // private malicious = orange, private benign = grey.
-        const color = mal ? (priv ? '#ff6b35' : '#ff3e5f')
-                          : (priv ? '#8899bb' : '#00d4ff');
-        const radius = priv ? 5 : Math.min(20, 4 + Math.log1p(item.count) * 3);
+        const color = item.is_malicious ? '#ff3e5f' : '#00d4ff';
+        const radius = Math.min(20, 4 + Math.log1p(item.count) * 3);
         L.circleMarker([item.lat, item.lon], {
-          color, fillColor: color, fillOpacity: priv ? 0.55 : 0.75,
-          radius, weight: priv ? 2 : 1,
-          dashArray: priv ? '2,3' : null,
+          color, fillColor: color, fillOpacity: 0.7, radius, weight: 1
         }).addTo(lmap).bindPopup(
           `<div style="font-family:monospace;font-size:12px">
             <strong>${escHtml(item.ip)}</strong><br>
-            ${escHtml(item.country)}${priv ? ' <span style="color:#8899bb">(synthetic location)</span>' : ''}<br>
+            ${escHtml(item.country)}<br>
             ${TXT.flows} ${item.count}<br>
-            ${TXT.status} <span style="color:${color}">${mal ? TXT.mal : TXT.ben}</span>
+            ${TXT.status} <span style="color:${color}">${item.is_malicious ? TXT.mal : TXT.ben}</span>
           </div>`
         );
-        if (mal)  malCount++; else benCount++;
-        if (priv) privCount++; else pubCount++;
+        if (item.is_malicious) malCount++; else benCount++;
       });
 
       if (geo.length === 0) {
         document.getElementById('map-status').textContent = TXT.noPublicIPs;
       } else {
-        document.getElementById('map-status').textContent =
-          `${geo.length} ${TXT.plotted} (${pubCount} public, ${privCount} private)`;
+        document.getElementById('map-status').textContent = `${geo.length} ${TXT.plotted}`;
       }
 
       // Summary strip
