@@ -2660,21 +2660,38 @@ _C2_BENIGN_PORTS = frozenset({
 
 def suspicious_c2_check(row, src_ip, dst_ip):
     """
-    Flag malware-C2-like flows: public destination on a non-standard port
-    with substantial, sustained data exchange. Only runs when the ML model
-    and the rule engine both failed to label a flow as malicious.
+    Flag malware-C2-like flows. Only runs when ML + rules both said BENIGN.
     Returns ('Suspicious C2', confidence) or (None, None).
+
+    Two patterns:
+      A. Non-standard port + public dst + >=50KB bytes + >=5s duration
+         (e.g. covert channels on random high ports).
+      B. Web port (80/443/8080/8443) + public dst + big one-sided DOWNLOAD
+         (tiny request, massive response over long duration) — the shape
+         of a malware payload pull from a C2.
     """
     if not dst_ip or dst_ip in ('N/A', 'nan') or is_private_ip(dst_ip):
         return None, None
     dst_port = int(row.get('Destination Port', 0) or 0)
-    if dst_port == 0 or dst_port in _C2_BENIGN_PORTS:
+    if dst_port == 0:
         return None, None
-    total_bytes = (row.get('Total Length of Fwd Packets', 0) +
-                   row.get('Total Length of Bwd Packets', 0))
-    duration = row.get('Flow Duration', 0)
-    if total_bytes >= 50_000 and duration >= 5_000_000:
-        return 'Suspicious C2', 75.0
+
+    fwd_bytes = row.get('Total Length of Fwd Packets', 0)
+    bwd_bytes = row.get('Total Length of Bwd Packets', 0)
+    bwd_pkts  = row.get('Total Backward Packets', 0)
+    duration  = row.get('Flow Duration', 0)
+
+    # Pattern A: non-standard port + substantial flow
+    if dst_port not in _C2_BENIGN_PORTS:
+        if (fwd_bytes + bwd_bytes) >= 50_000 and duration >= 5_000_000:
+            return 'Suspicious C2', 75.0
+
+    # Pattern B: web-port lopsided download (malware payload pull)
+    if dst_port in {80, 443, 8080, 8443}:
+        if (bwd_bytes >= 500_000 and bwd_pkts >= 200
+                and duration >= 10_000_000 and fwd_bytes <= 10_000):
+            return 'Suspicious C2', 75.0
+
     return None, None
 
 def enrich_results_with_ip_reputation(results, api_key, cache_path):
