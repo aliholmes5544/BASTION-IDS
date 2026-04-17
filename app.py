@@ -8506,7 +8506,9 @@ def two_fa_setup():
             else:
                 with _CONFIG_LOCK:
                     cfg_data = get_config()
-                    cfg_data.get('2fa_secrets',{}).pop(u, None)
+                    secrets = cfg_data.get('2fa_secrets')
+                    if isinstance(secrets, dict) and u in secrets:
+                        del secrets[u]
                     save_config(cfg_data); reload_config()
                 audit('2fa_disabled', detail=f'2FA disabled for {u}')
                 flash(t('flash 2fa disabled'), 'success')
