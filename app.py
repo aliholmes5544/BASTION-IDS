@@ -2857,10 +2857,11 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
             for j, (label, conf) in enumerate(zip(lbls, confs)):
                 idx = i + j
 
-                # Rule engine: run when ML says BENIGN, or when ML says
-                # DDoS with low confidence (DDoS/Hulk confusion).
+                # Rule engine: only run when ML has low confidence.
+                # High-confidence BENIGN (>70%) should not be overridden
+                # to avoid false positives on normal traffic.
                 rule_triggered = False
-                if label.upper() == 'BENIGN' or (label.upper() == 'DDOS' and conf < 70):
+                if (label.upper() == 'BENIGN' and conf < 70) or (label.upper() == 'DDOS' and conf < 70):
                     rule_result = rule_based_label(raw_rows[idx])
                     if rule_result:
                         label, conf, _ = rule_result
