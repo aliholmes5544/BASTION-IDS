@@ -2497,18 +2497,21 @@ _RULE_THRESHOLDS_LIST = [
                       ('Init_Win_bytes_forward', '<=', 1000),
                       ('Total Fwd Packets', '>=', 3),
                       ('Total Fwd Packets', '<=', 30)]),
-    # 6. Web brute force: port 80, many repeated HTTP requests.
-    ('web_brute',    [('Destination Port', '==', 80), ('Protocol', '==', 6),
-                      ('PSH Flag Count', '>=', 8),
-                      ('Total Fwd Packets', '>=', 8),
-                      ('Total Backward Packets', '<=', 3)]),
-    # 7. DoS Hulk (single-source HTTP flood): Init_Win ~256 + HIGH packet count
-    #    (>30 fwd) + sustained rate. Distinguishes from distributed DDoS above.
+    # 6. DoS Hulk (single-source HTTP flood): Init_Win ~256 + HIGH packet count
+    #    (>=30 fwd) + sustained rate. MUST come before web_brute so the
+    #    attack-tool window signature wins over generic PSH-heavy HTTP.
     ('dos_hulk',     [('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Init_Win_bytes_forward', '>=', 200),
                       ('Init_Win_bytes_forward', '<=', 300),
                       ('Total Fwd Packets', '>=', 30),
                       ('Flow Packets/s', '>=', 20)]),
+    # 7. Web brute force: port 80, many repeated HTTP requests, from a *normal*
+    #    client (Init_Win > 1000 excludes attack-tool signatures).
+    ('web_brute',    [('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Init_Win_bytes_forward', '>=', 1000),
+                      ('PSH Flag Count', '>=', 8),
+                      ('Total Fwd Packets', '>=', 8),
+                      ('Total Backward Packets', '<=', 3)]),
     # 7. DoS slowloris: port 80, tiny fwd payloads, *long* duration (>=10s).
     ('dos_slowloris',[('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Fwd Packet Length Max', '>=', 1),
