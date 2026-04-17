@@ -4514,15 +4514,27 @@ def api_shap(scan_id):
     if not mal_rows:
         return jsonify(features=[], importances=[])
 
-    X = pd.DataFrame(mal_rows)[feature_names] if all(f in pd.DataFrame(mal_rows).columns for f in feature_names) else None
-    if X is None:
-        # Rebuild from feature names
-        df_mal = pd.DataFrame(mal_rows)
-        X = pd.DataFrame(0.0, index=df_mal.index, columns=feature_names)
+    # Read original flow CSV to get real ML features (result rows don't have them)
+    flows_file = Path(entry.get('flows_file', ''))
+    if flows_file.exists():
+        df_flows = pd.read_csv(flows_file)
+        df_flows.columns = df_flows.columns.str.strip()
+        df_flows.replace([np.inf, -np.inf], np.nan, inplace=True)
+        # Get indices of malicious flows (flow_id is 1-based)
+        mal_indices = [r.get('flow_id', 0) - 1 for r in mal_rows if r.get('flow_id')]
+        mal_indices = [i for i in mal_indices if 0 <= i < len(df_flows)]
+        if mal_indices:
+            df_mal = df_flows.iloc[mal_indices]
+        else:
+            df_mal = df_flows.head(len(mal_rows))
+        X = pd.DataFrame(0.0, index=range(len(df_mal)), columns=feature_names)
         for col in feature_names:
             if col in df_mal.columns:
-                X[col] = df_mal[col]
-        X = X.fillna(0)
+                X[col] = df_mal[col].values
+        X = X.fillna(X.median(numeric_only=True)).fillna(0)
+    else:
+        # Fallback: use zeros (SHAP won't be meaningful but won't crash)
+        X = pd.DataFrame(0.0, index=range(len(mal_rows)), columns=feature_names)
 
     try:
         X_scaled = preprocessor.transform(X)
@@ -7201,7 +7213,8 @@ def case_comment_attachment(case_id, filename):
     role = get_roles().get(me, 'analyst')
     is_admin = role == 'admin'
     is_cc_admin = role == 'cc_admin'
-    all_cases = load_cases()
+    with _CASES_LOCK:
+        all_cases = load_cases()
     case = next((c for c in all_cases if c['id'] == case_id), None)
     if not case or (not is_admin and not is_cc_admin and case.get('analyst') != me and me not in get_assignees(case)):
         flash(t('flash access denied'), 'error')
@@ -7281,7 +7294,8 @@ def case_attachment(case_id, filename):
     role = get_roles().get(me, 'analyst')
     is_admin = role == 'admin'
     is_cc_admin = role == 'cc_admin'
-    all_cases = load_cases()
+    with _CASES_LOCK:
+        all_cases = load_cases()
     case = next((c for c in all_cases if c['id'] == case_id), None)
     if not case or (not is_admin and not is_cc_admin and case.get('analyst') != me and me not in get_assignees(case)):
         flash(t('flash access denied'), 'error')
@@ -7345,7 +7359,8 @@ def case_export_pdf(case_id):
     role = get_roles().get(me, 'analyst')
     is_admin = role == 'admin'
     is_cc_admin = role == 'cc_admin'
-    all_cases = load_cases()
+    with _CASES_LOCK:
+        all_cases = load_cases()
     case = next((c for c in all_cases if c['id'] == case_id), None)
     if not case:
         flash(t('flash case not found'), 'error')
@@ -7599,15 +7614,18 @@ def activity_log():
     roles = get_roles()
     role = roles.get(me, 'analyst')
     log = []
-    if AUDIT_PATH.exists():
-        try:
-            with open(AUDIT_PATH) as f:
-                log = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            log = []
+    with _AUDIT_LOCK:
+        if AUDIT_PATH.exists():
+            try:
+                with open(AUDIT_PATH) as f:
+                    log = json.load(f)
+            except (json.JSONDecodeError, OSError):
+                log = []
     log.reverse()
-    # CC Admin sees their own activity + their managed analysts' activity
-    if role == 'cc_admin':
+    # Filter by role: analysts see only their own activity
+    if role == 'analyst':
+        log = [e for e in log if e.get('user') == me]
+    elif role == 'cc_admin':
         config = get_config()
         managed = {u for u, mgr in config.get('managed_by', {}).items() if mgr == me}
         managed.add(me)
