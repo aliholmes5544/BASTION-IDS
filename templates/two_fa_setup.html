@@ -34,6 +34,14 @@
     </p>
     <form method="POST" action="{{ url_for('two_fa_setup') }}" onsubmit="return confirm({{ t('Disable 2FA confirm') | tojson }})">
       <input type="hidden" name="action" value="disable">
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">{{ t('6-Digit Code label') }}</label>
+        <input type="text" name="code" class="form-input" maxlength="6"
+               placeholder="000000" pattern="\d{6}" required
+               style="font-size:24px;letter-spacing:8px;text-align:center;max-width:220px"
+               autocomplete="one-time-code">
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px">{{ t('2FA disable code hint') }}</div>
+      </div>
       <button type="submit" class="btn btn-danger">
         {{ t('Disable 2FA') }}
       </button>
