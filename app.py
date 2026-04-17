@@ -2468,10 +2468,11 @@ _RULE_THRESHOLDS_LIST = [
     # 2. SSH-Patator: port 22, multiple packets with data
     ('ssh_patator',  [('Destination Port', '==', 22), ('Protocol', '==', 6),
                       ('Total Fwd Packets', '>=', 2)]),
-    # 3. Bot: unusual high ports (>=8000), small symmetric flows
+    # 3. Bot: unusual high ports (>=8000), tiny/no payload, few packets
     ('bot',          [('Destination Port', '>=', 8000), ('Protocol', '==', 6),
                       ('Total Fwd Packets', '<=', 5),
-                      ('Total Backward Packets', '<=', 5)]),
+                      ('Total Backward Packets', '<=', 5),
+                      ('Fwd Packet Length Max', '<=', 10)]),
     # 4. DDoS: SYN flood — many SYN flags, few backward packets
     ('ddos',         [('SYN Flag Count',   '>=',  3),  ('Total Backward Packets', '<=', 2),
                       ('Total Fwd Packets', '>=', 3)]),
@@ -2483,24 +2484,26 @@ _RULE_THRESHOLDS_LIST = [
                       ('Init_Win_bytes_forward', '<=', 300),
                       ('Init_Win_bytes_forward', '>=', 200),
                       ('Total Fwd Packets',  '>=', 3)]),
-    # 7. DoS slowloris: port 80, small payloads only, few bwd packets
+    # 7. DoS slowloris: port 80, small payloads, NO backward data, long IAT
     ('dos_slowloris',[('Destination Port', '==', 80), ('Protocol', '==', 6),
-                      ('Fwd Packet Length Max', '<=', 250),
+                      ('Fwd Packet Length Max', '<=', 50),
                       ('Total Fwd Packets', '>=', 3),
-                      ('Total Backward Packets', '<=', 3)]),
-    # 8. DoS GoldenEye: HTTP flood, high Init_Win, has large fwd data
+                      ('Total Backward Packets', '<=', 2),
+                      ('Bwd Packet Length Max', '<=', 0)]),
+    # 8. DoS GoldenEye: HTTP flood, Init_Win ~29200 (NOT 65535), large fwd data
     ('dos_goldeneye',[('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Init_Win_bytes_forward', '>=', 29000),
+                      ('Init_Win_bytes_forward', '<=', 30000),
                       ('Total Fwd Packets', '>=', 3),
                       ('Fwd Packet Length Max', '>=', 300)]),
     # 9. DoS Slowhttptest: long duration, fwd-only, no backward
     ('dos_slowhttp', [('Destination Port', '==', 80),
                       ('Flow Duration',    '>',  5_000_000),
                       ('Total Backward Packets', '==', 0)]),
-    # 10. PortScan: generic catch-all — few packets, SYN, tiny/no payload
-    ('portscan',     [('Total Fwd Packets','<=', 4),  ('SYN Flag Count', '>=', 1),
+    # 10. PortScan: SYN probe — very few packets (1-2), no data payload
+    ('portscan',     [('Total Fwd Packets','<=', 2),  ('SYN Flag Count', '>=', 1),
                       ('Total Backward Packets', '<=', 2),
-                      ('Fwd Packet Length Mean', '<=', 10)]),
+                      ('Fwd Packet Length Max', '<=', 0)]),
 ]
 
 _RULE_LABELS = {
@@ -2857,11 +2860,18 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
             for j, (label, conf) in enumerate(zip(lbls, confs)):
                 idx = i + j
 
-                # Rule engine: only run when ML has low confidence.
-                # High-confidence BENIGN (>70%) should not be overridden
-                # to avoid false positives on normal traffic.
+                # Rule engine: for CSV scans, only run on low-confidence results.
+                # For PCAP scans, always run because PCAP feature extraction
+                # differs from CIC-IDS2017 and ML may miss attacks.
                 rule_triggered = False
-                if (label.upper() == 'BENIGN' and conf < 70) or (label.upper() == 'DDOS' and conf < 70):
+                run_rules = False
+                if is_pcap_scan and label.upper() == 'BENIGN':
+                    run_rules = True
+                elif label.upper() == 'BENIGN' and conf < 70:
+                    run_rules = True
+                elif label.upper() == 'DDOS' and conf < 70:
+                    run_rules = True
+                if run_rules:
                     rule_result = rule_based_label(raw_rows[idx])
                     if rule_result:
                         label, conf, _ = rule_result
