@@ -2589,12 +2589,25 @@ def ml_sanity_check(label: str, conf: float, row: dict):
     fwd_max   = row.get('Fwd Packet Length Max', 0)
     dst_port  = int(row.get('Destination Port', 0) or 0)
 
-    # DDoS: real DDoS is lopsided and high-rate. Substantial bidirectional
-    # data means it's a normal conversation.
+    # DDoS: only demote when the flow has zero attack indicators AND looks
+    # like a normal conversation. DDoS-characteristic signals (anomalously
+    # low Init_Win, SYN flood, high packet rate, lopsided many-packet flow)
+    # keep the ML label.
     if label_upper == 'DDOS':
-        if bwd_bytes >= 500 and total_bwd >= 3:
-            return 'BENIGN', conf, True
+        init_win = row.get('Init_Win_bytes_forward', 0)
+        syn_count = row.get('SYN Flag Count', 0)
+        flow_pps = row.get('Flow Packets/s', 0)
+        has_attack_signal = (
+            (0 < init_win <= 1000) or            # anomalously low rcv window
+            syn_count >= 5 or                    # SYN flood
+            flow_pps >= 50 or                    # flood rate
+            (total_bwd <= 2 and total_fwd >= 10) # lopsided many-packet flow
+        )
+        if has_attack_signal:
+            return label, conf, False
         if total_fwd < 3:
+            return 'BENIGN', conf, True
+        if bwd_bytes >= 500 and total_bwd >= 3:
             return 'BENIGN', conf, True
 
     # PortScan: real scans have no payload and minimal exchange.
