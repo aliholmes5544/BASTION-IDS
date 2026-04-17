@@ -8021,7 +8021,7 @@ def api_dashboard_geo():
         key=lambda x: x['count'], reverse=True
     )[:200]
 
-    # geo-locate public IPs only
+    # geo-locate public IPs via ip-api.com
     pub_ips = [ip for ip,d in ip_info.items() if not d['is_private']][:100]
     geo_results = []
     if pub_ips:
@@ -8036,10 +8036,44 @@ def api_dashboard_geo():
                         'ip':ip,'lat':item.get('lat',0),'lon':item.get('lon',0),
                         'country':item.get('country','Unknown'),
                         'count':ip_info.get(ip,{}).get('count',0),
-                        'is_malicious':ip_info.get(ip,{}).get('is_malicious',False)
+                        'is_malicious':ip_info.get(ip,{}).get('is_malicious',False),
+                        'is_private':False,
                     })
         except Exception:
             app.logger.exception('Error geo-locating IPs via ip-api.com batch')
+
+    # Synthetic placement for private IPs (RFC1918 + reserved ranges).
+    # They have no real lat/lon, so lay them out on a deterministic grid in
+    # the mid-Atlantic ocean (clearly "not a country") so the user can still
+    # see every attacker IP on the map.
+    priv_items = [(ip, d) for ip, d in ip_info.items() if d['is_private']][:400]
+    if priv_items:
+        import zlib
+        GRID_COLS, GRID_ROWS = 25, 16
+        LAT_LO, LAT_HI = 8.0, 32.0     # ~24° tall slab
+        LON_LO, LON_HI = -52.0, -12.0  # ~40° wide slab
+        lat_step = (LAT_HI - LAT_LO) / GRID_ROWS
+        lon_step = (LON_HI - LON_LO) / GRID_COLS
+        used = set()
+        for ip, d in priv_items:
+            h = zlib.crc32(ip.encode('utf-8'))
+            slot = h % (GRID_COLS * GRID_ROWS)
+            attempt = 0
+            while slot in used and attempt < GRID_COLS * GRID_ROWS:
+                slot = (slot + 1) % (GRID_COLS * GRID_ROWS)
+                attempt += 1
+            used.add(slot)
+            row = slot // GRID_COLS
+            col = slot %  GRID_COLS
+            lat = LAT_HI - (row + 0.5) * lat_step
+            lon = LON_LO + (col + 0.5) * lon_step
+            geo_results.append({
+                'ip':ip,'lat':lat,'lon':lon,
+                'country':'Private / Internal',
+                'count':d['count'],
+                'is_malicious':d['is_malicious'],
+                'is_private':True,
+            })
 
     return jsonify({'geo': geo_results, 'table': table_rows})
 
