@@ -2483,22 +2483,32 @@ _RULE_THRESHOLDS_LIST = [
                       ('Fwd Packet Length Max', '>=', 3),
                       ('Fwd Packet Length Max', '<=', 20),
                       ('Flow Duration', '>=', 10_000)]),
-    # 4. DDoS: SYN flood — many SYN flags, sustained packet rate.
+    # 4. DDoS (SYN flood): many SYN flags, sustained packet rate, no bwd.
     ('ddos',         [('SYN Flag Count', '>=', 5),
                       ('Total Backward Packets', '<=', 2),
                       ('Total Fwd Packets', '>=', 5),
                       ('Flow Packets/s', '>=', 20)]),
-    # 5. Web brute force: port 80, many repeated HTTP requests.
+    # 5. DDoS (distributed HTTP): port 80 with low Init_Win (attack-tool
+    #    signature) but FEW packets per flow — characteristic of a distributed
+    #    flood where each source contributes a handful of requests. Must come
+    #    before dos_hulk so dos_hulk only catches single-source floods.
+    ('ddos_http',    [('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Init_Win_bytes_forward', '>=', 100),
+                      ('Init_Win_bytes_forward', '<=', 1000),
+                      ('Total Fwd Packets', '>=', 3),
+                      ('Total Fwd Packets', '<=', 30)]),
+    # 6. Web brute force: port 80, many repeated HTTP requests.
     ('web_brute',    [('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('PSH Flag Count', '>=', 8),
                       ('Total Fwd Packets', '>=', 8),
                       ('Total Backward Packets', '<=', 3)]),
-    # 6. DoS Hulk: HTTP flood, Init_Win ~256, multiple fast packets.
+    # 7. DoS Hulk (single-source HTTP flood): Init_Win ~256 + HIGH packet count
+    #    (>30 fwd) + sustained rate. Distinguishes from distributed DDoS above.
     ('dos_hulk',     [('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Init_Win_bytes_forward', '>=', 200),
                       ('Init_Win_bytes_forward', '<=', 300),
-                      ('Total Fwd Packets', '>=', 5),
-                      ('Flow Packets/s', '>=', 5)]),
+                      ('Total Fwd Packets', '>=', 30),
+                      ('Flow Packets/s', '>=', 20)]),
     # 7. DoS slowloris: port 80, tiny fwd payloads, *long* duration (>=10s).
     ('dos_slowloris',[('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Fwd Packet Length Max', '>=', 1),
@@ -2529,6 +2539,7 @@ _RULE_THRESHOLDS_LIST = [
 
 _RULE_LABELS = {
     'ddos':          ('DDoS',                          90.0, 'CRITICAL'),
+    'ddos_http':     ('DDoS',                          88.0, 'CRITICAL'),
     'dos_hulk':      ('DoS Hulk',                      85.0, 'HIGH'),
     'dos_goldeneye': ('DoS GoldenEye',                 85.0, 'HIGH'),
     'dos_slowloris': ('DoS slowloris',                 82.0, 'MEDIUM'),
