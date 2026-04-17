@@ -2465,47 +2465,66 @@ def pcap_to_flows_cicflowmeter(pcap_path: Path) -> pd.DataFrame:
 # IMPORTANT: order matters — first match wins.  Port-specific rules MUST
 #            come before generic rules like portscan.
 _RULE_THRESHOLDS_LIST = [
-    # 1. FTP-Patator: port 21 brute force (before portscan catches it)
-    ('ftp_patator',  [('Destination Port', '==', 21), ('Protocol', '==', 6)]),
-    # 2. SSH-Patator: port 22, multiple packets with data
-    ('ssh_patator',  [('Destination Port', '==', 22), ('Protocol', '==', 6),
-                      ('Total Fwd Packets', '>=', 2)]),
-    # 3. Bot: unusual high ports (>=8000), tiny/no payload, few packets
-    ('bot',          [('Destination Port', '>=', 8000), ('Protocol', '==', 6),
-                      ('Total Fwd Packets', '<=', 5),
-                      ('Total Backward Packets', '<=', 5),
-                      ('Fwd Packet Length Max', '<=', 10)]),
-    # 4. DDoS: SYN flood — many SYN flags, few backward packets
-    ('ddos',         [('SYN Flag Count',   '>=',  3),  ('Total Backward Packets', '<=', 2),
-                      ('Total Fwd Packets', '>=', 3)]),
-    # 5. Web brute force: HTTP port, high PSH, few backward
-    ('web_brute',    [('Destination Port', '==', 80), ('PSH Flag Count', '>=', 5),
-                      ('Total Backward Packets', '<=', 3)]),
-    # 6. DoS Hulk: HTTP flood, low Init_Win_fwd (200-300)
-    ('dos_hulk',     [('Destination Port', '==', 80), ('Protocol', '==', 6),
-                      ('Init_Win_bytes_forward', '<=', 300),
-                      ('Init_Win_bytes_forward', '>=', 200),
-                      ('Total Fwd Packets',  '>=', 3)]),
-    # 7. DoS slowloris: port 80, small payloads, NO backward data, long IAT
-    ('dos_slowloris',[('Destination Port', '==', 80), ('Protocol', '==', 6),
-                      ('Fwd Packet Length Max', '<=', 50),
+    # 1. FTP-Patator: port 21 brute force — needs actual FTP command exchange.
+    ('ftp_patator',  [('Destination Port', '==', 21), ('Protocol', '==', 6),
                       ('Total Fwd Packets', '>=', 3),
+                      ('PSH Flag Count', '>=', 2),
+                      ('Fwd Packet Length Max', '>=', 5)]),
+    # 2. SSH-Patator: port 22 with meaningful payload exchange.
+    ('ssh_patator',  [('Destination Port', '==', 22), ('Protocol', '==', 6),
+                      ('Total Fwd Packets', '>=', 5),
+                      ('Total Backward Packets', '>=', 3),
+                      ('Fwd Packet Length Max', '>=', 80)]),
+    # 3. Bot: C2 beacon on port 8000-9000, tiny beacon payload, minimum duration.
+    ('bot',          [('Destination Port', '>=', 8000), ('Destination Port', '<=', 9000),
+                      ('Protocol', '==', 6),
+                      ('Total Fwd Packets', '>=', 2), ('Total Fwd Packets', '<=', 6),
+                      ('Total Backward Packets', '>=', 1), ('Total Backward Packets', '<=', 5),
+                      ('Fwd Packet Length Max', '>=', 3),
+                      ('Fwd Packet Length Max', '<=', 20),
+                      ('Flow Duration', '>=', 10_000)]),
+    # 4. DDoS: SYN flood — many SYN flags, sustained packet rate.
+    ('ddos',         [('SYN Flag Count', '>=', 5),
                       ('Total Backward Packets', '<=', 2),
-                      ('Bwd Packet Length Max', '<=', 0)]),
-    # 8. DoS GoldenEye: HTTP flood, Init_Win ~29200 (NOT 65535), large fwd data
+                      ('Total Fwd Packets', '>=', 5),
+                      ('Flow Packets/s', '>=', 20)]),
+    # 5. Web brute force: port 80, many repeated HTTP requests.
+    ('web_brute',    [('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('PSH Flag Count', '>=', 8),
+                      ('Total Fwd Packets', '>=', 8),
+                      ('Total Backward Packets', '<=', 3)]),
+    # 6. DoS Hulk: HTTP flood, Init_Win ~256, multiple fast packets.
+    ('dos_hulk',     [('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Init_Win_bytes_forward', '>=', 200),
+                      ('Init_Win_bytes_forward', '<=', 300),
+                      ('Total Fwd Packets', '>=', 5),
+                      ('Flow Packets/s', '>=', 5)]),
+    # 7. DoS slowloris: port 80, tiny fwd payloads, *long* duration (>=10s).
+    ('dos_slowloris',[('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Fwd Packet Length Max', '>=', 1),
+                      ('Fwd Packet Length Max', '<=', 50),
+                      ('Total Fwd Packets', '>=', 4),
+                      ('Total Backward Packets', '<=', 2),
+                      ('Bwd Packet Length Max', '<=', 0),
+                      ('Flow Duration', '>=', 10_000_000)]),
+    # 8. DoS GoldenEye: Init_Win ~29200 + large fwd payload + min duration.
     ('dos_goldeneye',[('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Init_Win_bytes_forward', '>=', 29000),
                       ('Init_Win_bytes_forward', '<=', 30000),
-                      ('Total Fwd Packets', '>=', 3),
-                      ('Fwd Packet Length Max', '>=', 300)]),
-    # 9. DoS Slowhttptest: long duration, fwd-only, no backward
-    ('dos_slowhttp', [('Destination Port', '==', 80),
-                      ('Flow Duration',    '>',  5_000_000),
-                      ('Total Backward Packets', '==', 0)]),
-    # 10. PortScan: SYN probe — very few packets (1-2), no data payload
-    ('portscan',     [('Total Fwd Packets','<=', 2),  ('SYN Flag Count', '>=', 1),
+                      ('Total Fwd Packets', '>=', 5),
+                      ('Fwd Packet Length Max', '>=', 300),
+                      ('Flow Duration', '>=', 1_000_000)]),
+    # 9. DoS Slowhttptest: port 80, long duration, fwd-only.
+    ('dos_slowhttp', [('Destination Port', '==', 80), ('Protocol', '==', 6),
+                      ('Flow Duration',    '>',  10_000_000),
+                      ('Total Backward Packets', '==', 0),
+                      ('Total Fwd Packets', '>=', 3)]),
+    # 10. PortScan: SYN probe — 1-2 packets, zero payload on fwd.
+    ('portscan',     [('Total Fwd Packets','<=', 2),
+                      ('SYN Flag Count', '>=', 1),
                       ('Total Backward Packets', '<=', 2),
-                      ('Fwd Packet Length Max', '<=', 0)]),
+                      ('Fwd Packet Length Max', '<=', 0),
+                      ('Total Length of Fwd Packets', '<=', 0)]),
 ]
 
 _RULE_LABELS = {
@@ -2545,6 +2564,61 @@ def rule_based_label(row: dict):
             label, conf, sev = _RULE_LABELS[rule_name]
             return label, conf, sev
     return None
+
+# Well-known benign service ports. A Bot classification on these is almost
+# always a false positive; the ML was trained on CIC-IDS2017 where a few
+# attacks rode these ports, so it over-associates them.
+_BENIGN_SERVICE_PORTS = frozenset({
+    21, 22, 25, 53, 80, 88, 123, 135, 137, 138, 139, 143, 389, 443, 445,
+    465, 587, 636, 993, 995, 1433, 3268, 3389, 5353,
+})
+
+def ml_sanity_check(label: str, conf: float, row: dict):
+    """
+    Suppress obvious ML false positives. Demotes a flow to BENIGN when its
+    shape contradicts the claimed attack pattern. Returns (label, conf, demoted).
+
+    Runs AFTER the ML prediction and BEFORE the rule engine, so a wrongly
+    demoted genuine attack can still be recovered by a rule match.
+    """
+    label_upper = label.upper().replace('-', ' ').strip()
+    total_fwd = row.get('Total Fwd Packets', 0)
+    total_bwd = row.get('Total Backward Packets', 0)
+    fwd_bytes = row.get('Total Length of Fwd Packets', 0)
+    bwd_bytes = row.get('Total Length of Bwd Packets', 0)
+    fwd_max   = row.get('Fwd Packet Length Max', 0)
+    dst_port  = int(row.get('Destination Port', 0) or 0)
+
+    # DDoS: real DDoS is lopsided and high-rate. Substantial bidirectional
+    # data means it's a normal conversation.
+    if label_upper == 'DDOS':
+        if bwd_bytes >= 500 and total_bwd >= 3:
+            return 'BENIGN', conf, True
+        if total_fwd < 3:
+            return 'BENIGN', conf, True
+
+    # PortScan: real scans have no payload and minimal exchange.
+    if label_upper == 'PORTSCAN':
+        if fwd_max > 0 and total_bwd >= 2:
+            return 'BENIGN', conf, True
+        if fwd_bytes >= 100 or bwd_bytes >= 100:
+            return 'BENIGN', conf, True
+        if total_fwd >= 4 and total_bwd >= 3:
+            return 'BENIGN', conf, True
+
+    # DoS family: normal short/balanced sessions aren't DoS.
+    if label_upper in ('DOS HULK', 'DOS GOLDENEYE', 'DOS SLOWLORIS',
+                       'DOS SLOWHTTPTEST'):
+        if total_bwd >= total_fwd and total_fwd <= 8:
+            return 'BENIGN', conf, True
+        if bwd_bytes >= 1000 and total_bwd >= 3:
+            return 'BENIGN', conf, True
+
+    # Bot on well-known service ports is almost certainly a false positive.
+    if label_upper == 'BOT' and dst_port in _BENIGN_SERVICE_PORTS:
+        return 'BENIGN', conf, True
+
+    return label, conf, False
 
 _SEV_AR = {'SAFE': 'آمن', 'MEDIUM': 'متوسط', 'HIGH': 'عالٍ', 'CRITICAL': 'حرج', 'UNKNOWN': 'غير معروف'}
 
@@ -2757,11 +2831,18 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
         meta     = find_meta_cols(df)
         results  = []
 
-        # Pre-build raw feature rows for rule engine (uses original df values)
+        # Pre-build raw feature rows for rule engine + ML sanity filter.
+        # NOTE: every feature any rule or sanity check reads MUST be in this list —
+        # missing columns silently default to 0.0, which makes size/window checks
+        # ("<= 10", ">= 29000") evaluate against zero and misfire.
         rule_feature_cols = [
             'SYN Flag Count', 'ACK Flag Count', 'PSH Flag Count', 'FIN Flag Count',
-            'Total Fwd Packets', 'Total Backward Packets', 'Total Length of Fwd Packets',
-            'Flow Packets/s', 'Fwd Packets/s', 'Flow Duration', 'Destination Port', 'Protocol',
+            'Total Fwd Packets', 'Total Backward Packets',
+            'Total Length of Fwd Packets', 'Total Length of Bwd Packets',
+            'Fwd Packet Length Max', 'Bwd Packet Length Max',
+            'Init_Win_bytes_forward',
+            'Flow Packets/s', 'Fwd Packets/s', 'Flow Duration',
+            'Destination Port', 'Protocol',
         ]
         raw_rows = []
         for idx in range(total):
@@ -2861,6 +2942,12 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
 
             for j, (label, conf) in enumerate(zip(lbls, confs)):
                 idx = i + j
+
+                # ML sanity filter: demote obvious false positives (e.g. port-80
+                # flows labeled DDoS with real bidirectional data) to BENIGN
+                # before the rule engine gets a chance to re-label.
+                sanity_demoted = False
+                label, conf, sanity_demoted = ml_sanity_check(label, conf, raw_rows[idx])
 
                 # Rule engine: for CSV scans, only run on low-confidence results.
                 # For PCAP scans, always run because PCAP feature extraction
