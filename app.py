@@ -1981,6 +1981,8 @@ SEVERITY = {
     'DDoS':                     ('CRITICAL', '#ff3e5f', 4),
     'Heartbleed':               ('CRITICAL', '#ff3e5f', 4),
     'Infiltration':             ('CRITICAL', '#ff3e5f', 4),
+    'Suspicious C2':            ('MEDIUM',   '#ffb800', 2),
+    'Malicious C2':             ('CRITICAL', '#ff3e5f', 4),
 }
 
 SEVERITY_NUM = {'SAFE': 1, 'MEDIUM': 5, 'HIGH': 7, 'CRITICAL': 10, 'UNKNOWN': 3}
@@ -2647,6 +2649,128 @@ def ml_sanity_check(label: str, conf: float, row: dict):
 
     return label, conf, False
 
+# Ports commonly used for legitimate services — traffic to these is not
+# automatically suspicious, even to a public IP.
+_C2_BENIGN_PORTS = frozenset({
+    21, 22, 23, 25, 53, 67, 68, 80, 88, 110, 123, 135, 137, 138, 139, 143,
+    161, 162, 389, 443, 445, 465, 514, 587, 636, 993, 995, 1080, 1433, 1521,
+    1723, 3268, 3306, 3389, 5060, 5061, 5222, 5353, 5900, 5984, 6379,
+    8080, 8443, 8883, 9090, 11211, 27017,
+})
+
+def suspicious_c2_check(row, src_ip, dst_ip):
+    """
+    Flag malware-C2-like flows: public destination on a non-standard port
+    with substantial, sustained data exchange. Only runs when the ML model
+    and the rule engine both failed to label a flow as malicious.
+    Returns ('Suspicious C2', confidence) or (None, None).
+    """
+    if not dst_ip or dst_ip in ('N/A', 'nan') or is_private_ip(dst_ip):
+        return None, None
+    dst_port = int(row.get('Destination Port', 0) or 0)
+    if dst_port == 0 or dst_port in _C2_BENIGN_PORTS:
+        return None, None
+    total_bytes = (row.get('Total Length of Fwd Packets', 0) +
+                   row.get('Total Length of Bwd Packets', 0))
+    duration = row.get('Flow Duration', 0)
+    if total_bytes >= 50_000 and duration >= 5_000_000:
+        return 'Suspicious C2', 75.0
+    return None, None
+
+def enrich_results_with_ip_reputation(results, api_key, cache_path):
+    """
+    Post-scan: for every BENIGN flow with a public external IP, look up the
+    IP against AbuseIPDB. If abuseConfidenceScore >= 50, re-label the flow
+    as 'Malicious C2' (CRITICAL). Uses the 24h on-disk cache to avoid
+    burning the free-tier quota. Caps at MAX_LOOKUPS fresh API calls per
+    scan to stay under the daily limit.
+    """
+    if not api_key:
+        return 0
+    MAX_LOOKUPS = 25
+    now = datetime.now()
+
+    # Load cache
+    try:
+        with open(cache_path) as f:
+            cache = json.load(f)
+    except (OSError, ValueError):
+        cache = {}
+
+    # Collect public IPs appearing in BENIGN flows
+    benign_public = set()
+    for r in results:
+        if r.get('label', '').upper() != 'BENIGN':
+            continue
+        for k in ('src_ip', 'dst_ip'):
+            ip = r.get(k, '')
+            if ip and ip != 'N/A' and not is_private_ip(ip):
+                benign_public.add(ip)
+
+    # Work out which IPs need a fresh lookup
+    to_lookup = []
+    for ip in benign_public:
+        entry = cache.get(ip, {})
+        try:
+            cached_at = datetime.fromisoformat(entry.get('cached_at', '2000-01-01'))
+        except (ValueError, TypeError):
+            cached_at = datetime(2000, 1, 1)
+        if 'abuseScore' not in entry or (now - cached_at) >= timedelta(hours=24):
+            to_lookup.append(ip)
+
+    # Hit AbuseIPDB for the stale/missing ones (capped)
+    for ip in to_lookup[:MAX_LOOKUPS]:
+        try:
+            resp = req_lib.get(
+                'https://api.abuseipdb.com/api/v2/check',
+                headers={'Key': api_key, 'Accept': 'application/json'},
+                params={'ipAddress': ip, 'maxAgeInDays': 90},
+                timeout=5,
+            )
+            if resp.status_code != 200:
+                continue
+            d = resp.json().get('data', {})
+            cache[ip] = {
+                'ip':           ip,
+                'abuseScore':   d.get('abuseConfidenceScore', 0),
+                'country':      d.get('countryCode', 'N/A'),
+                'isp':          d.get('isp', 'N/A'),
+                'domain':       d.get('domain', 'N/A'),
+                'totalReports': d.get('totalReports', 0),
+                'cached_at':    now.isoformat(),
+            }
+        except Exception:
+            continue
+
+    # Persist cache updates
+    try:
+        with open(cache_path, 'w') as f:
+            json.dump(cache, f)
+    except OSError:
+        pass
+
+    # Re-label BENIGN flows whose external IP has a bad reputation
+    relabelled = 0
+    for r in results:
+        if r.get('label', '').upper() != 'BENIGN':
+            continue
+        worst_score = 0
+        for k in ('src_ip', 'dst_ip'):
+            ip = r.get(k, '')
+            if ip and ip != 'N/A' and not is_private_ip(ip):
+                worst_score = max(worst_score, cache.get(ip, {}).get('abuseScore', 0))
+        if worst_score >= 50:
+            r['label']        = 'Malicious C2'
+            r['confidence']   = float(worst_score)
+            r['anomaly_score'] = round(100.0 - worst_score, 2)
+            r['severity']     = 'CRITICAL'
+            r['color']        = '#ff3e5f'
+            r['rank']         = 4
+            r['is_malicious'] = True
+            r['rule_triggered'] = True
+            relabelled += 1
+    return relabelled
+
 _SEV_AR = {'SAFE': 'آمن', 'MEDIUM': 'متوسط', 'HIGH': 'عالٍ', 'CRITICAL': 'حرج', 'UNKNOWN': 'غير معروف'}
 
 def _tsev(s):
@@ -3012,6 +3136,20 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
                         except (IndexError, KeyError, ValueError, TypeError): r[key] = 'N/A'
                     else:
                         r[key] = 'N/A'
+                # Suspicious-C2 heuristic: if ML + rules both said BENIGN but the
+                # flow goes to a public IP on a non-standard port with notable
+                # volume/duration, flag it MEDIUM.
+                if r['label'].upper() == 'BENIGN' and not rule_triggered:
+                    c2_label, c2_conf = suspicious_c2_check(
+                        raw_rows[idx], r.get('src_ip'), r.get('dst_ip')
+                    )
+                    if c2_label:
+                        r['label'] = c2_label
+                        r['confidence'] = c2_conf
+                        r['anomaly_score'] = round(100.0 - c2_conf, 2)
+                        r['severity'], r['color'], r['rank'] = get_severity(c2_label)
+                        r['is_malicious'] = True
+                        r['rule_triggered'] = True
                 # Check whitelist — suppress malicious flag if whitelisted
                 if r['is_malicious'] and (_is_whitelisted_fast(r.get('src_ip','')) or _is_whitelisted_fast(r.get('dst_ip',''))):
                     r['is_malicious'] = False
@@ -3066,6 +3204,17 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
             continue
 
         upd(92, _ph(state, 'aggregating'))
+
+        # AbuseIPDB post-enrichment: re-label BENIGN flows whose external IP
+        # has a bad reputation (abuseScore >= 50) as Malicious C2.
+        # Silent no-op when the AbuseIPDB key isn't configured.
+        try:
+            _abuse_key = get_config().get('abuseipdb_key', '') or ''
+            if _abuse_key:
+                enrich_results_with_ip_reputation(results, _abuse_key, IP_CACHE_PATH)
+        except Exception:
+            app.logger.exception('AbuseIPDB enrichment failed for scan %s', scan_id)
+
         malicious = sum(1 for r in results if r['is_malicious'])
         threat_bd, sev_bd = {}, {}
         for r in results:
