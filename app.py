@@ -2522,11 +2522,15 @@ _RULE_THRESHOLDS_LIST = [
                       ('Total Backward Packets', '<=', 2),
                       ('Bwd Packet Length Max', '<=', 0),
                       ('Flow Duration', '>=', 10_000_000)]),
-    # 8. DoS GoldenEye: Init_Win ~29200 + large fwd payload + min duration.
+    # 8. DoS GoldenEye: Init_Win ~29200 + large fwd + few bwd packets.
+    # The few-bwd gate (<=3) distinguishes attacks (server overwhelmed /
+    # ignoring) from legitimate Linux-client HTTP POSTs (server sends a
+    # full response, bwd > 3).
     ('dos_goldeneye',[('Destination Port', '==', 80), ('Protocol', '==', 6),
                       ('Init_Win_bytes_forward', '>=', 29000),
                       ('Init_Win_bytes_forward', '<=', 30000),
                       ('Total Fwd Packets', '>=', 5),
+                      ('Total Backward Packets', '<=', 3),
                       ('Fwd Packet Length Max', '>=', 300),
                       ('Flow Duration', '>=', 1_000_000)]),
     # 9. DoS Slowhttptest: port 80, long duration, fwd-only.
@@ -3117,14 +3121,17 @@ def _run_scan(scan_id: str, filepath: Path, scan_user: str = 'system'):
                 sanity_demoted = False
                 label, conf, sanity_demoted = ml_sanity_check(label, conf, raw_rows[idx])
 
-                # Rule engine: for CSV scans, only run on low-confidence results.
-                # For PCAP scans, always run because PCAP feature extraction
-                # differs from CIC-IDS2017 and ML may miss attacks.
+                # Rule engine gate: run on every BENIGN flow (both CSV + PCAP)
+                # because the ML is sometimes confidently wrong on out-of-
+                # distribution inputs, and the tightened rules have narrow
+                # enough conditions (specific Init_Win ranges, port filters,
+                # duration / rate floors) that they don't false-positive on
+                # real benign traffic. Also run on low-confidence DDoS so the
+                # rule engine can reassign to the correct DoS family when the
+                # ML guesses DDoS for everything port-80-shaped.
                 rule_triggered = False
                 run_rules = False
-                if is_pcap_scan and label.upper() == 'BENIGN':
-                    run_rules = True
-                elif label.upper() == 'BENIGN' and conf < 70:
+                if label.upper() == 'BENIGN':
                     run_rules = True
                 elif label.upper() == 'DDOS' and conf < 70:
                     run_rules = True
